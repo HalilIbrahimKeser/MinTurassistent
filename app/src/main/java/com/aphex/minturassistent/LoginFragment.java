@@ -69,19 +69,24 @@ public class LoginFragment extends Fragment {
         fragmentLoginBinding.buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.createUserWithEmailAndPassword(fragmentLoginBinding.editUser.getText().toString(),
-                        fragmentLoginBinding.editPassword.getText().toString())
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getContext(),"Du er registrert!",Toast.LENGTH_SHORT).show();
-                            Navigation.findNavController(getView()).navigate(R.id.mainFragment);
-                        } else {
-                            Toast.makeText(getContext(), "Kunne ikke registrere bruker.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+//                if(!fragmentLoginBinding.editUser.getText().toString().isEmpty()) {
+                    mAuth.createUserWithEmailAndPassword(fragmentLoginBinding.editUser.getText().toString(),
+                            fragmentLoginBinding.editPassword.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getContext(),"Du er registrert!",Toast.LENGTH_SHORT).show();
+                                        Navigation.findNavController(getView()).navigate(R.id.mainFragment);
+                                    } else {
+                                        Toast.makeText(getContext(), "Kunne ikke registrere bruker.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+//                }else {
+//                    Toast.makeText(getContext(), "Du må skrive inn brukernavn og passord.", Toast.LENGTH_SHORT).show();
+//                }
+
             }
         });
 
