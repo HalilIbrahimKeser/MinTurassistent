@@ -5,5 +5,7 @@
     <string name="login">Login</string>
     <string name="glemt_passord">Glemt passord</string>
     <string name="registrere">Registrere</string>
+    <string name="rediger">Rediger bruker</string>
+    <string name="epost">Epost</string>
 
 </resources>

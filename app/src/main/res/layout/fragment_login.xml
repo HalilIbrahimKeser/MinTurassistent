@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@string/brukernavn"
+            android:text="@string/epost"
             android:textSize="24sp"
             app:layout_constraintBaseline_toBaselineOf="@+id/editUser"
             app:layout_constraintEnd_toStartOf="@+id/editUser"
