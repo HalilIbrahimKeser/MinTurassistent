@@ -51,7 +51,9 @@ public class LoginFragment extends Fragment {
         fragmentLoginBinding.buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.signInWithEmailAndPassword(fragmentLoginBinding.editUser.getText().toString(), fragmentLoginBinding.editPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                mAuth.signInWithEmailAndPassword(fragmentLoginBinding.editUser.getText().toString(),
+                        fragmentLoginBinding.editPassword.getText().toString())
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -67,7 +69,9 @@ public class LoginFragment extends Fragment {
         fragmentLoginBinding.buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.createUserWithEmailAndPassword(fragmentLoginBinding.editUser.getText().toString(), fragmentLoginBinding.editPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                mAuth.createUserWithEmailAndPassword(fragmentLoginBinding.editUser.getText().toString(),
+                        fragmentLoginBinding.editPassword.getText().toString())
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -84,7 +88,8 @@ public class LoginFragment extends Fragment {
         fragmentLoginBinding.buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.sendPasswordResetEmail(fragmentLoginBinding.editUser.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                mAuth.sendPasswordResetEmail(fragmentLoginBinding.editUser.getText().toString())
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {

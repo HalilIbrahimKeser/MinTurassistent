@@ -7,5 +7,7 @@
     <string name="registrere">Registrere</string>
     <string name="rediger">Rediger bruker</string>
     <string name="epost">Epost</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>
