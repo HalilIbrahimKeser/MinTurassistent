@@ -2,12 +2,18 @@
     <string name="app_name">MinTurassistent</string>
     <string name="brukernavn">Brukernavn</string>
     <string name="passord">Passord</string>
-    <string name="login">Login</string>
+    <string name="login">Logg inn</string>
     <string name="glemt_passord">Glemt passord</string>
-    <string name="registrere">Registrere</string>
-    <string name="rediger">Rediger bruker</string>
+    <string name="registrere">Registrer deg</string>
     <string name="epost">Epost</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="str_velkommen">Velkommen til vår app: Min Tur Assistent</string>
+    <string name="str_nytur">Velg ny tur fra toppmeny...</string>
+    <string name="str_madeby">Laget av:</string>
+    <string name="str_madeby1">Are Abrahamsen, Jørgen Rypdal</string>
+    <string name="str_madeby2">og Halil Ibrahim Keser</string>
+    <string name="todo">TODO</string>
+    <string name="todo1">TODO</string>
 
 </resources>

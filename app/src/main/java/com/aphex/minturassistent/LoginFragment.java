@@ -51,7 +51,7 @@ public class LoginFragment extends Fragment {
         binding.buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(binding.editUser.getText().toString().isEmpty()) {
+                if(!binding.editUser.getText().toString().isEmpty() || !binding.editPassword.getText().toString().isEmpty()) {
                     mAuth.signInWithEmailAndPassword(binding.editUser.getText().toString(),
                             binding.editPassword.getText().toString())
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
