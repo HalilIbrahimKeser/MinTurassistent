@@ -6,6 +6,7 @@
         android:id="@id/newTourFragment"
         android:icon="@drawable/ic_baseline_add_24"
         android:title="@string/str_ny_tur"
+        app:actionLayout="@layout/custom_menu_item"
         app:showAsAction="always" />
 
     <item
