@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/login">
+    app:startDestination="@id/loginFragment">
 
     <fragment
-        android:id="@+id/login"
+        android:id="@+id/loginFragment"
         android:name="com.aphex.minturassistent.LoginFragment"
-        android:label="fragment_login"
+        android:label=""
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_login_to_mainFragment"
@@ -17,25 +17,26 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.aphex.minturassistent.MainFragment"
-        android:label=" "
+        android:label=""
         tools:layout="@layout/fragment_main" />
     <fragment
         android:id="@+id/newTourFragment"
         android:name="com.aphex.minturassistent.NewTourFragment"
-        android:label=" "
+        android:label=""
         tools:layout="@layout/fragment_new_tour" />
     <fragment
         android:id="@+id/myToursFragment"
         android:name="com.aphex.minturassistent.MyToursFragment"
-        android:label=" "
+        android:label=""
         tools:layout="@layout/fragment_my_tours" />
     <fragment
         android:id="@+id/myProfileFragment"
         android:name="com.aphex.minturassistent.MyProfileFragment"
-        android:label=" "
+        android:label=""
         tools:layout="@layout/fragment_my_profile" />
+
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.aphex.minturassistent.SettingsFragment"
-        android:label=" " />
+        android:label="Settings" />
 </navigation>
