@@ -25,7 +25,8 @@
             android:paddingEnd="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageMainLogo" />
+            app:layout_constraintTop_toBottomOf="@+id/imageMainLogo"
+            android:autofillHints="" />
 
         <EditText
             android:id="@+id/editPassword"
@@ -40,16 +41,17 @@
             android:paddingEnd="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editUser" />
+            app:layout_constraintTop_toBottomOf="@+id/editUser"
+            android:autofillHints="" />
 
         <ImageView
             android:id="@+id/imageMainLogo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="50dp"
             android:layout_marginEnd="8dp"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/test"
             android:src="@drawable/logoturapp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

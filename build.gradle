@@ -10,6 +10,9 @@ buildscript {
 
         //Safeargs
         classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0"
+        //Safeargs denne lagt til fra Werner sin pdf Halil
+        def nav_version = "2.3.4"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

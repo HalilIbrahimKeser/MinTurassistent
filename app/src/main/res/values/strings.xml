@@ -15,5 +15,26 @@
     <string name="str_madeby2">og Halil Ibrahim Keser</string>
     <string name="todo">TODO</string>
     <string name="todo1">TODO</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="test">TODO</string>
+    <string name="str_ny_tur">Ny tur</string>
+    <string name="str_mine_turer">Mine turer</string>
+    <string name="str_innstillinger">Innstillinger</string>
+    <string name="str_min_profil">Min profil</string>
 
 </resources>

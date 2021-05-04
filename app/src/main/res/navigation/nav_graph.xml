@@ -17,6 +17,25 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.aphex.minturassistent.MainFragment"
-        android:label="fragment_main"
+        android:label=" "
         tools:layout="@layout/fragment_main" />
+    <fragment
+        android:id="@+id/newTourFragment"
+        android:name="com.aphex.minturassistent.NewTourFragment"
+        android:label="fragment_new_tour"
+        tools:layout="@layout/fragment_new_tour" />
+    <fragment
+        android:id="@+id/myToursFragment"
+        android:name="com.aphex.minturassistent.MyToursFragment"
+        android:label="fragment_my_tours"
+        tools:layout="@layout/fragment_my_tours" />
+    <fragment
+        android:id="@+id/myProfileFragment"
+        android:name="com.aphex.minturassistent.MyProfileFragment"
+        android:label="fragment_my_profile"
+        tools:layout="@layout/fragment_my_profile" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.aphex.minturassistent.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>
