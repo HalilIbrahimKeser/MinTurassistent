@@ -8,13 +8,14 @@
     <string name="epost">Epost</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="str_velkommen">Velkommen til vår app: Min Tur Assistent</string>
+    <string name="str_velkommen">Velkommen til vår app: Min TurAssistent</string>
     <string name="str_nytur">Velg ny tur fra toppmeny...</string>
     <string name="str_madeby">Laget av:</string>
     <string name="str_madeby1">Are Abrahamsen, Jørgen Rypdal</string>
     <string name="str_madeby2">og Halil Ibrahim Keser</string>
     <string name="todo">TODO</string>
     <string name="todo1">TODO</string>
+    <string name="trips">Mine turer:</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- Preference Titles -->

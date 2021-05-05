@@ -15,16 +15,20 @@ import java.util.List;
 public class ViewModel extends AndroidViewModel {
 
     private Repository mRepository;
-
-    //TRIP
-//    private final LiveData<List<Trip>> mTripInsert;
+    public LiveData<List<Trip>> mAllTrips;
 
     public ViewModel(Application application) {
         super(application);
         mRepository = new Repository(application);
-//        mTripInsert = mRepository.getTrips(trip);
+        mAllTrips = mRepository.getAllTrips();
     }
 
     //TRIP ------------------
-    public void insertTrip(Trip trip) { mRepository.tripInsert(trip); }
+    public void insertTrip(Trip trip) {
+        mRepository.tripInsert(trip);
+    }
+
+    public LiveData<List<Trip>> getAllTrips() {
+        return mAllTrips;
+    }
 }
