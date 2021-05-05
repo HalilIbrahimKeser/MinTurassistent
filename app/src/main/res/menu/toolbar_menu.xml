@@ -3,27 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@id/newTourButton"
+        android:id="@+id/newTourFragment"
         android:title="@string/str_ny_tur"
         android:icon="@drawable/ic_action_addtour"
-        app:actionLayout="@layout/add_item"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@id/myToursFragment"
         android:title="@string/str_mine_turer"
-        app:actionLayout="@layout/history_item"
+        android:icon="@drawable/ic_baseline_history_24"
         app:showAsAction="always"/>
 
     <item
         android:id="@id/myProfileFragment"
         android:title="@string/str_min_profil"
-        app:actionLayout="@layout/profile_item"
+        android:icon="@drawable/ic_baseline_person_24"
         app:showAsAction="always"/>
 
     <item
         android:id="@id/settingsFragment"
         android:title="@string/str_innstillinger"
-        app:actionLayout="@layout/settings_item"
+        android:icon="@drawable/ic_baseline_settings_24"
         app:showAsAction="always"/>
 </menu>
