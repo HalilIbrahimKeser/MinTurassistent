@@ -15,4 +15,9 @@
     <color name="gray">#66BAD5E3</color>
     <color name="darkgray">#363637</color>
     <color name="red">#F44336</color>
+
+    <color name="card_bg">#F1F1F1</color>
+    <color name="title_text">#2196F3</color>
+    <color name="content_text">#121212</color>
+
 </resources>

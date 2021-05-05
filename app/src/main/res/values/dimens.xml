@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name ="status_bar_height">10dp</dimen>
-
+    <dimen name="big_padding">16dp</dimen>
 </resources>
