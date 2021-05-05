@@ -2,13 +2,30 @@ package com.aphex.minturassistent;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MyProfileFragment extends Fragment {
+    private static final String TAG = "log";
+    private FirebaseAuth mAuth;
 
     public MyProfileFragment() {
         // Required empty public constructor
@@ -17,6 +34,9 @@ public class MyProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
     }
 
@@ -24,6 +44,76 @@ public class MyProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        TextView tvPUser = view.findViewById(R.id.tvPUser);
+
+        tvPUser.setText(user.getEmail());
+
+        Button btnLogOut = view.findViewById(R.id.btnLogOut);
+        btnLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signOut();
+            }
+        });
+        Button btnDelete = view.findViewById(R.id.btnDelete);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteUserFromFirebase();
+            }
+        });
+
+        return view;
+    }
+
+    public void signOut() {
+        AuthUI.getInstance()
+                .signOut(getActivity());
+        Navigation.findNavController(getView()).navigate(R.id.loginFragment);
+    }
+
+    private void deleteUserFromFirebase() {
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Log.d(TAG, "Log in before delete.");
+            return;
+        }
+
+        //Antar bruk av EmailAuthProvider:
+        //Her må man spørr bruker etter brukernavn og passord (hardkoder her):
+        AuthCredential credential = EmailAuthProvider
+                .getCredential("are.abrahamsen@gmail.com", "Jadda123");
+        Log.i(TAG, "Authenticate");
+
+        //  reauthenticate før sletting:
+        currentUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                // Utfør sletting:
+                Log.i(TAG, "Deleted user");
+                doDeleteFromFirebase(currentUser);
+                Navigation.findNavController(getView()).navigate(R.id.loginFragment);
+            }
+        });
+    }
+
+    // Utfører sletting:
+    private void doDeleteFromFirebase(FirebaseUser user) {
+        user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.i(TAG, "User account deleted.");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "Error on delete user.");
+                    }
+                });
     }
 }

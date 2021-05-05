@@ -36,5 +36,8 @@
     <string name="str_mine_turer">Mine turer</string>
     <string name="str_innstillinger">Innstillinger</string>
     <string name="str_min_profil">Min profil</string>
+    <string name="hei_bruker">Hei bruker:</string>
+    <string name="slett_bruker">Slett bruker</string>
+    <string name="logg_ut">Logg ut</string>
 
 </resources>
