@@ -1,8 +1,11 @@
 package com.aphex.minturassistent;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -12,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,8 +41,6 @@ public class MyProfileFragment extends Fragment {
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
     }
 
     @Override
@@ -64,7 +66,7 @@ public class MyProfileFragment extends Fragment {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteUserFromFirebase();
+                onBtnDeleteFinish(view);
             }
         });
 
@@ -76,35 +78,52 @@ public class MyProfileFragment extends Fragment {
         Navigation.findNavController(getView()).navigate(R.id.loginFragment);
     }
 
-    private void deleteUserFromFirebase() {
+    //Viser en standard AlertDialog.. Tilpasset fra Werners dialogTest
+    public void onBtnDeleteFinish(View view) {
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Log.d(TAG, "Log in before delete.");
-            return;
-        }
+        MyProfileFragment context = this;
+        String title = "Bekreft sletting av bruker";
+        String message = "Ønsker du virkelig å slette brukeren din?";
+        String button1String = "Ja";
+        String button2String = "Nei, gå tilbake!";
 
-        currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Navigation.findNavController(getView()).navigate(R.id.loginFragment);
-            }
-        });
-    }
+        AlertDialog.Builder ad = new AlertDialog.Builder(context.getContext());
+        ad.setTitle(title);
+        ad.setMessage(message);
 
-    // Utfører sletting:
-    private void doDeleteFromFirebase(FirebaseUser user) {
-        user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.i(TAG, "User account deleted.");
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "Error on delete user.");
+        ad.setPositiveButton(button1String,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                        if (currentUser == null) {
+                            Log.d(TAG, "Log in before delete.");
+                            return;
+                        }
+
+                        currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Navigation.findNavController(getView()).navigate(R.id.loginFragment);
+                                Toast.makeText(context.getContext(), "Bruker slettet..", Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
                 });
+
+        ad.setNegativeButton(button2String,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        Toast.makeText(context.getContext(), "Avbryter..", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        ad.setCancelable(false);
+
+        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+            }
+        });
+
+        ad.show();
     }
 }
