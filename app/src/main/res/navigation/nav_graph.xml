@@ -39,4 +39,8 @@
         android:id="@+id/settingsFragment"
         android:name="com.aphex.minturassistent.SettingsFragment"
         android:label="Settings" />
+    <dialog
+        android:id="@+id/datePickerFragment"
+        android:name="com.aphex.minturassistent.DatePickerFragment"
+        android:label="DatePickerFragment" />
 </navigation>

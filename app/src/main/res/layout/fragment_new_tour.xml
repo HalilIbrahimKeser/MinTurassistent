@@ -45,6 +45,7 @@
 
         <EditText
             android:id="@+id/etDate"
+            android:focusableInTouchMode="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -198,15 +199,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
-
-        <Button
-            android:id="@+id/btnDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onBtnDateFragmentDialog"
-            android:text="Button"
-            app:layout_constraintStart_toEndOf="@+id/etDate"
-            app:layout_constraintTop_toTopOf="@+id/etDate" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

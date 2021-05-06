@@ -6,22 +6,32 @@ import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.aphex.minturassistent.viewmodel.ViewModel;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class NewTourFragment extends Fragment {
     final Calendar myCalendar = Calendar.getInstance();
     EditText etDate;
     NewTourFragment context = this;
+    ViewModel viewModel;
 
     public NewTourFragment() {
         // Required empty public constructor
@@ -45,39 +55,30 @@ public class NewTourFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_new_tour, container, false);
 
         etDate = view.findViewById(R.id.etDate);
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, month);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
-            }
-        };
+
             etDate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // TODO Auto-generated method stub
-                    new DatePickerDialog(view.getContext(), date, myCalendar
-                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-                }
-            });
+                    NavController navController = Navigation.findNavController(view);
+
+                    Navigation.findNavController(getView()).navigate(R.id.nav_graph);
+
+//                    NavBackStackEntry backStackEntry = navController.getBackStackEntry(R.id.nav_graph);
+//
+//                    viewModel = new ViewModelProvider(backStackEntry).get(ViewModel.class);
+//                    viewModel.getDate().observe(getViewLifecycleOwner(), list -> {
+//
+//                    });
+            }});
         return view;
     }
 
-    private void updateLabel() {
-        String myFormat = "MM/dd/yy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        etDate.setText(sdf.format(myCalendar.getTime()));
-    }
-
-
-    //Bruker DialogFragment med egendefinert layout:
-    public void onBtnDateFragmentDialog(View view) {
-
-        DialogFragment datePickerFragment = new DatePickerFragment();
-        datePickerFragment.show(getChildFragmentManager(), "datePicker");
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        viewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ViewModel.class);
+        viewModel.getDate().observe(getViewLifecycleOwner(), date -> {
+            etDate.setText(date);
+        });
     }
 }
