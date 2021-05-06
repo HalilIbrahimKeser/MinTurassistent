@@ -42,5 +42,15 @@
     <string name="logg_ut">Logg ut</string>
     <string name="str_turnavn_tittel">Turnavn / Tittel:</string>
     <string name="str_turnnavn">Turnnavn</string>
+    <string name="str_dato_for_tur">Dato for tur</string>
+    <string name="str__dato">00.00.0000</string>
+    <string name="str_estimert_dager">Estimert dager</string>
+    <string name="str_estimerte_timer">Estimerte timer</string>
+    <string name="str_fottur">Fottur</string>
+    <string name="str_sykkeltur">Sykkeltur</string>
+    <string name="str_skitur">Skitur</string>
+    <string name="str_velg_tur_p_kart">Velg tur på kart</string>
+    <string name="str_todo">TODO</string>
+    <string name="str_0">0</string>
 
 </resources>

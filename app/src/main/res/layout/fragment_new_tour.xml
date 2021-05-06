@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Dato for tur"
+            android:text="@string/str_dato_for_tur"
             app:layout_constraintStart_toStartOf="@+id/etTourName"
             app:layout_constraintTop_toBottomOf="@+id/etTourName" />
 
@@ -50,7 +50,7 @@
             android:layout_marginTop="8dp"
             android:autofillHints=""
             android:ems="10"
-            android:hint="00.00.0000"
+            android:hint="@string/str__dato"
             android:inputType="date"
             app:layout_constraintStart_toStartOf="@+id/tvDate"
             app:layout_constraintTop_toBottomOf="@+id/tvDate" />
@@ -59,7 +59,7 @@
             android:id="@+id/tvEstimatedDays"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Estimert dager"
+            android:text="@string/str_estimert_dager"
             app:layout_constraintBaseline_toBaselineOf="@+id/tvEstimatedHours"
             app:layout_constraintStart_toStartOf="@+id/etDate" />
 
@@ -67,7 +67,9 @@
             android:id="@+id/etEstimatedDays"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autofillHints=""
             android:ems="5"
+            android:hint="@string/str_0"
             android:inputType="numberDecimal"
             app:layout_constraintBaseline_toBaselineOf="@+id/etEstimatedHours"
             app:layout_constraintStart_toStartOf="@+id/tvEstimatedDays" />
@@ -78,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="100dp"
             android:layout_marginTop="32dp"
-            android:text="Estimerte timer"
+            android:text="@string/str_estimerte_timer"
             app:layout_constraintStart_toEndOf="@+id/tvEstimatedDays"
             app:layout_constraintTop_toBottomOf="@+id/etDate" />
 
@@ -87,7 +89,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:autofillHints=""
             android:ems="5"
+            android:hint="@string/str_0"
             android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="@+id/tvEstimatedHours"
             app:layout_constraintTop_toBottomOf="@+id/tvEstimatedHours" />
@@ -131,14 +135,14 @@
             android:src="@drawable/ic_baseline_directions_walk_24"
             app:layout_constraintStart_toEndOf="@+id/radioGroup"
             app:layout_constraintTop_toTopOf="@+id/radioGroup"
-            app:srcCompat="@drawable/ic_baseline_directions_walk_24" />
+            android:contentDescription="@string/str_todo" />
 
         <TextView
             android:id="@+id/tvPerson"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Fottur"
+            android:text="@string/str_fottur"
             app:layout_constraintBottom_toBottomOf="@+id/imPerson"
             app:layout_constraintStart_toEndOf="@+id/imPerson"
             app:layout_constraintTop_toTopOf="@+id/imPerson" />
@@ -148,18 +152,18 @@
             android:layout_width="44dp"
             android:layout_height="46dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_baseline_directions_walk_24"
+            android:src="@drawable/ic_baseline_directions_bike_24"
             app:layout_constraintEnd_toEndOf="@+id/imPerson"
             app:layout_constraintStart_toStartOf="@+id/imPerson"
             app:layout_constraintTop_toBottomOf="@+id/imPerson"
-            app:srcCompat="@drawable/ic_baseline_directions_bike_24" />
+            android:contentDescription="@string/str_todo" />
 
         <TextView
             android:id="@+id/tvBicycle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Sykkeltur"
+            android:text="@string/str_sykkeltur"
             app:layout_constraintBottom_toBottomOf="@+id/imBicycle"
             app:layout_constraintStart_toEndOf="@+id/imBicycle"
             app:layout_constraintTop_toTopOf="@+id/imBicycle" />
@@ -169,18 +173,18 @@
             android:layout_width="44dp"
             android:layout_height="46dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_baseline_directions_walk_24"
+            android:src="@drawable/ic_baseline_downhill_skiing_24"
             app:layout_constraintEnd_toEndOf="@+id/imBicycle"
             app:layout_constraintStart_toStartOf="@+id/imBicycle"
             app:layout_constraintTop_toBottomOf="@+id/imBicycle"
-            app:srcCompat="@drawable/ic_baseline_downhill_skiing_24" />
+            android:contentDescription="@string/str_todo" />
 
         <TextView
             android:id="@+id/tvSki"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Skitur"
+            android:text="@string/str_skitur"
             app:layout_constraintBottom_toBottomOf="@+id/imSki"
             app:layout_constraintStart_toEndOf="@+id/imSki"
             app:layout_constraintTop_toTopOf="@+id/imSki" />
@@ -190,10 +194,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:text="Velg tur på kart"
+            android:text="@string/str_velg_tur_p_kart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+
+        <Button
+            android:id="@+id/btnDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onBtnDateFragmentDialog"
+            android:text="Button"
+            app:layout_constraintStart_toEndOf="@+id/etDate"
+            app:layout_constraintTop_toTopOf="@+id/etDate" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
