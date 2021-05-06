@@ -53,22 +53,21 @@ public class NewTourFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_tour, container, false);
-
         etDate = view.findViewById(R.id.etDate);
+
+        Calendar choosenDate = Calendar.getInstance();
+        int cday = choosenDate.get(Calendar.DAY_OF_MONTH);
+        int cmonth = choosenDate.get(Calendar.MONTH) + 1;
+        int cyear = choosenDate.get(Calendar.YEAR);
+        String dateString = cday + "." + cmonth  + "." + cyear;
+        etDate.setText(dateString);
 
             etDate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     NavController navController = Navigation.findNavController(view);
+                    Navigation.findNavController(getView()).navigate(R.id.datePickerFragment);
 
-                    Navigation.findNavController(getView()).navigate(R.id.nav_graph);
-
-//                    NavBackStackEntry backStackEntry = navController.getBackStackEntry(R.id.nav_graph);
-//
-//                    viewModel = new ViewModelProvider(backStackEntry).get(ViewModel.class);
-//                    viewModel.getDate().observe(getViewLifecycleOwner(), list -> {
-//
-//                    });
             }});
         return view;
     }
@@ -77,8 +76,21 @@ public class NewTourFragment extends Fragment {
     public void onStart() {
         super.onStart();
         viewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ViewModel.class);
-        viewModel.getDate().observe(getViewLifecycleOwner(), date -> {
-            etDate.setText(date);
-        });
+//        viewModel.getDate().observe(getViewLifecycleOwner(), date -> {
+//            etDate.setText(date);
+//        });
     }
 }
+
+
+
+
+
+
+//      KODE FJERNET FRA ONCREATE WIEW, Kommentert ut i tilfelle vi skal initialisere viewmodel
+//                    NavBackStackEntry backStackEntry = navController.getBackStackEntry(R.id.nav_graph);
+//
+//                    viewModel = new ViewModelProvider(backStackEntry).get(ViewModel.class);
+//                    viewModel.getDate().observe(getViewLifecycleOwner(), list -> {
+//
+//                    });

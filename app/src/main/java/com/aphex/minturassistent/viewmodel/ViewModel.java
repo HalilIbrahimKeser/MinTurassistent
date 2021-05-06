@@ -12,19 +12,21 @@ import com.aphex.minturassistent.Entities.Trip;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
 
     private Repository mRepository;
-    public MutableLiveData<String> date;
+    public MutableLiveData<Calendar> dateData;
     public LiveData<List<Trip>> mAllTrips;
 
     public ViewModel(Application application) {
         super(application);
         mRepository = new Repository(application);
         mAllTrips = mRepository.getAllTrips();
+
     }
 
     //TRIP ------------------
@@ -36,11 +38,14 @@ public class ViewModel extends AndroidViewModel {
         return mAllTrips;
     }
 
-    public MutableLiveData<String> getDate() {
-        return date;
+    public MutableLiveData<Calendar> getDate() {
+        return dateData;
     }
 
-    public void setValue(int year, int month, int dayOfMonth) {
-        Date yearDate = new Date(year, month, dayOfMonth);
+    public Calendar setValue(int year, int month, int dayOfMonth) {
+        Calendar choosenDate = Calendar.getInstance();
+
+        choosenDate.set(year, month, dayOfMonth);
+        return choosenDate;
     }
 }
