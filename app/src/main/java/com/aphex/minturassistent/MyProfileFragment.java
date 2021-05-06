@@ -34,6 +34,7 @@ public class MyProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -46,10 +47,10 @@ public class MyProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         TextView tvPUser = view.findViewById(R.id.tvPUser);
 
-        tvPUser.setText(user.getEmail());
+        tvPUser.setText(currentUser.getEmail());
 
         Button btnLogOut = view.findViewById(R.id.btnLogOut);
         btnLogOut.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +59,7 @@ public class MyProfileFragment extends Fragment {
                 signOut();
             }
         });
+
         Button btnDelete = view.findViewById(R.id.btnDelete);
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,8 +72,7 @@ public class MyProfileFragment extends Fragment {
     }
 
     public void signOut() {
-        AuthUI.getInstance()
-                .signOut(getActivity());
+        FirebaseAuth.getInstance().signOut();
         Navigation.findNavController(getView()).navigate(R.id.loginFragment);
     }
 
@@ -83,19 +84,9 @@ public class MyProfileFragment extends Fragment {
             return;
         }
 
-        //Antar bruk av EmailAuthProvider:
-        //Her må man spørr bruker etter brukernavn og passord (hardkoder her):
-        AuthCredential credential = EmailAuthProvider
-                .getCredential("are.abrahamsen@gmail.com", "Jadda123");
-        Log.i(TAG, "Authenticate");
-
-        //  reauthenticate før sletting:
-        currentUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+        currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                // Utfør sletting:
-                Log.i(TAG, "Deleted user");
-                doDeleteFromFirebase(currentUser);
                 Navigation.findNavController(getView()).navigate(R.id.loginFragment);
             }
         });
