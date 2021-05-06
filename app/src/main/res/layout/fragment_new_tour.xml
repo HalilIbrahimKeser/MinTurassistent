@@ -1,14 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".NewTourFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="@color/white">
+
+
+        <TextView
+            android:id="@+id/tvTittel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/str_turnavn_tittel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/etTourName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/str_turnnavn"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="@+id/tvTittel"
+            app:layout_constraintTop_toBottomOf="@+id/tvTittel" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Dato for tur"
+            app:layout_constraintStart_toStartOf="@+id/etTourName"
+            app:layout_constraintTop_toBottomOf="@+id/etTourName" />
+
+        <EditText
+            android:id="@+id/etDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="00.00.0000"
+            android:inputType="date"
+            app:layout_constraintStart_toStartOf="@+id/tvDate"
+            app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+
+        <TextView
+            android:id="@+id/tvEstimatedDays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Estimert dager"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvEstimatedHours"
+            app:layout_constraintStart_toStartOf="@+id/etDate" />
+
+        <EditText
+            android:id="@+id/etEstimatedDays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="5"
+            android:inputType="numberDecimal"
+            app:layout_constraintBaseline_toBaselineOf="@+id/etEstimatedHours"
+            app:layout_constraintStart_toStartOf="@+id/tvEstimatedDays" />
+
+        <TextView
+            android:id="@+id/tvEstimatedHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="32dp"
+            android:text="Estimerte timer"
+            app:layout_constraintStart_toEndOf="@+id/tvEstimatedDays"
+            app:layout_constraintTop_toBottomOf="@+id/etDate" />
+
+        <EditText
+            android:id="@+id/etEstimatedHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ems="5"
+            android:inputType="numberDecimal"
+            app:layout_constraintStart_toStartOf="@+id/tvEstimatedHours"
+            app:layout_constraintTop_toBottomOf="@+id/tvEstimatedHours" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEstimatedDays">
+
+            <RadioButton
+                android:id="@+id/rbTrailhiking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:visibility="visible" />
+
+            <RadioButton
+                android:id="@+id/rbBicycleTour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                tools:visibility="visible" />
+
+            <RadioButton
+                android:id="@+id/rbSkitour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                tools:visibility="visible" />
+        </RadioGroup>
+
+        <ImageView
+            android:id="@+id/imPerson"
+            android:layout_width="44dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/ic_baseline_directions_walk_24"
+            app:layout_constraintStart_toEndOf="@+id/radioGroup"
+            app:layout_constraintTop_toTopOf="@+id/radioGroup"
+            app:srcCompat="@drawable/ic_baseline_directions_walk_24" />
+
+        <TextView
+            android:id="@+id/tvPerson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Fottur"
+            app:layout_constraintBottom_toBottomOf="@+id/imPerson"
+            app:layout_constraintStart_toEndOf="@+id/imPerson"
+            app:layout_constraintTop_toTopOf="@+id/imPerson" />
+
+        <ImageView
+            android:id="@+id/imBicycle"
+            android:layout_width="44dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_baseline_directions_walk_24"
+            app:layout_constraintEnd_toEndOf="@+id/imPerson"
+            app:layout_constraintStart_toStartOf="@+id/imPerson"
+            app:layout_constraintTop_toBottomOf="@+id/imPerson"
+            app:srcCompat="@drawable/ic_baseline_directions_bike_24" />
+
+        <TextView
+            android:id="@+id/tvBicycle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Sykkeltur"
+            app:layout_constraintBottom_toBottomOf="@+id/imBicycle"
+            app:layout_constraintStart_toEndOf="@+id/imBicycle"
+            app:layout_constraintTop_toTopOf="@+id/imBicycle" />
+
+        <ImageView
+            android:id="@+id/imSki"
+            android:layout_width="44dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_baseline_directions_walk_24"
+            app:layout_constraintEnd_toEndOf="@+id/imBicycle"
+            app:layout_constraintStart_toStartOf="@+id/imBicycle"
+            app:layout_constraintTop_toBottomOf="@+id/imBicycle"
+            app:srcCompat="@drawable/ic_baseline_downhill_skiing_24" />
+
+        <TextView
+            android:id="@+id/tvSki"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Skitur"
+            app:layout_constraintBottom_toBottomOf="@+id/imSki"
+            app:layout_constraintStart_toEndOf="@+id/imSki"
+            app:layout_constraintTop_toTopOf="@+id/imSki" />
+
+        <Button
+            android:id="@+id/btnNewTour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="Velg tur på kart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

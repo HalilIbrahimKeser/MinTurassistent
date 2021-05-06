@@ -40,5 +40,7 @@
     <string name="hei_bruker">Hei bruker:</string>
     <string name="slett_bruker">Slett bruker</string>
     <string name="logg_ut">Logg ut</string>
+    <string name="str_turnavn_tittel">Turnavn / Tittel:</string>
+    <string name="str_turnnavn">Turnnavn</string>
 
 </resources>
