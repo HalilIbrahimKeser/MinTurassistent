@@ -11,6 +11,8 @@
         android:id="@+id/my_toolbar"
         android:theme="@style/NavigationTheme"
         app:title=" "
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"
