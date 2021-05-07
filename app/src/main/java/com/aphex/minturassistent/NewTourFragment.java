@@ -1,5 +1,6 @@
 package com.aphex.minturassistent;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 
@@ -28,8 +29,9 @@ import java.util.Date;
 import java.util.Locale;
 
 public class NewTourFragment extends Fragment {
+    public static EditText etDate;
+    private static View view;
     final Calendar myCalendar = Calendar.getInstance();
-    EditText etDate;
     NewTourFragment context = this;
     ViewModel viewModel;
 
@@ -52,45 +54,37 @@ public class NewTourFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_new_tour, container, false);
+        view = inflater.inflate(R.layout.fragment_new_tour, container, false);
         etDate = view.findViewById(R.id.etDate);
 
         Calendar choosenDate = Calendar.getInstance();
         int cday = choosenDate.get(Calendar.DAY_OF_MONTH);
         int cmonth = choosenDate.get(Calendar.MONTH) + 1;
         int cyear = choosenDate.get(Calendar.YEAR);
-        String dateString = cday + "." + cmonth  + "." + cyear;
+        String dateString = cday + "." + cmonth + "." + cyear;
         etDate.setText(dateString);
 
-            etDate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    NavController navController = Navigation.findNavController(view);
-                    Navigation.findNavController(getView()).navigate(R.id.datePickerFragment);
-
-            }});
+        etDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                Navigation.findNavController(getView()).navigate(R.id.datePickerFragment);
+            }
+        });
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        viewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ViewModel.class);
-//        viewModel.getDate().observe(getViewLifecycleOwner(), date -> {
-//            etDate.setText(date);
-//        });
+    }
+
+    public static void dateUdate(int year1, int month1, int dayOfMonth1) {
+        Calendar choosenDate = Calendar.getInstance();
+        int month = month1 + 1;
+
+        String dateString = dayOfMonth1 + "." + month + "." + year1;
+        etDate = view.findViewById(R.id.etDate);
+        etDate.setText(dateString);
     }
 }
-
-
-
-
-
-
-//      KODE FJERNET FRA ONCREATE WIEW, Kommentert ut i tilfelle vi skal initialisere viewmodel
-//                    NavBackStackEntry backStackEntry = navController.getBackStackEntry(R.id.nav_graph);
-//
-//                    viewModel = new ViewModelProvider(backStackEntry).get(ViewModel.class);
-//                    viewModel.getDate().observe(getViewLifecycleOwner(), list -> {
-//
-//                    });
