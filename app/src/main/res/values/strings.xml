@@ -46,7 +46,7 @@
     <string name="str__dato">00.00.0000</string>
     <string name="str_estimert_dager">Estimert dager</string>
     <string name="str_estimerte_timer">Estimerte timer</string>
-    <string name="str_fottur">Fottur</string>
+    <string name="str_fottur">Gåtur</string>
     <string name="str_sykkeltur">Sykkeltur</string>
     <string name="str_skitur">Skitur</string>
     <string name="str_velg_tur_p_kart">Velg tur på kart</string>

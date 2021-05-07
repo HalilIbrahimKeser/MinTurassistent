@@ -13,11 +13,15 @@
         app:title=" "
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp"
+
+        android:paddingEnd="2dp"
+        android:paddingStart="1dp"
+
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"
         android:background="@color/red"
-        android:elevation="4dp"
+        android:elevation="1dp"
         android:gravity="center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

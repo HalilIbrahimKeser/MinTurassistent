@@ -15,6 +15,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.renderscript.ScriptGroup;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Switch;
+import android.widget.Toast;
 
+import com.aphex.minturassistent.Entities.Trip;
+import com.aphex.minturassistent.databinding.FragmentNewTourBinding;
+import com.aphex.minturassistent.viewmodel.Repository;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import java.text.SimpleDateFormat;
@@ -32,13 +40,16 @@ import java.util.Locale;
 
 public class NewTourFragment extends Fragment {
     public static EditText etDate;
+    public static Button btnNewTour;
+    public static String tourType;
+
     private static View view;
     final Calendar myCalendar = Calendar.getInstance();
     NewTourFragment context = this;
     ViewModel viewmodel;
+    FragmentNewTourBinding binding;
 
     public NewTourFragment() {
-        // Required empty public constructor
     }
 
     public static NewTourFragment newInstance() {
@@ -56,15 +67,23 @@ public class NewTourFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_new_tour, container, false);
-        etDate = view.findViewById(R.id.etDate);
+        binding = FragmentNewTourBinding.inflate(inflater, container, false);
+//        view = inflater.inflate(R.layout.fragment_new_tour, container, false);
+        etDate = binding.etDate;
 
         Calendar choosenDate = Calendar.getInstance();
-        int cday = choosenDate.get(Calendar.DAY_OF_MONTH);
-        int cmonth = choosenDate.get(Calendar.MONTH) + 1;
-        int cyear = choosenDate.get(Calendar.YEAR);
-        String dateString = cday + "." + cmonth + "." + cyear;
+        int day = choosenDate.get(Calendar.DAY_OF_MONTH);
+        int month = choosenDate.get(Calendar.MONTH) + 1;
+        int year = choosenDate.get(Calendar.YEAR);
+        String dateString = day + "." + month + "." + year;
         etDate.setText(dateString);
+
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
 
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +92,66 @@ public class NewTourFragment extends Fragment {
                 Navigation.findNavController(getView()).navigate(R.id.datePickerFragment);
             }
         });
-        return view;
+
+        btnNewTour = binding.btnNewTour;
+        btnNewTour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view1) {
+
+                //OM VERDIENE ER TOMME, LEGG INN VERDIER
+                EditText tourName = binding.etTourName;
+                String tourName1;
+                try {
+                    tourName1 = tourName.getText().toString();
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    tourName1 = "Uten navn";
+                }
+
+                EditText date = binding.etDate;
+
+                EditText estimatedDays = binding.etEstimatedDays;
+                int estimatedDays1;
+                try {
+                    estimatedDays1 = Integer.parseInt(estimatedDays.getText().toString());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    estimatedDays1 = 0;
+                }
+
+                EditText estimatedHours = binding.etEstimatedHours;
+                int estimatedHours1;
+                try {
+                    estimatedHours1 = Integer.parseInt(estimatedHours.getText().toString());
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    estimatedHours1 = 0;
+                }
+
+                RadioButton radioButton1 = binding.rbTrailhiking;
+                RadioButton radioButton2 = binding.rbBicycleTour;
+                RadioButton radioButton3 = binding.rbSkitour;
+
+                if (radioButton1.isChecked()){
+                    tourType = "Gåtur";
+                }else if(radioButton2.isChecked()) {
+                    tourType = "Sykkeltur";
+                }else if(radioButton3.isChecked()) {
+                    tourType = "Skitur";
+                }else {
+                    tourType = "Ikke valgt";
+                }
+                if(tourName1.isEmpty()){
+                    tourName1 = "Uten navn";
+                }
+
+                Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedDays1, estimatedHours1,
+                        false, "null", "null");
+                insertTrip(newTrip);
+            }
+        });
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -83,5 +160,17 @@ public class NewTourFragment extends Fragment {
         viewmodel.getDate().observe(getActivity(), date -> {
             etDate.setText(date);
         });
+    }
+
+    public void insertTrip(Trip trip) {
+        Trip tripToAdd = new Trip(trip.mTripName, trip.mDate, trip.mEstimatedHours, trip.mEstimatedHDays, trip.getmIsFinished(), trip.getmTimeSpent(), trip.getmPlace());
+        try {
+            viewmodel.insertTrip(tripToAdd);
+            Toast.makeText(getContext(), "Tur lagt inn", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Kunne ikke legge inn", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),  String.valueOf(e), Toast.LENGTH_LONG).show();
+        }
     }
 }

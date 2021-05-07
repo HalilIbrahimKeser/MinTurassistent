@@ -96,7 +96,7 @@ public class MyProfileFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int arg1) {
                         FirebaseUser currentUser = mAuth.getCurrentUser();
                         if (currentUser == null) {
-                            Log.d(TAG, "Log in before delete.");
+                            Log.d(TAG, "Logg inn før du kan slette.");
                             return;
                         }
 

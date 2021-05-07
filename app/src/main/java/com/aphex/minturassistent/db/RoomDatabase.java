@@ -47,9 +47,12 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
                 dao.deleteAlltrips();
 
                 //Dummy User
-                Trip trip1 = new Trip( "Nydelig dag på Mt.Everest!", "05.05.2021", 0, 5, true,"24", "Mt.Everest");
-                Trip trip2 = new Trip( "Fett på K2!", "06.06.2021", 0, 5,true,"12", "K2");
-                Trip trip3 = new Trip( "Bestiget Besseggen!", "19.07.2021", 0, 5,true,"10", "Besseggen");
+                Trip trip1 = new Trip( "Nydelig dag på Mt.Everest!", "05.05.2021", 0, 5,
+                        true,"24", "Mt.Everest");
+                Trip trip2 = new Trip( "Fett på K2!", "06.06.2021", 0, 5,
+                        true,"12", "K2");
+                Trip trip3 = new Trip( "Bestiget Besseggen!", "19.07.2021", 0, 5,
+                        true, "10", "Besseggen");
                 dao.tripInsert(trip1);
                 dao.tripInsert(trip2);
                 dao.tripInsert(trip3);

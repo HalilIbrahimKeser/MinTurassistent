@@ -11,13 +11,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import java.util.Calendar;
-
-
 /**
  * Hentet fra exemplet dialogTest på Modul6
- *
  * Created by Werner on 30.03.2017.
- *
  * FRA: https://developer.android.com/guide/topics/ui/controls/pickers.html
  */
 
