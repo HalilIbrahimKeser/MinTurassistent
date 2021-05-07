@@ -52,7 +52,7 @@ public class MyProfileFragment extends Fragment {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         TextView tvPUser = view.findViewById(R.id.tvPUser);
 
-        tvPUser.setText(currentUser.getEmail());
+        tvPUser.setText("Hei bruker: \n" + currentUser.getEmail());
 
         Button btnLogOut = view.findViewById(R.id.btnLogOut);
         btnLogOut.setOnClickListener(new View.OnClickListener() {

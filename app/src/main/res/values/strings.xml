@@ -52,5 +52,6 @@
     <string name="str_velg_tur_p_kart">Velg tur på kart</string>
     <string name="str_todo">TODO</string>
     <string name="str_0">0</string>
+    <string name="profil_text">Her kan du logge deg ut eller slette brukeren din.</string>
 
 </resources>
