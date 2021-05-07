@@ -19,14 +19,13 @@ import java.util.List;
 public class ViewModel extends AndroidViewModel {
 
     private Repository mRepository;
-    public MutableLiveData<Calendar> dateData;
     public LiveData<List<Trip>> mAllTrips;
+    public MutableLiveData<String> dateData = new MutableLiveData<>();
 
     public ViewModel(Application application) {
         super(application);
         mRepository = new Repository(application);
         mAllTrips = mRepository.getAllTrips();
-
     }
 
     //TRIP ------------------
@@ -38,14 +37,9 @@ public class ViewModel extends AndroidViewModel {
         return mAllTrips;
     }
 
-    public MutableLiveData<Calendar> getDate() {
+    //DATE VIEWMODEL
+    public MutableLiveData<String> getDate() {
         return dateData;
     }
 
-    public Calendar setValue(int year, int month, int dayOfMonth) {
-        Calendar choosenDate = Calendar.getInstance();
-
-        choosenDate.set(year, month, dayOfMonth);
-        return choosenDate;
-    }
 }
