@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavBackStackEntry;
 import androidx.navigation.NavController;
@@ -33,7 +35,7 @@ public class NewTourFragment extends Fragment {
     private static View view;
     final Calendar myCalendar = Calendar.getInstance();
     NewTourFragment context = this;
-    ViewModel viewModel;
+    ViewModel viewmodel;
 
     public NewTourFragment() {
         // Required empty public constructor
@@ -75,16 +77,11 @@ public class NewTourFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    public static void dateUdate(int year1, int month1, int dayOfMonth1) {
-        Calendar choosenDate = Calendar.getInstance();
-        int month = month1 + 1;
-
-        String dateString = dayOfMonth1 + "." + month + "." + year1;
-        etDate = view.findViewById(R.id.etDate);
-        etDate.setText(dateString);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        viewmodel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        viewmodel.getDate().observe(getActivity(), date -> {
+            etDate.setText(date);
+        });
     }
 }

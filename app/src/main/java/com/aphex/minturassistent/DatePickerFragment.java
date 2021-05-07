@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.widget.DatePicker;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import java.util.Calendar;
 
@@ -26,7 +29,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         // Starter med dagens dato
         final Calendar currentDate = Calendar.getInstance();
         int year = currentDate.get(Calendar.YEAR);
-        int month = currentDate.get(Calendar.MONTH) + 1;
+        int month = currentDate.get(Calendar.MONTH);
         int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
         return new DatePickerDialog(getContext(), this, year, month, day);
@@ -34,7 +37,9 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        NewTourFragment.dateUdate(year, month, dayOfMonth);
+        String dateString = dayOfMonth + "." + (month + 1) + "." + year;
+        ViewModel viewmodel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        viewmodel.dateData.setValue(dateString);
     }
 
 }
