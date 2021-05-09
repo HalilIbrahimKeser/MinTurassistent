@@ -19,8 +19,8 @@ public interface Dao {
     @Query("SELECT * FROM trip_table ORDER BY tripID")
     LiveData<List<Trip>> getTrips();
 
-    @Query("SELECT * FROM trip_table where tripID=:TripID")
-    LiveData<List<Trip>> getTripData(int TripID);
+    @Query("SELECT * FROM trip_table WHERE tripID = :mTripID")
+    LiveData<List<Trip>> getTripData(int mTripID);
 
     //LOCATION - - - - - - - - - - - - - - - - - - - - -  -
     @Insert(onConflict = OnConflictStrategy.IGNORE)

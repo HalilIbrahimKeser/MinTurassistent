@@ -20,8 +20,7 @@ public class ViewModel extends AndroidViewModel {
 
     private Repository mRepository;
     public LiveData<List<Trip>> mAllTrips;
-    public  LiveData<List<Trip>> mTripData;
-    public MutableLiveData<Integer> tripID = new MutableLiveData<>();
+
     public MutableLiveData<String> dateData = new MutableLiveData<>();
 
     public ViewModel(Application application) {
@@ -39,11 +38,8 @@ public class ViewModel extends AndroidViewModel {
         return mAllTrips;
     }
 
-    public  LiveData<List<Trip>> getTripData(int TripID) {
-        return mRepository.getTripData(TripID);
-    }
-    public MutableLiveData<Integer> getTripID() {
-        return tripID;
+    public LiveData<List<Trip>> getTripData(int mTripID) {
+        return mRepository.getTripData(mTripID);
     }
 
     //DATE VIEWMODEL

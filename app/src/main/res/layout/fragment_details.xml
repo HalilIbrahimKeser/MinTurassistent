@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tid brukt: "
-            app:layout_constraintBaseline_toBaselineOf="@+id/textView12"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvTimeSpent"
             app:layout_constraintStart_toStartOf="@+id/imageButton" />
 
         <TextView
@@ -45,11 +45,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dato: "
-            app:layout_constraintBaseline_toBaselineOf="@+id/textView13"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvTripDate"
             app:layout_constraintStart_toStartOf="@+id/textView10" />
 
         <TextView
-            android:id="@+id/textView12"
+            android:id="@+id/tvTimeSpent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -59,13 +59,13 @@
             app:layout_constraintTop_toBottomOf="@+id/imageButton" />
 
         <TextView
-            android:id="@+id/textView13"
+            android:id="@+id/tvTripDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="TextView"
-            app:layout_constraintStart_toStartOf="@+id/textView12"
-            app:layout_constraintTop_toBottomOf="@+id/textView12" />
+            app:layout_constraintStart_toStartOf="@+id/tvTimeSpent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTimeSpent" />
 
         <Button
             android:id="@+id/btnDeleteTrip"

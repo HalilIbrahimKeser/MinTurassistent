@@ -14,7 +14,7 @@ public class Repository {
 
     private Dao mDao;
     private LiveData<List<Trip>> mAllTrips;
-    private LiveData<List<Trip>> mTripData;
+
 
     Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
@@ -33,8 +33,7 @@ public class Repository {
         return mAllTrips;
     }
 
-    LiveData<List<Trip>> getTripData(int TripID) {
-        mTripData = mDao.getTripData(TripID);
-        return mTripData;
+    LiveData<List<Trip>> getTripData(int mTripID) {
+        return mDao.getTripData(mTripID);
     }
 }

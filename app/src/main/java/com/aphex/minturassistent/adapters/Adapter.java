@@ -2,6 +2,7 @@ package com.aphex.minturassistent.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStore;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
@@ -47,11 +49,12 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
             @Override
             public void onEdit(int position, View view) {
                 Trip click = getItem(position);
-
                 int tripID = click.getmTripID();
-
-//                ViewModel viewmodel =  new ViewModelProvider(getActivity()).get(ViewModel.class);
-//                viewmodel.tripID.setValue(tripID);
+                SharedPreferences prefs = view.getContext().getSharedPreferences("tripID", 0);
+                SharedPreferences.Editor editor = prefs.edit();
+                prefs.edit().remove("tripID").apply();
+                editor.putInt("tripID", tripID);
+                editor.apply();
 
                 Navigation.findNavController(view).navigate(R.id.detailsFragment);
             }
