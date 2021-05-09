@@ -28,7 +28,11 @@
         android:id="@+id/myToursFragment"
         android:name="com.aphex.minturassistent.MyToursFragment"
         android:label=""
-        tools:layout="@layout/fragment_my_tours" />
+        tools:layout="@layout/fragment_my_tours" >
+        <action
+            android:id="@+id/action_myToursFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/myProfileFragment"
         android:name="com.aphex.minturassistent.MyProfileFragment"

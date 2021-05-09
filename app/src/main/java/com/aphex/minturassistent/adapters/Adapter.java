@@ -1,17 +1,26 @@
 package com.aphex.minturassistent.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.aphex.minturassistent.DetailsFragment;
+import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
+import com.aphex.minturassistent.MainActivity;
 import com.aphex.minturassistent.R;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
@@ -38,7 +47,13 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
             @Override
             public void onEdit(int position, View view) {
                 Trip click = getItem(position);
-                //int UserId = click.getmUserId();
+
+                int tripID = click.getmTripID();
+
+//                ViewModel viewmodel =  new ViewModelProvider(getActivity()).get(ViewModel.class);
+//                viewmodel.tripID.setValue(tripID);
+
+                Navigation.findNavController(view).navigate(R.id.detailsFragment);
             }
         });
         return holder;
@@ -70,26 +85,27 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
 
 class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     MyClickListener listener;
+
     public final TextView textViewTitle;
     public final TextView textViewPlace;
     public final TextView textViewDate;
-
+    public final CardView cardView;
 
     ViewHolder(View itemView, MyClickListener listener) {
         super(itemView);
         textViewTitle = itemView.findViewById(R.id.textViewTitle);
         textViewPlace = itemView.findViewById(R.id.textViewPlace);
         textViewDate = itemView.findViewById(R.id.textViewDate);
-
+        cardView = itemView.findViewById(R.id.cardView);
         this.listener = listener;
 
-        textViewTitle.setOnClickListener(this);
+        cardView.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.textViewTitle:
+            case R.id.cardView:
                 listener.onEdit(this.getLayoutPosition(), view);
                 break;
             default:

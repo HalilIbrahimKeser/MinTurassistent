@@ -14,11 +14,13 @@ public class Repository {
 
     private Dao mDao;
     private LiveData<List<Trip>> mAllTrips;
+    private LiveData<List<Trip>> mTripData;
 
     Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
         mDao = db.Dao();
         mAllTrips = (LiveData<List<Trip>>) mDao.getTrips();
+
     }
     //TRIP--------------------
     void tripInsert(Trip trip) {
@@ -29,5 +31,10 @@ public class Repository {
 
     LiveData<List<Trip>> getAllTrips() {
         return mAllTrips;
+    }
+
+    LiveData<List<Trip>> getTripData(int TripID) {
+        mTripData = mDao.getTripData(TripID);
+        return mTripData;
     }
 }
