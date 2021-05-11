@@ -15,7 +15,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.renderscript.ScriptGroup;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Switch;
-import android.widget.Toast;
 
-import com.aphex.minturassistent.Entities.Trip;
-import com.aphex.minturassistent.databinding.FragmentNewTourBinding;
-import com.aphex.minturassistent.viewmodel.Repository;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import java.text.SimpleDateFormat;
@@ -44,8 +36,10 @@ public class NewTourFragment extends Fragment {
     public static String tourType;
 
     private static View view;
+    public EditText etDate;
+    public Button btNewTour;
+    private View view;
     final Calendar myCalendar = Calendar.getInstance();
-    NewTourFragment context = this;
     ViewModel viewmodel;
     FragmentNewTourBinding binding;
 
@@ -78,12 +72,13 @@ public class NewTourFragment extends Fragment {
         String dateString = day + "." + month + "." + year;
         etDate.setText(dateString);
 
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
+        btNewTour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
+            }
+        });
 
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override

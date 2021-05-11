@@ -23,7 +23,15 @@
         android:id="@+id/newTourFragment"
         android:name="com.aphex.minturassistent.NewTourFragment"
         android:label=""
-        tools:layout="@layout/fragment_new_tour" />
+        tools:layout="@layout/fragment_new_tour" >
+        <action
+            android:id="@+id/action_newTourFragment_to_datePickerFragment2"
+            app:destination="@id/datePickerFragment"
+            app:enterAnim="@android:anim/fade_in" />
+        <action
+            android:id="@+id/action_newTourFragment_to_planTour"
+            app:destination="@id/planTourFragment" />
+    </fragment>
     <fragment
         android:id="@+id/myToursFragment"
         android:name="com.aphex.minturassistent.MyToursFragment"
@@ -42,7 +50,7 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.aphex.minturassistent.SettingsFragment"
-        android:label="Settings" />
+        android:label="" />
     <dialog
         android:id="@+id/datePickerFragment"
         android:name="com.aphex.minturassistent.DatePickerFragment"
@@ -51,4 +59,19 @@
         android:id="@+id/detailsFragment"
         android:name="com.aphex.minturassistent.DetailsFragment"
         tools:layout="@layout/fragment_details" />
+        android:label="" >
+        <action
+            android:id="@+id/action_datePickerFragment_to_newTourFragment"
+            app:destination="@id/newTourFragment"
+            app:enterAnim="@android:anim/fade_out" />
+    </dialog>
+    <fragment
+        android:id="@+id/planTourFragment"
+        android:name="com.aphex.minturassistent.PlanTourFragment"
+        android:label=""
+        tools:layout="@layout/fragment_plan_tour" >
+        <action
+            android:id="@+id/action_planTour_to_myToursFragment"
+            app:destination="@id/myToursFragment" />
+    </fragment>
 </navigation>

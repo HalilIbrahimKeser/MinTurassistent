@@ -27,10 +27,6 @@ android {
         viewBinding true
     }
 
-    viewBinding {
-        enabled = true
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -127,9 +123,15 @@ dependencies {
     // optional - ReactiveStreams support for LiveData
     implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
 
+    //GOOGLE
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 
     //OSMDROID
     implementation "org.osmdroid:osmdroid-android:6.1.10"
     implementation "org.osmdroid:osmdroid-wms:6.1.10"
     implementation "org.osmdroid:osmdroid-geopackage:6.1.10"
+    implementation 'com.github.MKergall:osmbonuspack:6.7.0'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
 }

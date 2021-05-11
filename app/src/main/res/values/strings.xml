@@ -53,5 +53,6 @@
     <string name="str_todo">TODO</string>
     <string name="str_0">0</string>
     <string name="profil_text">Her kan du logge deg ut eller slette brukeren din.</string>
+    <string name="location_permission_denied">Kunne ikke få tilgang til lokasjon</string>
 
 </resources>
