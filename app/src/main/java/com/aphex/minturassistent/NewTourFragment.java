@@ -22,7 +22,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
+import com.aphex.minturassistent.Entities.Trip;
+import com.aphex.minturassistent.databinding.FragmentNewTourBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import java.text.SimpleDateFormat;
@@ -31,15 +35,11 @@ import java.util.Date;
 import java.util.Locale;
 
 public class NewTourFragment extends Fragment {
-    public static EditText etDate;
-    public static Button btnNewTour;
-    public static String tourType;
-
-    private static View view;
     public EditText etDate;
-    public Button btNewTour;
-    private View view;
-    final Calendar myCalendar = Calendar.getInstance();
+    public Button btnNewTour;
+    public String tourType;
+
+    Calendar choosenDate = Calendar.getInstance();
     ViewModel viewmodel;
     FragmentNewTourBinding binding;
 
@@ -62,23 +62,15 @@ public class NewTourFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentNewTourBinding.inflate(inflater, container, false);
-//        view = inflater.inflate(R.layout.fragment_new_tour, container, false);
         etDate = binding.etDate;
+        btnNewTour = binding.btnNewTour;
 
-        Calendar choosenDate = Calendar.getInstance();
+
         int day = choosenDate.get(Calendar.DAY_OF_MONTH);
         int month = choosenDate.get(Calendar.MONTH) + 1;
         int year = choosenDate.get(Calendar.YEAR);
         String dateString = day + "." + month + "." + year;
         etDate.setText(dateString);
-
-        btNewTour.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavController navController = Navigation.findNavController(view);
-                Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
-            }
-        });
 
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +83,7 @@ public class NewTourFragment extends Fragment {
         btnNewTour = binding.btnNewTour;
         btnNewTour.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view1) {
+            public void onClick(View view) {
 
                 //OM VERDIENE ER TOMME, LEGG INN VERDIER
                 EditText tourName = binding.etTourName;
@@ -143,8 +135,12 @@ public class NewTourFragment extends Fragment {
                 Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedDays1, estimatedHours1,
                         false, "null", "null");
                 insertTrip(newTrip);
+
+                NavController navController = Navigation.findNavController(view);
+                Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
             }
         });
+        return binding.getRoot();
     }
 
 

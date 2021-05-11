@@ -54,17 +54,16 @@
     <dialog
         android:id="@+id/datePickerFragment"
         android:name="com.aphex.minturassistent.DatePickerFragment"
-        android:label="DatePickerFragment" />
+        android:label="" />
     <fragment
         android:id="@+id/detailsFragment"
         android:name="com.aphex.minturassistent.DetailsFragment"
-        tools:layout="@layout/fragment_details" />
-        android:label="" >
+        tools:layout="@layout/fragment_details"
+        android:label="" />
         <action
             android:id="@+id/action_datePickerFragment_to_newTourFragment"
             app:destination="@id/newTourFragment"
             app:enterAnim="@android:anim/fade_out" />
-    </dialog>
     <fragment
         android:id="@+id/planTourFragment"
         android:name="com.aphex.minturassistent.PlanTourFragment"
