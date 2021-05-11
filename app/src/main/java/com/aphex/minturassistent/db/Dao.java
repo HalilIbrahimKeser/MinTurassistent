@@ -1,5 +1,6 @@
 package com.aphex.minturassistent.db;
 
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -22,6 +23,9 @@ public interface Dao {
     @Query("SELECT * FROM trip_table WHERE tripID = :mTripID")
     LiveData<List<Trip>> getTripData(int mTripID);
 
+    @Query("DELETE FROM trip_table WHERE tripID = :mTripID")
+    void deleteTrip(int mTripID);
+
     //LOCATION - - - - - - - - - - - - - - - - - - - - -  -
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void locationInsert(Location location);
@@ -31,4 +35,7 @@ public interface Dao {
 
     @Query("DELETE FROM trip_table")
     void deleteAlltrips();
+
+    //IMAGES - - - - - - - - - - - - - - - - - - - - - - -
+
 }

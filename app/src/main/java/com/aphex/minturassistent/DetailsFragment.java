@@ -5,17 +5,19 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.aphex.minturassistent.databinding.FragmentDetailsBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 public class DetailsFragment extends Fragment {
-    FragmentDetailsBinding binding;
     private ViewModel mViewModel;
     public int mTripID;
     public TextView tvTourTittel;
@@ -23,13 +25,6 @@ public class DetailsFragment extends Fragment {
     public TextView tvTripDate;
 
     public DetailsFragment() {
-    }
-
-    public static DetailsFragment newInstance() {
-        DetailsFragment fragment = new DetailsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -50,10 +45,28 @@ public class DetailsFragment extends Fragment {
 
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         mViewModel.getTripData(mTripID).observe(getActivity(), tripData -> {
+            if(!tripData.isEmpty()) {
+                tvTourTittel.setText(tripData.get(0).getmTripName());
+                tvTimeSpent.setText(tripData.get(0).getmTimeSpent());
+                tvTripDate.setText(tripData.get(0).getmDate());
+            }
+        });
 
-            tvTourTittel.setText(tripData.get(0).getmTripName());
-            tvTimeSpent.setText(tripData.get(0).getmTimeSpent());
-            tvTripDate.setText(tripData.get(0).getmDate());
+        Button btnImages = view.findViewById(R.id.btnImages);
+        btnImages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment);
+            }
+        });
+
+        Button btnDeleteTrip = view.findViewById(R.id.btnDeleteTrip);
+        btnDeleteTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mViewModel.deleteTrip(mTripID);
+                Navigation.findNavController(getView()).navigate(R.id.myToursFragment);
+            }
         });
         return view;
     }

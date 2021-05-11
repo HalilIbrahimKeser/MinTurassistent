@@ -25,5 +25,6 @@ public class Images implements Serializable {
 
     @ColumnInfo(name = "title") public String mTitle;
 
+    @ColumnInfo(name = "imageURI") public String mImageURI;
 
 }

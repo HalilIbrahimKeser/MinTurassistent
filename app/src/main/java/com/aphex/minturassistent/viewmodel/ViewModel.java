@@ -41,6 +41,9 @@ public class ViewModel extends AndroidViewModel {
     public LiveData<List<Trip>> getTripData(int mTripID) {
         return mRepository.getTripData(mTripID);
     }
+    public void deleteTrip(int mTripID) {
+        mRepository.deleteTrip(mTripID);
+    }
 
     //DATE VIEWMODEL
     public MutableLiveData<String> getDate() {

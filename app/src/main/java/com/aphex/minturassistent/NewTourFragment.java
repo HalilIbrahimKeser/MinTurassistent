@@ -75,7 +75,6 @@ public class NewTourFragment extends Fragment {
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavController navController = Navigation.findNavController(view);
                 Navigation.findNavController(getView()).navigate(R.id.datePickerFragment);
             }
         });

@@ -36,11 +36,7 @@
         android:id="@+id/myToursFragment"
         android:name="com.aphex.minturassistent.MyToursFragment"
         android:label=""
-        tools:layout="@layout/fragment_my_tours" >
-        <action
-            android:id="@+id/action_myToursFragment_to_detailsFragment"
-            app:destination="@id/detailsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_my_tours" />
     <fragment
         android:id="@+id/myProfileFragment"
         android:name="com.aphex.minturassistent.MyProfileFragment"
@@ -73,4 +69,9 @@
             android:id="@+id/action_planTour_to_myToursFragment"
             app:destination="@id/myToursFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/storedImagesFragment"
+        android:name="com.aphex.minturassistent.StoredImagesFragment"
+        android:label=""
+        tools:layout="@layout/fragment_stored_images" />
 </navigation>
