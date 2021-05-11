@@ -1,40 +1,28 @@
 package com.aphex.minturassistent;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavBackStackEntry;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class NewTourFragment extends Fragment {
-    public static EditText etDate;
-    private static View view;
+    public EditText etDate;
+    public Button btNewTour;
+    private View view;
     final Calendar myCalendar = Calendar.getInstance();
-    NewTourFragment context = this;
     ViewModel viewmodel;
 
     public NewTourFragment() {
@@ -58,6 +46,7 @@ public class NewTourFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_new_tour, container, false);
         etDate = view.findViewById(R.id.etDate);
+        btNewTour = view.findViewById(R.id.btnNewTour);
 
         Calendar choosenDate = Calendar.getInstance();
         int cday = choosenDate.get(Calendar.DAY_OF_MONTH);
@@ -65,6 +54,14 @@ public class NewTourFragment extends Fragment {
         int cyear = choosenDate.get(Calendar.YEAR);
         String dateString = cday + "." + cmonth + "." + cyear;
         etDate.setText(dateString);
+
+        btNewTour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
+            }
+        });
 
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
