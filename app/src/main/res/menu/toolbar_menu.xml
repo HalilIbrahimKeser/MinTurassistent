@@ -9,19 +9,19 @@
         app:showAsAction="always"/>
 
     <item
-        android:id="@id/myToursFragment"
+        android:id="@+id/myToursFragment"
         android:title="@string/str_mine_turer"
         android:icon="@drawable/history"
         app:showAsAction="always"/>
 
     <item
-        android:id="@id/myProfileFragment"
+        android:id="@+id/myProfileFragment"
         android:title="@string/str_min_profil"
         android:icon="@drawable/user"
         app:showAsAction="always"/>
 
     <item
-        android:id="@id/settingsFragment"
+        android:id="@+id/planTourFragment"
         android:title="@string/str_innstillinger"
         android:icon="@drawable/settings"
         app:showAsAction="always"/>

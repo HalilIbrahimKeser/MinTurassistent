@@ -1,14 +1,12 @@
 package com.aphex.minturassistent;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,11 +21,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
-import com.aphex.minturassistent.Entities.Location;
-import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.ActivityMainBinding;
-import com.aphex.minturassistent.db.Dao;
-import com.aphex.minturassistent.db.RoomDatabase;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import org.osmdroid.config.Configuration;
