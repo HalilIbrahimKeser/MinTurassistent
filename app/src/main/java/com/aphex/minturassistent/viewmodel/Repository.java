@@ -36,4 +36,10 @@ public class Repository {
     LiveData<List<Trip>> getTripData(int mTripID) {
         return mDao.getTripData(mTripID);
     }
+
+    void deleteTrip(int trip) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.deleteTrip(trip);
+        });
+    }
 }
