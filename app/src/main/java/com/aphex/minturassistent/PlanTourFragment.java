@@ -9,6 +9,8 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,6 +41,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
@@ -54,6 +58,9 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     Button buttonPop;
     ArrayList<Marker> markers = new ArrayList<>();
     ArrayList<Polyline> polys = new ArrayList<>();
+
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    Handler handler = new Handler(Looper.getMainLooper());
 
     public PlanTourFragment() {
         // Required empty public constructor
@@ -80,43 +87,28 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_plan_tour, container, false);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mMapView = view.findViewById(R.id.map);
 
-        mMapView = view.findViewById(R.id.map);
-        buttonPop = view.findViewById(R.id.buttonPopupMenu);
-        roadManager = new OSRMRoadManager(inflater.getContext(), "MinTurassistent");
+                //Background work here
 
-        mMapView.setMultiTouchControls(true);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
 
-        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(inflater.getContext()),mMapView);
-        mLocationOverlay.enableMyLocation();
-        mMapView.getOverlays().add(mLocationOverlay);
+                        //UI Thread work here
+                    }
+                });
+            }
+        });
+        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        //StrictMode.setThreadPolicy(policy);
 
-        getAddress();
 
-        if (mLocationOverlay.getMyLocation() != null) {
-            mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
-        }
-        else {
-            clickLocation = new GeoPoint(62.4577, 6.1305);
-            mMapView.getController().animateTo(clickLocation);
-            mMapView.getController().zoomTo(18.0);
-        }
-
-        CompassOverlay mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
-        mCompassOverlay.enableCompass();
-        mMapView.getOverlays().add(mCompassOverlay);
-
-        //Add "listener" to map, so you can set a marker where you want..
-        mMapEventsOverlay = new MapEventsOverlay(this);
-        mMapView.getOverlays().add(0, mMapEventsOverlay);
-
-        SearchView test = view.findViewById(R.id.searchField);
-        test.setBackgroundColor(ContextCompat.getColor(inflater.getContext(), R.color.white));
         return view;
     }
 
@@ -190,7 +182,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
                         mMapView.invalidate();
                         return true;
                     case R.id.menu_viapoint:
-                        
+
                         return true;
                     default:
                         return false;
@@ -202,3 +194,35 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     }
 
 }
+/*
+        buttonPop = view.findViewById(R.id.buttonPopupMenu);
+        roadManager = new OSRMRoadManager(inflater.getContext(), "MinTurassistent");
+
+        mMapView.setMultiTouchControls(true);
+
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(inflater.getContext()),mMapView);
+        mLocationOverlay.enableMyLocation();
+        mMapView.getOverlays().add(mLocationOverlay);
+
+        getAddress();
+
+        if (mLocationOverlay.getMyLocation() != null) {
+            mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
+        }
+        else {
+            clickLocation = new GeoPoint(62.4577, 6.1305);
+            mMapView.getController().animateTo(clickLocation);
+            mMapView.getController().zoomTo(18.0);
+        }
+
+        CompassOverlay mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
+        mCompassOverlay.enableCompass();
+        mMapView.getOverlays().add(mCompassOverlay);
+
+        //Add "listener" to map, so you can set a marker where you want..
+        mMapEventsOverlay = new MapEventsOverlay(this);
+        mMapView.getOverlays().add(0, mMapEventsOverlay);
+
+        SearchView test = view.findViewById(R.id.searchField);
+        test.setBackgroundColor(ContextCompat.getColor(inflater.getContext(), R.color.white));
+ */
