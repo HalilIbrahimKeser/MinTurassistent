@@ -27,4 +27,24 @@ public class Images implements Serializable {
 
     @ColumnInfo(name = "imageURI") public String mImageURI;
 
+    public Images(String mTitle, String mImageURI) {
+        this.mTitle = mTitle;
+        this.mImageURI = mImageURI;
+    }
+
+    public String getmTitle() {
+        return mTitle;
+    }
+
+    public void setmTitle(String mTitle) {
+        this.mTitle = mTitle;
+    }
+
+    public String getmImageURI() {
+        return mImageURI;
+    }
+
+    public void setmImageURI(String mImageURI) {
+        this.mImageURI = mImageURI;
+    }
 }

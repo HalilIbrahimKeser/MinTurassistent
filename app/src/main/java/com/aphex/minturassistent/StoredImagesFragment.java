@@ -1,32 +1,32 @@
 package com.aphex.minturassistent;
 
-import android.content.ContentResolver;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.ImageDecoder;
+import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.room.util.FileUtil;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.jetbrains.annotations.NotNull;
+import com.aphex.minturassistent.Entities.Images;
+import com.aphex.minturassistent.adapters.Adapter;
+import com.aphex.minturassistent.adapters.ImageAdapter;
+import com.aphex.minturassistent.viewmodel.ViewModel;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class StoredImagesFragment extends Fragment {
-    // PICK_PHOTO_CODE is a constant integer
-    public final static int PICK_PHOTO_CODE = 1046;
+    private List<Images> mediaList = new ArrayList<>();
+    private ViewModel mViewModel;
+    private Cursor cursor;
 
     public StoredImagesFragment() {
     }
@@ -40,58 +40,47 @@ public class StoredImagesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stored_images, container, false);
+        final ImageAdapter imageAdapter = new ImageAdapter(getActivity(), new ImageAdapter.WordDiff());
+        RecyclerView recyclerView = view.findViewById(R.id.imagerecycler);
+        recyclerView.setAdapter(imageAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        mediaList = new ArrayList<>();
+        parseAllImages();
+        mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        mViewModel.getMediaData().observe(getViewLifecycleOwner(), medialist -> imageAdapter.submitList(medialist));
 
         return view;
     }
 
-    // Trigger gallery selection for a photo
-    public void onPickPhoto(View view) {
-        // Create intent for picking a photo from the gallery
-        Intent intent = new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
-        // So as long as the result is not null, it's safe to use the intent.
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Bring up gallery to select a photo
-            startActivityForResult(intent, PICK_PHOTO_CODE);
-        }
-    }
-
-    public Bitmap loadFromUri(Uri photoUri) {
-        Bitmap image = null;
+    private void parseAllImages() {
         try {
-            // check version of Android on device
-            if(Build.VERSION.SDK_INT > 27){
-                // on newer versions of Android, use the new decodeBitmap method
-                ImageDecoder.Source source = ImageDecoder.createSource(getActivity().getContentResolver(), photoUri);
-                image = ImageDecoder.decodeBitmap(source);
+            String[] projection = {
+                    MediaStore.Images.Media.DATA
+            };
+            cursor = getActivity()
+                    .getContentResolver()
+                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+
+            int size = cursor.getCount();
+
+            if (size == 0) {
+                Toast.makeText(getActivity(), "Kunne ikke finne noen bilder på minnet.", Toast.LENGTH_SHORT).show();
             } else {
-                // support older versions of Android by using getBitmap
-                image = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photoUri);
+                while (cursor.moveToNext()) {
+                    int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    String path = cursor.getString(file_ColumnIndex);
+                    String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
+                    Images imageData = new Images(fileName, path);
+                    mediaList.add(imageData);
+                }
+                cursor.close();
             }
-        } catch (IOException e) {
+            mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+            mViewModel.mediaData.setValue(mediaList);
+
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        return image;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull @NotNull View view, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if ((data != null) && requestCode == PICK_PHOTO_CODE) {
-            Uri photoUri = data.getData();
-
-            // Load the image located at photoUri into selectedImage
-            Bitmap selectedImage = loadFromUri(photoUri);
-
-            // Load the selected image into a preview
-            ImageView ivPreview = getActivity().findViewById(R.id.imageRecycler);
-            ivPreview.setImageBitmap(selectedImage);
         }
     }
 }

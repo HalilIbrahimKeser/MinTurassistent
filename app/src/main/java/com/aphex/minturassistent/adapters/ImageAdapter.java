@@ -7,6 +7,7 @@ import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,22 +22,24 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aphex.minturassistent.DetailsFragment;
+import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.MainActivity;
 import com.aphex.minturassistent.R;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.bumptech.glide.Glide;
 
 import org.jetbrains.annotations.NotNull;
 
 
-public class ImageAdapter extends ListAdapter<Image, ImageViewHolder> {
+public class ImageAdapter extends ListAdapter<Images, ImageViewHolder> {
     private LayoutInflater layoutInflater;
     private ViewModel mViewModel;
     Context context;
 
 
-    public ImageAdapter(Context context, @NonNull DiffUtil.ItemCallback<Image> diffCallback) {
+    public ImageAdapter(Context context, @NonNull DiffUtil.ItemCallback<Images> diffCallback) {
         super(diffCallback);
         layoutInflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -67,21 +70,26 @@ public class ImageAdapter extends ListAdapter<Image, ImageViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        Image current = getItem(position);
-        String imageTitle = "Bildetekst: " ;
+        Images current = getItem(position);
+        String imageTitle = "Bildetittel: " + current.mTitle;
+
+        Glide.with(holder.ivThumb)
+                .load(current.mImageURI)
+                .thumbnail(0.33f)
+                .centerCrop()
+                .into(holder.ivThumb);
 
         holder.tvImageTitle.setText(imageTitle);
     }
 
-    public static class WordDiff extends DiffUtil.ItemCallback<Image> {
+    public static class WordDiff extends DiffUtil.ItemCallback<Images> {
         @Override
-        public boolean areItemsTheSame(@NonNull Image oldItem, @NonNull Image newItem) {
+        public boolean areItemsTheSame(@NonNull Images oldItem, @NonNull Images newItem) {
             return oldItem == newItem;
         }
         @Override
-        public boolean areContentsTheSame(@NonNull Image oldItem, @NonNull Image newItem) {
+        public boolean areContentsTheSame(@NonNull Images oldItem, @NonNull Images newItem) {
             return true;
-            //return oldItem.getmName().equals(newItem.getmName());
         }
     }
 }
@@ -90,12 +98,14 @@ class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
     MyClickListener listener;
 
     public TextView tvImageTitle;
+    public ImageView ivThumb;
     public CardView imageCardView;
 
     ImageViewHolder(View itemView, MyClickListener listener) {
         super(itemView);
 
         tvImageTitle = itemView.findViewById(R.id.tvImageTitle);
+        ivThumb = itemView.findViewById(R.id.ivThumb);
         imageCardView = itemView.findViewById(R.id.imageCardView);
         this.listener = listener;
 

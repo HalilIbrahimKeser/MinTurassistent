@@ -8,10 +8,12 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Trip;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.net.HttpCookie;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +24,7 @@ public class ViewModel extends AndroidViewModel {
     public LiveData<List<Trip>> mAllTrips;
 
     public MutableLiveData<String> dateData = new MutableLiveData<>();
+    public MutableLiveData<List<Images>> mediaData = new MutableLiveData<>();
 
     public ViewModel(Application application) {
         super(application);
@@ -48,6 +51,11 @@ public class ViewModel extends AndroidViewModel {
     //DATE VIEWMODEL
     public MutableLiveData<String> getDate() {
         return dateData;
+    }
+
+    //IMAGE VIEWMODEL
+    public MutableLiveData<List<Images>> getMediaData() {
+        return mediaData;
     }
 
 }
