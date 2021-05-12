@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import androidx.preference.PreferenceManager;
 
 import com.aphex.minturassistent.databinding.ActivityMainBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.osmdroid.config.Configuration;
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ViewModel mViewModel;
     public final int REQUEST_LOCATION_PERMISSION = 0;
+    private static BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,35 +52,28 @@ public class MainActivity extends AppCompatActivity {
             Log.d("GET LOCATION", "getLocation: permissions granted");
         }
 
-
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.getRoot());
-
-        Toolbar toolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(toolbar);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
 
-        AppBarConfiguration appBarConfiguration =
-                new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
-
-        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            toolbar.setNavigationIcon(null);
-        });
+        //BUTTOM NAVIGATION
+        bottomNav = findViewById(R.id.bottom_nav);
+        NavigationUI.setupWithNavController(bottomNav, navHostFragment.getNavController());
 
         mViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(ViewModel.class);
 
     }
 
+    public static void hideBottomNav() {
+        bottomNav.setVisibility(View.GONE);
+    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
+    public static void showBottomNav() {
+        bottomNav.setVisibility(View.VISIBLE);
     }
 
     @Override

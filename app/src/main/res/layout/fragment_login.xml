@@ -16,7 +16,8 @@
             android:id="@+id/editUser"
             android:layout_width="230dp"
             android:layout_height="46dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="8dp"
+            android:autofillHints=""
             android:background="#FFFFFF"
             android:ems="10"
             android:hint="@string/brukernavn"
@@ -25,8 +26,7 @@
             android:paddingEnd="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageMainLogo"
-            android:autofillHints="" />
+            app:layout_constraintTop_toBottomOf="@+id/imageMainLogo" />
 
         <EditText
             android:id="@+id/editPassword"
@@ -49,7 +49,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/test"
             android:src="@drawable/logoturapp"
@@ -61,7 +61,7 @@
             android:id="@+id/buttonLogin"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="24dp"
             android:backgroundTint="@color/gray"
             android:text="@string/login"
             android:textColor="@color/white"

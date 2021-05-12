@@ -17,6 +17,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.aphex.minturassistent.databinding.FragmentLoginBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +28,7 @@ public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 123;
     private static final String TAG = "TAG_EMAIL_LOGIN";
+    BottomNavigationView bottomNav;
 
     private FragmentLoginBinding binding;
 
@@ -52,7 +54,13 @@ public class LoginFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+        MainActivity.hideBottomNav();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        MainActivity.showBottomNav();
     }
 
     @Override
@@ -135,9 +143,5 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
-    }
+
 }
