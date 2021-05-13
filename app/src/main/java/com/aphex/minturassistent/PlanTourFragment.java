@@ -1,5 +1,6 @@
 package com.aphex.minturassistent;
 
+import android.annotation.SuppressLint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -48,7 +50,6 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
 
 public class PlanTourFragment extends Fragment implements MapEventsReceiver {
-    FusedLocationProviderClient mFusedLocationClient;
     Location mLastLocation;
     MapView mMapView;
     MyLocationNewOverlay mLocationOverlay;
@@ -64,13 +65,12 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     Handler handler = new Handler(Looper.getMainLooper());
 
     public PlanTourFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
     }
 
     @Override
@@ -89,24 +89,25 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plan_tour, container, false);
+
         mMapView = view.findViewById(R.id.map);
         buttonPop = view.findViewById(R.id.buttonPopupMenu);
         mMapView.setMultiTouchControls(true);
 
         mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(inflater.getContext()),mMapView);
         mLocationOverlay.enableMyLocation();
+        mMapView.getController().zoomTo(18.0);
 
         mMapView.getOverlays().add(mLocationOverlay);
 
         getAddress();
-
+        //TODO HENTE GPS LAST POINT FRA MAin
         if (mLocationOverlay.getMyLocation() != null) {
             mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
         }
         else {
             clickLocation = new GeoPoint(62.4577, 6.1305);
             mMapView.getController().animateTo(clickLocation);
-            mMapView.getController().zoomTo(18.0);
         }
 
         CompassOverlay mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
@@ -120,18 +121,12 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         SearchView test = view.findViewById(R.id.searchField);
         test.setBackgroundColor(ContextCompat.getColor(inflater.getContext(), R.color.white));
 
-        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        //StrictMode.setThreadPolicy(policy);
-
-
         return view;
     }
 
     private void setMarker(GeoPoint clickedPoint) {
         Marker startMarker = new Marker(mMapView);
         startMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
-        //startMarker.setTitle("Start point");
-
         startMarker.setPosition(clickedPoint);
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         mMapView.getOverlays().add(startMarker);
@@ -159,12 +154,10 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
                 for (Marker m : markers) {
                     temp.add(new GeoPoint(m.getPosition().getLatitude(), m.getPosition().getLongitude()));
                 }
-                try
-                {
+                try {
                     road = roadManager.getRoad(temp);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     e.printStackTrace();
                 }
 
