@@ -54,6 +54,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     MyLocationNewOverlay mLocationOverlay;
     MapEventsOverlay mMapEventsOverlay;
     GeoPoint clickLocation;
+    Road road;
     RoadManager roadManager;
     Button buttonPop;
     ArrayList<Marker> markers = new ArrayList<>();
@@ -88,23 +89,37 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plan_tour, container, false);
+        mMapView = view.findViewById(R.id.map);
+        buttonPop = view.findViewById(R.id.buttonPopupMenu);
+        mMapView.setMultiTouchControls(true);
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                mMapView = view.findViewById(R.id.map);
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(inflater.getContext()),mMapView);
+        mLocationOverlay.enableMyLocation();
 
-                //Background work here
+        mMapView.getOverlays().add(mLocationOverlay);
 
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
+        getAddress();
 
-                        //UI Thread work here
-                    }
-                });
-            }
-        });
+        if (mLocationOverlay.getMyLocation() != null) {
+            mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
+        }
+        else {
+            clickLocation = new GeoPoint(62.4577, 6.1305);
+            mMapView.getController().animateTo(clickLocation);
+            mMapView.getController().zoomTo(18.0);
+        }
+
+        CompassOverlay mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
+        mCompassOverlay.enableCompass();
+        mMapView.getOverlays().add(mCompassOverlay);
+
+        //Add "listener" to map, so you can set a marker where you want..
+        mMapEventsOverlay = new MapEventsOverlay(this);
+        mMapView.getOverlays().add(0, mMapEventsOverlay);
+
+        SearchView test = view.findViewById(R.id.searchField);
+        test.setBackgroundColor(ContextCompat.getColor(inflater.getContext(), R.color.white));
+
         //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         //StrictMode.setThreadPolicy(policy);
 
@@ -136,15 +151,38 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     }
 
     private void getRoute() {
-        ArrayList<GeoPoint> temp = new ArrayList<>();
-        for (Marker m : markers) {
-            temp.add(new GeoPoint(m.getPosition().getLatitude(), m.getPosition().getLongitude()));
-        }
-        Road road = roadManager.getRoad(temp);
-        Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
-        polys.add(roadOverlay);
-        mMapView.getOverlays().add(roadOverlay);
-        mMapView.invalidate();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                roadManager = new OSRMRoadManager(getActivity(), "MinTurassistent");
+                ArrayList<GeoPoint> temp = new ArrayList<>();
+                for (Marker m : markers) {
+                    temp.add(new GeoPoint(m.getPosition().getLatitude(), m.getPosition().getLongitude()));
+                }
+                try
+                {
+                    road = roadManager.getRoad(temp);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (road.mStatus != Road.STATUS_OK) {
+                            Toast.makeText(getActivity(), "Kunne ikke sette opp rute.", Toast.LENGTH_SHORT).show();
+                        }
+                        Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
+                        polys.add(roadOverlay);
+                        mMapView.getOverlays().add(roadOverlay);
+                        mMapView.invalidate();
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -194,35 +232,21 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     }
 
 }
+
 /*
-        buttonPop = view.findViewById(R.id.buttonPopupMenu);
-        roadManager = new OSRMRoadManager(inflater.getContext(), "MinTurassistent");
+      executor.execute(new Runnable() {
+            @Override
+            public void run() {
 
-        mMapView.setMultiTouchControls(true);
+                //Background work here
 
-        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(inflater.getContext()),mMapView);
-        mLocationOverlay.enableMyLocation();
-        mMapView.getOverlays().add(mLocationOverlay);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
 
-        getAddress();
-
-        if (mLocationOverlay.getMyLocation() != null) {
-            mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
-        }
-        else {
-            clickLocation = new GeoPoint(62.4577, 6.1305);
-            mMapView.getController().animateTo(clickLocation);
-            mMapView.getController().zoomTo(18.0);
-        }
-
-        CompassOverlay mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
-        mCompassOverlay.enableCompass();
-        mMapView.getOverlays().add(mCompassOverlay);
-
-        //Add "listener" to map, so you can set a marker where you want..
-        mMapEventsOverlay = new MapEventsOverlay(this);
-        mMapView.getOverlays().add(0, mMapEventsOverlay);
-
-        SearchView test = view.findViewById(R.id.searchField);
-        test.setBackgroundColor(ContextCompat.getColor(inflater.getContext(), R.color.white));
+                        //UI Thread work here
+                    }
+                });
+            }
+        });
  */
