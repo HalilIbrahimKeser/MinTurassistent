@@ -3,6 +3,7 @@ package com.aphex.minturassistent;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     FusedLocationProviderClient mFusedLocationClient;
     Location mLastLocation;
     private ActivityMainBinding binding;
-    private ViewModel mViewModel;
     public final int REQUEST_LOCATION_PERMISSION = 1;
+    private final int REQUEST_ACCESS_MEDIA_LOCATION = 2;
     private static BottomNavigationView bottomNav;
 
     @Override
@@ -58,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
         //BUTTOM NAVIGATION
         bottomNav = findViewById(R.id.bottom_nav);
         NavigationUI.setupWithNavController(bottomNav, navHostFragment.getNavController());
-
-        mViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(ViewModel.class);
-
     }
 
     public static void hideBottomNav() {
@@ -84,14 +82,23 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case REQUEST_LOCATION_PERMISSION:
-                // If the permission is granted, get the location,
-                // otherwise, show a Toast
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getLocation();
                 } else {
                     Toast.makeText(this,
                             R.string.location_permission_denied,
+                            Toast.LENGTH_SHORT).show();
+                }
+            case REQUEST_ACCESS_MEDIA_LOCATION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this,
+                            "Tilgang akseptert",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this,
+                            "Ingen tilgang til filer",
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -104,14 +111,13 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
-                            {Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_LOCATION_PERMISSION);
+                            {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_MEDIA_LOCATION},
+                    REQUEST_ACCESS_MEDIA_LOCATION);
         } else {
             mFusedLocationClient.getLastLocation().addOnSuccessListener(
                     new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            Toast.makeText(MainActivity.this, "hey", Toast.LENGTH_SHORT).show();
                             if (location != null) {
                                 mLastLocation = location;
 
