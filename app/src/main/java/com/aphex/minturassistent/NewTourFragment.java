@@ -83,6 +83,8 @@ public class NewTourFragment extends Fragment {
         btnNewTour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //DATE
+                EditText date = binding.etDate;
 
                 //OM VERDIENE ER TOMME, LEGG INN VERDIER
                 EditText tourName = binding.etTourName;
@@ -93,9 +95,6 @@ public class NewTourFragment extends Fragment {
                     e.printStackTrace();
                     tourName1 = "Uten navn";
                 }
-
-                EditText date = binding.etDate;
-
                 EditText estimatedDays = binding.etEstimatedDays;
                 int estimatedDays1;
                 try {
@@ -104,7 +103,6 @@ public class NewTourFragment extends Fragment {
                     e.printStackTrace();
                     estimatedDays1 = 0;
                 }
-
                 EditText estimatedHours = binding.etEstimatedHours;
                 int estimatedHours1;
                 try {
@@ -126,9 +124,6 @@ public class NewTourFragment extends Fragment {
                     tourType = "Skitur";
                 }else {
                     tourType = "Ikke valgt";
-                }
-                if(tourName1.isEmpty()){
-                    tourName1 = "Uten navn";
                 }
 
                 Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedDays1, estimatedHours1,

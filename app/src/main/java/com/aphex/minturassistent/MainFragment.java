@@ -19,7 +19,6 @@ public class MainFragment extends Fragment {
     private FragmentMainBinding binding;
 
     public MainFragment() {
-        // Required empty public constructor
     }
 
     @Override
