@@ -1,7 +1,6 @@
 package com.aphex.minturassistent;
 
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aphex.minturassistent.Entities.Images;
-import com.aphex.minturassistent.adapters.Adapter;
 import com.aphex.minturassistent.adapters.ImageAdapter;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 

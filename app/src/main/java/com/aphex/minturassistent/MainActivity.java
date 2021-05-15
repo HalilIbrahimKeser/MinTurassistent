@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
-        NavController navController = navHostFragment.getNavController();
+        //NavController navController = navHostFragment.getNavController();
 
         //BUTTOM NAVIGATION
         bottomNav = findViewById(R.id.bottom_nav);
@@ -80,27 +80,21 @@ public class MainActivity extends AppCompatActivity {
                                            @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSION:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLocation();
-                } else {
-                    Toast.makeText(this,
-                            R.string.location_permission_denied,
-                            Toast.LENGTH_SHORT).show();
+            case 0:
+                if (grantResults.length > 0 && permissions.length == grantResults.length) {
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(this,
+                                    R.string.location_permission_allowed,
+                                    Toast.LENGTH_SHORT).show();
+                            getLocation();
+                        } else {
+                            Toast.makeText(this,
+                                    R.string.location_permission_denied,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
-            case REQUEST_ACCESS_MEDIA_LOCATION:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this,
-                            "Tilgang akseptert",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this,
-                            "Ingen tilgang til filer",
-                            Toast.LENGTH_SHORT).show();
-                }
-                break;
         }
     }
 
@@ -110,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
-                            {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_MEDIA_LOCATION},
-                    REQUEST_ACCESS_MEDIA_LOCATION);
+                            {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE},1);
         } else {
             mFusedLocationClient.getLastLocation().addOnSuccessListener(
                     new OnSuccessListener<Location>() {

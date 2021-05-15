@@ -53,11 +53,11 @@
     <string name="str_todo">TODO</string>
     <string name="str_0">0</string>
     <string name="profil_text">Her kan du logge deg ut eller slette brukeren din.</string>
-    <string name="location_permission_denied">Kunne ikke få tilgang til lokasjon</string>
+
     <string name="menu_delete">Slett rute</string>
     <string name="menu_viapoint">Legg til viapunkt</string>
-    <string name="media_permission_denied">Kunne ikke få tilgang til media</string>
-    <string name="media_permission_approved">Applikasjonen har fått tilgang media</string>
-    <string name="location_permission_approved">Applikasjonen har fått lokasjon tillatelser</string>
+
+    <string name="location_permission_denied">Kunne ikke få tilganger</string>
+    <string name="location_permission_allowed">Tilgang akseptert</string>
 
 </resources>
