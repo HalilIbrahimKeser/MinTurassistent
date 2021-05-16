@@ -10,17 +10,17 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="match_parent"
+        android:layout_width="380dp"
         android:layout_height="80dp"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="2dp"
+        android:layout_marginBottom="16dp"
         android:background="@color/snow"
-        android:outlineAmbientShadowColor="@color/black"
-        app:cardCornerRadius="5dp"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
+        android:outlineAmbientShadowColor="@color/black"
+        app:cardCornerRadius="5dp"
         app:cardPreventCornerOverlap="true"
-        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -45,7 +45,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="25dp"
             android:text="Simple Title Text "
             android:textColor="@color/title_text"
             android:textStyle="bold" />
@@ -56,9 +56,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="280dp"
+            android:layout_marginStart="285dp"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="22dp"
+            android:layout_marginEnd="20dp"
             android:text="TextView"
             android:textColor="@color/content_text" />
 
@@ -75,10 +75,10 @@
             app:srcCompat="@mipmap/ic_launcher" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/imIconStatus"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginStart="330dp"
+            android:layout_marginStart="340dp"
             android:layout_marginTop="35dp"
             android:background="@drawable/image_finished" />
 

@@ -19,12 +19,12 @@ import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class StoredImagesFragment extends Fragment {
     private List<Images> mediaList = new ArrayList<>();
     private ViewModel mViewModel;
-    private Cursor cursor;
 
     public StoredImagesFragment() {
     }
@@ -38,7 +38,7 @@ public class StoredImagesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stored_images, container, false);
-        final ImageAdapter imageAdapter = new ImageAdapter(getActivity(), new ImageAdapter.WordDiff());
+        final ImageAdapter imageAdapter = new ImageAdapter(requireActivity(), new ImageAdapter.ImageDiff());
         RecyclerView recyclerView = view.findViewById(R.id.imagerecycler);
         recyclerView.setAdapter(imageAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -46,7 +46,7 @@ public class StoredImagesFragment extends Fragment {
         mediaList = new ArrayList<>();
         parseAllImages();
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        mViewModel.getMediaData().observe(getViewLifecycleOwner(), medialist -> imageAdapter.submitList(medialist));
+        mViewModel.getMediaData().observe(getViewLifecycleOwner(), imageAdapter::submitList);
 
         return view;
     }
@@ -56,14 +56,14 @@ public class StoredImagesFragment extends Fragment {
             String[] projection = {
                     MediaStore.Images.Media.DATA
             };
-            cursor = getActivity()
+            Cursor cursor = requireActivity()
                     .getContentResolver()
                     .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
 
             int size = cursor.getCount();
 
             if (size == 0) {
-                Toast.makeText(getActivity(), "Kunne ikke finne noen bilder på minnet.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Det er ingen bilder på minnet.", Toast.LENGTH_SHORT).show();
             } else {
                 while (cursor.moveToNext()) {
                     int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);

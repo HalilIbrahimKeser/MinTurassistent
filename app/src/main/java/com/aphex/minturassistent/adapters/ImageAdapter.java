@@ -1,37 +1,22 @@
 package com.aphex.minturassistent.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStore;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aphex.minturassistent.DetailsFragment;
 import com.aphex.minturassistent.Entities.Images;
-import com.aphex.minturassistent.Entities.Location;
-import com.aphex.minturassistent.Entities.Trip;
-import com.aphex.minturassistent.MainActivity;
 import com.aphex.minturassistent.R;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.bumptech.glide.Glide;
-
-import org.jetbrains.annotations.NotNull;
-
 
 public class ImageAdapter extends ListAdapter<Images, ImageViewHolder> {
     private LayoutInflater layoutInflater;
@@ -82,7 +67,7 @@ public class ImageAdapter extends ListAdapter<Images, ImageViewHolder> {
         holder.tvImageTitle.setText(imageTitle);
     }
 
-    public static class WordDiff extends DiffUtil.ItemCallback<Images> {
+    public static class ImageDiff extends DiffUtil.ItemCallback<Images> {
         @Override
         public boolean areItemsTheSame(@NonNull Images oldItem, @NonNull Images newItem) {
             return oldItem == newItem;
@@ -103,12 +88,10 @@ class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
 
     ImageViewHolder(View itemView, MyClickListener listener) {
         super(itemView);
-
         tvImageTitle = itemView.findViewById(R.id.tvImageTitle);
         ivThumb = itemView.findViewById(R.id.ivThumb);
         imageCardView = itemView.findViewById(R.id.imageCardView);
         this.listener = listener;
-
         imageCardView.setOnClickListener(this);
     }
 
@@ -122,8 +105,8 @@ class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
                 break;
         }
     }
-    public interface MyClickListener {
 
+    public interface MyClickListener {
         void onEdit(int p, View view);
     }
 }

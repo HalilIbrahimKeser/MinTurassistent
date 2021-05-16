@@ -73,5 +73,21 @@
         android:id="@+id/storedImagesFragment"
         android:name="com.aphex.minturassistent.StoredImagesFragment"
         android:label=""
-        tools:layout="@layout/fragment_stored_images" />
+        tools:layout="@layout/fragment_stored_images" >
+        <action
+            android:id="@+id/action_storedImagesFragment_to_storedSingleImageShowFragment"
+            app:destination="@id/storedSingleImageShowFragment"
+            app:enterAnim="@anim/fui_slide_in_right"
+            app:exitAnim="@anim/fui_slide_out_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/storedSingleImageShowFragment"
+        android:name="com.aphex.minturassistent.storedSingleImageShowFragment"
+        android:label="fragment_stored_single_image_show"
+        tools:layout="@layout/fragment_stored_single_image_show" >
+        <action
+            android:id="@+id/action_storedSingleImageShowFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment"
+            app:enterAnim="@anim/fui_slide_in_right" />
+    </fragment>
 </navigation>

@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aphex.minturassistent.adapters.Adapter;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
+import java.util.Objects;
+
 public class MyToursFragment extends Fragment {
-    private ViewModel mViewModel;
 
     public MyToursFragment() {
     }
@@ -29,13 +30,14 @@ public class MyToursFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_tours, container, false);
 
-        final Adapter adapter = new Adapter(getActivity(), new Adapter.WordDiff());
+        final Adapter adapter = new Adapter(requireActivity(), new Adapter.WordDiff());
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ViewModel.class);
-        mViewModel.getAllTrips().observe(getViewLifecycleOwner(), list -> adapter.submitList(list));
+        ViewModel mViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);
+        mViewModel.getAllTrips().observe(getViewLifecycleOwner(),
+                adapter::submitList);
 
         return view;
     }

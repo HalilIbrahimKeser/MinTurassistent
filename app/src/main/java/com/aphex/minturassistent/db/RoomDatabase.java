@@ -46,20 +46,28 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
                 Dao dao = INSTANCE.Dao();
                 dao.deleteAlltrips();
 
-                //Dummy User
+                //Dummy Trip
                 Trip trip1 = new Trip( "Nydelig dag på Mt.Everest!", "05.05.2021", 0, 5,
                         true,"24", "Mt.Everest");
                 Trip trip2 = new Trip( "Fett på K2!", "06.06.2021", 0, 5,
                         true,"12", "K2");
                 Trip trip3 = new Trip( "Bestiget Besseggen!", "19.07.2021", 0, 5,
                         true, "10", "Besseggen");
+                Trip trip4 = new Trip( "Mormorparken", "16.05.2021", 0, 5,
+                        false, "10", "Besseggen");
                 dao.tripInsert(trip1);
                 dao.tripInsert(trip2);
                 dao.tripInsert(trip3);
+                dao.tripInsert(trip4);
 
-                //Dummy User
+                //Dummy Location
                 Location location1 = new Location( 1, 71.33, 54.22,22.22);
                 dao.locationInsert(location1);
+
+                //Dummy Image
+                Images image1 = new Images("TestBilde1",
+                        "https://image.shutterstock.com/image-photo/beautiful-autumn-scene-hintersee-lake-600w-747646759.jpg");
+                dao.imageInsert(image1);
             });
         }
     };

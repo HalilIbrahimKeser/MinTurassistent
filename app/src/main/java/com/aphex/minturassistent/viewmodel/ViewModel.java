@@ -32,7 +32,7 @@ public class ViewModel extends AndroidViewModel {
         mAllTrips = mRepository.getAllTrips();
     }
 
-    //TRIP ------------------
+    //TRIP ------------------------------------------------------------
     public void insertTrip(Trip trip) {
         mRepository.tripInsert(trip);
     }
@@ -48,14 +48,20 @@ public class ViewModel extends AndroidViewModel {
         mRepository.deleteTrip(mTripID);
     }
 
-    //DATE VIEWMODEL
+
+    //DATE ------------------------------------------------------
     public MutableLiveData<String> getDate() {
         return dateData;
     }
 
-    //IMAGE VIEWMODEL
+
+    //IMAGE ------------------------------------------------------------------
     public MutableLiveData<List<Images>> getMediaData() {
         return mediaData;
+    }
+
+    public LiveData<List<Images>> getImage(int mImageID) {
+        return mRepository.getImage(mImageID);
     }
 
 }

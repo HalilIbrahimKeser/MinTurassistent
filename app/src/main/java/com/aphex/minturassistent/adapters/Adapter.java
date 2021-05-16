@@ -31,6 +31,7 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
     private LayoutInflater layoutInflater;
     private ViewModel mViewModel;
     Context context;
+    String isFinished;
 
 
     public Adapter(Context context, @NonNull DiffUtil.ItemCallback<Trip> diffCallback) {
@@ -48,6 +49,8 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         ViewHolder holder = new ViewHolder(view, new ViewHolder.MyClickListener() {
             @Override
             public void onEdit(int position, View view) {
+                Trip current = getItem(position);
+                isFinished = current.getmIsFinished().toString();
                 Trip click = getItem(position);
                 int tripID = click.getmTripID();
                 SharedPreferences prefs = view.getContext().getSharedPreferences("tripID", 0);
@@ -56,7 +59,11 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
                 editor.putInt("tripID", tripID);
                 editor.apply();
 
-                Navigation.findNavController(view).navigate(R.id.detailsFragment);
+                if (isFinished.contains("true")) {
+                    Navigation.findNavController(view).navigate(R.id.detailsFragment);
+                }else {
+                    Navigation.findNavController(view).navigate(R.id.planTourFragment);
+                }
             }
         });
         return holder;
@@ -67,6 +74,13 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         Trip current = getItem(position);
         String title = "Tittel: " + current.getmTripName();
         String place = "Lokasjon: " + current.getmPlace();
+        isFinished = current.getmIsFinished().toString();
+        if (isFinished.contains("true")) {
+            holder.imIconStatus.setBackgroundResource(R.drawable.image_finished);
+        }else {
+            holder.imIconStatus.setBackgroundResource(R.drawable.image_planned);
+        }
+
         holder.textViewTitle.setText(title);
         holder.textViewPlace.setText(place);
         holder.textViewDate.setText(current.getmDate());
@@ -92,6 +106,7 @@ class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     public final TextView textViewTitle;
     public final TextView textViewPlace;
     public final TextView textViewDate;
+    public final TextView imIconStatus;
     public final CardView cardView;
 
     ViewHolder(View itemView, MyClickListener listener) {
@@ -99,9 +114,9 @@ class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
         textViewTitle = itemView.findViewById(R.id.textViewTitle);
         textViewPlace = itemView.findViewById(R.id.textViewPlace);
         textViewDate = itemView.findViewById(R.id.textViewDate);
+        imIconStatus = itemView.findViewById(R.id.imIconStatus);
         cardView = itemView.findViewById(R.id.cardView);
         this.listener = listener;
-
         cardView.setOnClickListener(this);
     }
 
@@ -116,7 +131,6 @@ class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
         }
     }
     public interface MyClickListener {
-
         void onEdit(int p, View view);
     }
 }

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.db.Dao;
 import com.aphex.minturassistent.db.RoomDatabase;
@@ -41,5 +42,16 @@ public class Repository {
         RoomDatabase.databaseWriteExecutor.execute(() -> {
             mDao.deleteTrip(trip);
         });
+    }
+
+    //IMAGES--------------------
+    void imageInsert(Images image) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.imageInsert(image);
+        });
+    }
+
+    LiveData<List<Images>> getImage(int mImageID) {
+        return mDao.getImage(mImageID);
     }
 }

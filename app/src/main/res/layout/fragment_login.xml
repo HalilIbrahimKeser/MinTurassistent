@@ -51,7 +51,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
-            android:contentDescription="@string/test"
+            android:contentDescription="@string/str_todo"
             android:src="@drawable/logoturapp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
