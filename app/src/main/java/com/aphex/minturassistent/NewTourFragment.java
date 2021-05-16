@@ -126,7 +126,7 @@ public class NewTourFragment extends Fragment {
                     tourType = "Ikke valgt";
                 }
 
-                Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedDays1, estimatedHours1,
+                Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedHours1, estimatedDays1,
                         false, "null", "null");
                 insertTrip(newTrip);
 
