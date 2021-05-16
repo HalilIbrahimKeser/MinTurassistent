@@ -54,4 +54,9 @@ public class Repository {
     LiveData<List<Images>> getImage(int mImageID) {
         return mDao.getImage(mImageID);
     }
+
+    //MAPS ------------------------
+    LiveData<List<Trip>> getLastTourType() {
+        return mDao.getLastTourType();
+    }
 }

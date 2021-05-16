@@ -64,4 +64,7 @@ public class ViewModel extends AndroidViewModel {
         return mRepository.getImage(mImageID);
     }
 
+    //MAPS ------------------------------------------------------------------
+    public LiveData<List<Trip>> getLastTourType() { return mRepository.getLastTourType(); }
+
 }

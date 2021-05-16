@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,9 +62,12 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     Button buttonPop;
     ArrayList<Marker> markers = new ArrayList<>();
     ArrayList<Polyline> polys = new ArrayList<>();
-
+    CompassOverlay mCompassOverlay;
+    ViewModel mViewModel;
     ExecutorService executor = Executors.newSingleThreadExecutor();
     Handler handler = new Handler(Looper.getMainLooper());
+
+    String tourType;
 
     public PlanTourFragment() {
     }
@@ -89,6 +94,10 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plan_tour, container, false);
+        mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        mViewModel.getLastTourType().observe(getActivity(), trip -> {
+            tourType = trip.get(0).mTourType;
+        });
 
         mMapView = view.findViewById(R.id.map);
         buttonPop = view.findViewById(R.id.buttonPopupMenu);
@@ -110,7 +119,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
             mMapView.getController().animateTo(clickLocation);
         }
 
-        CompassOverlay mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
+        mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
         mCompassOverlay.enableCompass();
         mMapView.getOverlays().add(mCompassOverlay);
 
@@ -150,6 +159,17 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
             @Override
             public void run() {
                 roadManager = new OSRMRoadManager(getActivity(), "MinTurassistent");
+                switch (tourType) {
+                    case "Gåtur":
+                        ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
+                        break;
+                    case "Sykkeltur":
+                        ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);
+                        break;
+                    case "Skitur":
+                        ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_CAR);
+                        break;
+                }
                 ArrayList<GeoPoint> temp = new ArrayList<>();
                 for (Marker m : markers) {
                     temp.add(new GeoPoint(m.getPosition().getLatitude(), m.getPosition().getLongitude()));

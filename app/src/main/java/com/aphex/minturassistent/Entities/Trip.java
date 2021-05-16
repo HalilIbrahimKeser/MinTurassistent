@@ -25,15 +25,16 @@ public class Trip implements Serializable {
 
     @ColumnInfo(name = "estimatedHours") public int mEstimatedHours;
 
+    @ColumnInfo(name = "tourType") public String mTourType;
+
     @ColumnInfo(name = "isFinished") public Boolean mIsFinished;
 
     @ColumnInfo(name = "timeSpent") public String mTimeSpent;
 
-    @ColumnInfo(name = "Place") public String mPlace;
+    @ColumnInfo(name = "place") public String mPlace;
 
-//    @ColumnInfo(name = "images") public String mImages;
 
-    public Trip( String mTripName, String mDate, int mEstimatedHours, int mEstimatedHDays, Boolean mIsFinished, String mTimeSpent, String mPlace) {
+    public Trip( String mTripName, String mDate, int mEstimatedHours, int mEstimatedHDays, Boolean mIsFinished, String mTimeSpent, String mPlace, String mTourType) {
         this.mTripName = mTripName;
         this.mDate = mDate;
         this.mEstimatedHours = mEstimatedHours;
@@ -41,7 +42,7 @@ public class Trip implements Serializable {
         this.mIsFinished = mIsFinished;
         this.mTimeSpent = mTimeSpent;
         this.mPlace = mPlace;
-//        this.mImages = mImages;
+        this.mTourType = mTourType;
     }
 
     public int getmTripID() {
@@ -90,5 +91,11 @@ public class Trip implements Serializable {
     }
     public void setmPlace(String mPlace) {
         this.mPlace = mPlace;
+    }
+
+    public String getmTourType() {return mTourType;}
+
+    public void setmTourType(String mTourType) {
+        this.mTourType = mTourType;
     }
 }

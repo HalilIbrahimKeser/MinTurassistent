@@ -127,10 +127,9 @@ public class NewTourFragment extends Fragment {
                 }
 
                 Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedHours1, estimatedDays1,
-                        false, "null", "null");
+                        false, "null", "null", tourType);
                 insertTrip(newTrip);
 
-                NavController navController = Navigation.findNavController(view);
                 Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
             }
         });
@@ -148,7 +147,8 @@ public class NewTourFragment extends Fragment {
     }
 
     public void insertTrip(Trip trip) {
-        Trip tripToAdd = new Trip(trip.mTripName, trip.mDate, trip.mEstimatedHours, trip.mEstimatedHDays, trip.getmIsFinished(), trip.getmTimeSpent(), trip.getmPlace());
+        Trip tripToAdd = new Trip(trip.mTripName, trip.mDate, trip.mEstimatedHours,
+                trip.mEstimatedHDays, trip.getmIsFinished(), trip.getmTimeSpent(), trip.getmPlace(), trip.getmTourType());
         try {
             viewmodel.insertTrip(tripToAdd);
             Toast.makeText(getContext(), "Tur lagt inn", Toast.LENGTH_SHORT).show();

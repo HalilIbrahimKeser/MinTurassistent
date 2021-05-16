@@ -50,5 +50,7 @@ public interface Dao {
     @Query("DELETE FROM trip_table")
     void deleteAlltrips();
 
-
+    //MAPS - - - - - - - - - -
+    @Query("SELECT * FROM trip_table ORDER BY tripID DESC LIMIT 1")
+    LiveData<List<Trip>> getLastTourType();
 }
