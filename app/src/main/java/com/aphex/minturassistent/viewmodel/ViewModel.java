@@ -1,9 +1,7 @@
 package com.aphex.minturassistent.viewmodel;
 
 import android.app.Application;
-import android.app.DatePickerDialog;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,11 +9,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Trip;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.net.HttpCookie;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {

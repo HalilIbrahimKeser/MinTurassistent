@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aphex.minturassistent.adapters.Adapter;
+import com.aphex.minturassistent.databinding.FragmentMyToursBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
-import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class MyToursFragment extends Fragment {
 
@@ -26,19 +27,21 @@ public class MyToursFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_tours, container, false);
+        FragmentMyToursBinding binding = FragmentMyToursBinding.inflate(inflater, container, false);
 
         final Adapter adapter = new Adapter(requireActivity(), new Adapter.WordDiff());
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
+
+        RecyclerView recyclerView = binding.recyclerview;
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        ViewModel mViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);
+        ViewModel mViewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);
         mViewModel.getAllTrips().observe(getViewLifecycleOwner(),
                 adapter::submitList);
 
-        return view;
+        return binding.getRoot();
     }
 }

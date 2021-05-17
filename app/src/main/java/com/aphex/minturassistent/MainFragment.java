@@ -1,22 +1,17 @@
 package com.aphex.minturassistent;
 
-import android.app.Activity;
 import android.os.Bundle;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+
 import com.aphex.minturassistent.databinding.FragmentMainBinding;
 
-public class MainFragment extends Fragment {
+import org.jetbrains.annotations.NotNull;
 
-    private FragmentMainBinding binding;
+public class MainFragment extends Fragment {
 
     public MainFragment() {
     }
@@ -27,9 +22,9 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentMainBinding.inflate(inflater, container, false);
+        FragmentMainBinding binding = FragmentMainBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 }

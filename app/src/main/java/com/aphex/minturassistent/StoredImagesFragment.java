@@ -15,7 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.adapters.ImageAdapter;
+import com.aphex.minturassistent.databinding.FragmentMyToursBinding;
+import com.aphex.minturassistent.databinding.FragmentStoredImagesBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +39,13 @@ public class StoredImagesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_stored_images, container, false);
+        FragmentStoredImagesBinding binding = FragmentStoredImagesBinding.inflate(inflater, container, false);
+
         final ImageAdapter imageAdapter = new ImageAdapter(requireActivity(), new ImageAdapter.ImageDiff());
-        RecyclerView recyclerView = view.findViewById(R.id.imagerecycler);
+
+        RecyclerView recyclerView = binding.imagerecycler;
         recyclerView.setAdapter(imageAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -48,7 +54,7 @@ public class StoredImagesFragment extends Fragment {
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         mViewModel.getMediaData().observe(getViewLifecycleOwner(), imageAdapter::submitList);
 
-        return view;
+        return binding.getRoot();
     }
 
     private void parseAllImages() {

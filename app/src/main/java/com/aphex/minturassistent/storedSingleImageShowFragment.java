@@ -1,26 +1,25 @@
 package com.aphex.minturassistent;
 
-import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.provider.MediaStore;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.adapters.ImageAdapter;
+import com.aphex.minturassistent.databinding.FragmentStoredSingleImageShowBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class storedSingleImageShowFragment extends Fragment {
-    private List<Images> mediaList = new ArrayList<>();
+    private final List<Images> mediaList = new ArrayList<>();
     private ViewModel mViewModel;
 
     public storedSingleImageShowFragment() {
@@ -32,15 +31,15 @@ public class storedSingleImageShowFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_stored_images, container, false);
+        FragmentStoredSingleImageShowBinding binding = FragmentStoredSingleImageShowBinding.inflate(inflater, container, false);
         final ImageAdapter imageAdapter = new ImageAdapter(requireActivity(), new ImageAdapter.ImageDiff());
 
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         mViewModel.getMediaData().observe(getViewLifecycleOwner(), imageAdapter::submitList);
 
-        return view;
+        return binding.getRoot();
     }
 
 
@@ -53,7 +52,7 @@ public class storedSingleImageShowFragment extends Fragment {
             //hente imageid
             //mViewModel.getImage(imageID)
             //sette image på imSinglePhotoShow
-            //Denne må muligens gjøres vi en adapter
+            //Denne må muligens gjøres via en adapter
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,20 +2,20 @@ package com.aphex.minturassistent;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+
 import com.aphex.minturassistent.databinding.FragmentDetailsBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+
+import org.jetbrains.annotations.NotNull;
 
 public class DetailsFragment extends Fragment {
     private ViewModel mViewModel;
@@ -33,14 +33,14 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_details, container, false);
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        FragmentDetailsBinding binding = FragmentDetailsBinding.inflate(inflater, container, false);
 
-        tvTourTittel = view.findViewById(R.id.tvTourTittel);
-        tvTimeSpent = view.findViewById(R.id.tvTimeSpent);
-        tvTripDate = view.findViewById(R.id.tvTripDate);
+        tvTourTittel = binding.tvTourTittel;
+        tvTimeSpent = binding.tvTimeSpent;
+        tvTripDate = binding.tvTripDate;
 
-        SharedPreferences prefs = view.getContext().getSharedPreferences("tripID", 0);
+        SharedPreferences prefs = getContext().getSharedPreferences("tripID", 0);
         mTripID = prefs.getInt("tripID", -1);
 
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
@@ -52,22 +52,15 @@ public class DetailsFragment extends Fragment {
             }
         });
 
-        Button btnImages = view.findViewById(R.id.btnImages);
-        btnImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment);
-            }
-        });
+        Button btnImages = binding.btnImages;
+        btnImages.setOnClickListener(view ->
+                Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment));
 
-        Button btnDeleteTrip = view.findViewById(R.id.btnDeleteTrip);
-        btnDeleteTrip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mViewModel.deleteTrip(mTripID);
-                Navigation.findNavController(getView()).navigate(R.id.myToursFragment);
-            }
+        Button btnDeleteTrip = binding.btnDeleteTrip;
+        btnDeleteTrip.setOnClickListener(view -> {
+            mViewModel.deleteTrip(mTripID);
+            Navigation.findNavController(getView()).navigate(R.id.myToursFragment);
         });
-        return view;
+        return binding.getRoot();
     }
 }

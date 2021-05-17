@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.aphex.minturassistent.databinding.FragmentPlanTourBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -93,24 +94,26 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_plan_tour, container, false);
+        FragmentPlanTourBinding binding = FragmentPlanTourBinding.inflate(inflater, container, false);
+
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         mViewModel.getLastTourType().observe(getActivity(), trip -> {
             tourType = trip.get(0).mTourType;
         });
 
-        mMapView = view.findViewById(R.id.map);
-        buttonPop = view.findViewById(R.id.buttonPopupMenu);
+        mMapView = binding.map;
+        buttonPop = binding.buttonPopupMenu;
         mMapView.setMultiTouchControls(true);
 
-        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(inflater.getContext()),mMapView);
+        mLocationOverlay = new MyLocationNewOverlay(
+                new GpsMyLocationProvider(inflater.getContext()), mMapView);
         mLocationOverlay.enableMyLocation();
         mMapView.getController().zoomTo(18.0);
 
         mMapView.getOverlays().add(mLocationOverlay);
 
         getAddress();
-        //TODO HENTE GPS LAST POINT FRA MAin
+        //TODO HENTE GPS LAST POINT FRA MAIN
         if (mLocationOverlay.getMyLocation() != null) {
             mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
         }
@@ -119,7 +122,8 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
             mMapView.getController().animateTo(clickLocation);
         }
 
-        mCompassOverlay = new CompassOverlay(inflater.getContext(), new InternalCompassOrientationProvider(inflater.getContext()),mMapView);
+        mCompassOverlay = new CompassOverlay(inflater.getContext(),
+                new InternalCompassOrientationProvider(inflater.getContext()), mMapView);
         mCompassOverlay.enableCompass();
         mMapView.getOverlays().add(mCompassOverlay);
 
@@ -127,10 +131,10 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         mMapEventsOverlay = new MapEventsOverlay(this);
         mMapView.getOverlays().add(0, mMapEventsOverlay);
 
-        SearchView test = view.findViewById(R.id.searchField);
+        SearchView test = binding.searchField;
         test.setBackgroundColor(ContextCompat.getColor(inflater.getContext(), R.color.white));
 
-        return view;
+        return binding.getRoot();
     }
 
     private void setMarker(GeoPoint clickedPoint) {
@@ -218,6 +222,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         PopupMenu popupMenu = new PopupMenu(getActivity(), buttonPop);
         popupMenu.getMenuInflater().inflate(R.menu.map_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
@@ -226,10 +231,14 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
                             mMapView.getOverlays().remove(m);
                             mMapView.invalidate();
                         }
-                        markers.remove(1);
-                        markers.remove(0);
-                        mMapView.getOverlays().remove(polys.get(0));
-                        polys.remove(0);
+                        try {
+                            markers.remove(1);
+                            markers.remove(0);
+                            mMapView.getOverlays().remove(polys.get(0));
+                            polys.remove(0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         mMapView.invalidate();
                         return true;
                     case R.id.menu_viapoint:
