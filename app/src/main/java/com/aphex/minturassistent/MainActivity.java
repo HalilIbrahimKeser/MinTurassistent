@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -25,10 +26,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.osmdroid.config.Configuration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     FusedLocationProviderClient mFusedLocationClient;
     Location mLastLocation;
     private static BottomNavigationView bottomNav;
+    //private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+    //private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
+    //       Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_MEDIA_LOCATION };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.getRoot());
 
+        //checkPermissions();
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
         Configuration.getInstance().load(getApplicationContext(), PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
@@ -45,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
 
-        bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav = binding.bottomNav;
+        assert navHostFragment != null;
         NavigationUI.setupWithNavController(bottomNav, navHostFragment.getNavController());
     }
 
@@ -63,6 +74,47 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
     }
 
+    /**
+     protected void checkPermissions() {
+        //https://developer.here.com/documentation/android-premium/3.17/dev_guide/topics/request-android-permissions.html
+        final List<String> missingPermissions = new ArrayList<String>();
+
+        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
+            final int result = ContextCompat.checkSelfPermission(this, permission);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(permission);
+            }
+        }
+        if (!missingPermissions.isEmpty()) {
+            final String[] permissions = missingPermissions
+                    .toArray(new String[missingPermissions.size()]);
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
+        } else {
+            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+                    grantResults);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_ASK_PERMISSIONS) {
+            for (int index = permissions.length - 1; index >= 0; --index) {
+                if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Ønsket tillatelse '" + permissions[index]
+                            + "' ikke gitt", Toast.LENGTH_LONG).show();
+                    finish();
+                    return;
+                }
+            }
+            Toast.makeText(this, "Ønsket tillatelse ikke gitt", Toast.LENGTH_LONG).show();
+            getLocation();
+        }
+    }
+     **/
     //Tatt fra: https://developer.android.com/codelabs/advanced-android-training-device-location?index=..%2F..advanced-android-training#3
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -87,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Tatt fra: https://developer.android.com/codelabs/advanced-android-training-device-location?index=..%2F..advanced-android-training#3
     public void getLocation() {
+        //Todo legg inn if SDK version høyere enn 29 så koden nedenfor, hvis ikke kun loacation permission
+
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {

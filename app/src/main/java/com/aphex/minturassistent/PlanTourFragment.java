@@ -221,32 +221,28 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     public boolean longPressHelper(GeoPoint p) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), buttonPop);
         popupMenu.getMenuInflater().inflate(R.menu.map_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_delete:
-                        for (Marker m : markers) {
-                            mMapView.getOverlays().remove(m);
-                            mMapView.invalidate();
-                        }
-                        try {
-                            markers.remove(1);
-                            markers.remove(0);
-                            mMapView.getOverlays().remove(polys.get(0));
-                            polys.remove(0);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_delete:
+                    for (Marker m : markers) {
+                        mMapView.getOverlays().remove(m);
                         mMapView.invalidate();
-                        return true;
-                    case R.id.menu_viapoint:
+                    }
+                    try {
+                        markers.remove(1);
+                        markers.remove(0);
+                        mMapView.getOverlays().remove(polys.get(0));
+                        polys.remove(0);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mMapView.invalidate();
+                    return true;
+                case R.id.menu_viapoint:
 
-                        return true;
-                    default:
-                        return false;
-                }
+                    return true;
+                default:
+                    return false;
             }
         });
         popupMenu.show();
