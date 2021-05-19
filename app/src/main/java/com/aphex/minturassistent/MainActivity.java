@@ -34,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
     FusedLocationProviderClient mFusedLocationClient;
     Location mLastLocation;
     private static BottomNavigationView bottomNav;
-    //private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
-    //private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
-    //       Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_MEDIA_LOCATION };
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_MEDIA_LOCATION};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.getRoot());
 
-        //checkPermissions();
+        checkPermissions();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLocation();
@@ -74,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
     }
 
-    /**
-     protected void checkPermissions() {
+    protected void checkPermissions() {
         //https://developer.here.com/documentation/android-premium/3.17/dev_guide/topics/request-android-permissions.html
         final List<String> missingPermissions = new ArrayList<String>();
 
@@ -98,39 +97,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //Endret, https://developer.here.com/documentation/android-premium/3.17/dev_guide/topics/request-android-permissions.html
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_ASK_PERMISSIONS) {
-            for (int index = permissions.length - 1; index >= 0; --index) {
-                if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Ønsket tillatelse '" + permissions[index]
-                            + "' ikke gitt", Toast.LENGTH_LONG).show();
-                    finish();
-                    return;
-                }
-            }
-            Toast.makeText(this, "Ønsket tillatelse ikke gitt", Toast.LENGTH_LONG).show();
-            getLocation();
-        }
-    }
-     **/
-    //Tatt fra: https://developer.android.com/codelabs/advanced-android-training-device-location?index=..%2F..advanced-android-training#3
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 0) {
             if (grantResults.length > 0 && permissions.length == grantResults.length) {
                 for (int i = 0; i < permissions.length; i++) {
                     if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(this,
-                                R.string.location_permission_allowed,
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Ønsket tillatelse \n'" + permissions[i]
+                                + "' \nakseptert", Toast.LENGTH_SHORT).show();
                         getLocation();
                     } else {
-                        Toast.makeText(this,
-                                R.string.location_permission_denied,
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Ønsket tillatelse \n'" + permissions[i]
+                                + "' \nIKKE akseptert", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -138,15 +117,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Tatt fra: https://developer.android.com/codelabs/advanced-android-training-device-location?index=..%2F..advanced-android-training#3
-    public void getLocation() {
-        //Todo legg inn if SDK version høyere enn 29 så koden nedenfor, hvis ikke kun loacation permission
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == 0) {
+//            if (grantResults.length > 0 && permissions.length == grantResults.length) {
+//                for (int i = 0; i < permissions.length; i++) {
+//                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+//                        Toast.makeText(this,
+//                                R.string.location_permission_allowed,
+//                                Toast.LENGTH_SHORT).show();
+//                        getLocation();
+//                    } else {
+//                        Toast.makeText(this,
+//                                R.string.location_permission_denied,
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            }
+//        }
+//    }
 
+    //Tatt fra: https://developer.android.com/codelabs/advanced-android-training-device-location?index=..%2F..advanced-android-training#3
+    public void getLocation() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_MEDIA_LOCATION,
-                            Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                    {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
             mFusedLocationClient.getLastLocation().addOnSuccessListener(
                     (Location location) -> {

@@ -29,7 +29,6 @@ import com.aphex.minturassistent.viewmodel.ViewModel;
 
 public class Adapter extends ListAdapter<Trip, ViewHolder> {
     private LayoutInflater layoutInflater;
-    private ViewModel mViewModel;
     Context context;
     String isFinished;
 
@@ -46,24 +45,21 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = layoutInflater.inflate(R.layout.recyclerview_item, null);
 
-        ViewHolder holder = new ViewHolder(view, new ViewHolder.MyClickListener() {
-            @Override
-            public void onEdit(int position, View view) {
-                Trip current = getItem(position);
-                isFinished = current.getmIsFinished().toString();
-                Trip click = getItem(position);
-                int tripID = click.getmTripID();
-                SharedPreferences prefs = view.getContext().getSharedPreferences("tripID", 0);
-                SharedPreferences.Editor editor = prefs.edit();
-                prefs.edit().remove("tripID").apply();
-                editor.putInt("tripID", tripID);
-                editor.apply();
+        ViewHolder holder = new ViewHolder(view, (position, view1) -> {
+            Trip trip = getItem(position);
+            isFinished = trip.getmIsFinished().toString();
+            int tripID = trip.getmTripID();
 
-                if (isFinished.contains("true")) {
-                    Navigation.findNavController(view).navigate(R.id.detailsFragment);
-                }else {
-                    Navigation.findNavController(view).navigate(R.id.planTourFragment);
-                }
+            SharedPreferences prefs = view1.getContext().getSharedPreferences("tripID", 0);
+            SharedPreferences.Editor editor = prefs.edit();
+            prefs.edit().remove("tripID").apply();
+            editor.putInt("tripID", tripID);
+            editor.apply();
+
+            if (isFinished.contains("true")) {
+                Navigation.findNavController(view1).navigate(R.id.detailsFragment);
+            }else {
+                Navigation.findNavController(view1).navigate(R.id.trackTourFragment);
             }
         });
         return holder;
@@ -75,6 +71,7 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         String title = "Tittel: " + current.getmTripName();
         String place = "Lokasjon: " + current.getmPlace();
         isFinished = current.getmIsFinished().toString();
+
         if (isFinished.contains("true")) {
             holder.imIconStatus.setBackgroundResource(R.drawable.image_finished);
         }else {

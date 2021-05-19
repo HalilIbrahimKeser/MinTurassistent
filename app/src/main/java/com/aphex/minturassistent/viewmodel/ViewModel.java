@@ -13,8 +13,10 @@ import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
 
-    private Repository mRepository;
+    private final Repository mRepository;
+
     public LiveData<List<Trip>> mAllTrips;
+    public MutableLiveData<Trip> mCurrentTrip;
 
     public MutableLiveData<String> dateData = new MutableLiveData<>();
     public MutableLiveData<List<Images>> mediaData = new MutableLiveData<>();
@@ -28,6 +30,13 @@ public class ViewModel extends AndroidViewModel {
     //TRIP ------------------------------------------------------------
     public void insertTrip(Trip trip) {
         mRepository.tripInsert(trip);
+    }
+
+    public MutableLiveData<Trip> getCurrentTrip() {
+        if (mCurrentTrip == null) {
+            mCurrentTrip = new MutableLiveData<>();
+        }
+        return mCurrentTrip;
     }
 
     public LiveData<List<Trip>> getAllTrips() {

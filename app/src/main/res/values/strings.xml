@@ -48,7 +48,7 @@
     <string name="str_fottur">Gåtur</string>
     <string name="str_sykkeltur">Sykkeltur</string>
     <string name="str_skitur">Skitur</string>
-    <string name="str_velg_tur_p_kart">Velg tur på kart</string>
+    <string name="str_velg_tur_p_kart">Gå til kart</string>
     <string name="str_todo">Bilde description</string>
     <string name="str_0">0</string>
     <string name="profil_text">Her kan du logge deg ut eller slette brukeren din.</string>

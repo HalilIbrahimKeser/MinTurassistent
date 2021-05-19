@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -22,12 +23,14 @@ import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentPlanTourBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.jetbrains.annotations.NotNull;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -61,10 +64,11 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     Road road;
     RoadManager roadManager;
     Button buttonPop;
+    Button btSaveTour;
     ArrayList<Marker> markers = new ArrayList<>();
     ArrayList<Polyline> polys = new ArrayList<>();
     CompassOverlay mCompassOverlay;
-    ViewModel mViewModel;
+    ViewModel viewModel;
     ExecutorService executor = Executors.newSingleThreadExecutor();
     Handler handler = new Handler(Looper.getMainLooper());
 
@@ -92,17 +96,25 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         FragmentPlanTourBinding binding = FragmentPlanTourBinding.inflate(inflater, container, false);
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        mViewModel.getLastTourType().observe(getActivity(), trip -> {
+        viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        viewModel.getLastTourType().observe(getActivity(), trip -> {
             tourType = trip.get(0).mTourType;
         });
 
         mMapView = binding.map;
         buttonPop = binding.buttonPopupMenu;
+        btSaveTour = binding.btSaveTour;
+
+        btSaveTour.setOnClickListener(v -> {
+            Trip tempTrip = viewModel.getCurrentTrip().getValue();
+            viewModel.insertTrip(tempTrip);
+            Navigation.findNavController(getView()).navigate(R.id.myToursFragment);
+        });
+
         mMapView.setMultiTouchControls(true);
 
         mLocationOverlay = new MyLocationNewOverlay(
@@ -113,7 +125,6 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         mMapView.getOverlays().add(mLocationOverlay);
 
         getAddress();
-        //TODO HENTE GPS LAST POINT FRA MAIN
         if (mLocationOverlay.getMyLocation() != null) {
             mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
         }
@@ -165,13 +176,11 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
                 roadManager = new OSRMRoadManager(getActivity(), "MinTurassistent");
                 switch (tourType) {
                     case "Gåtur":
+                    case "Skitur":
                         ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
                         break;
                     case "Sykkeltur":
                         ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);
-                        break;
-                    case "Skitur":
-                        ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_CAR);
                         break;
                 }
                 ArrayList<GeoPoint> temp = new ArrayList<>();
