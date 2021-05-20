@@ -1,6 +1,8 @@
 package com.aphex.minturassistent;
 
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +70,7 @@ public class MyToursFragment extends Fragment {
                     case ItemTouchHelper.LEFT:
                         mViewModel.deleteTrip(currentTrip.mTripID);
                         adapter.notifyItemRemoved(currentTrip.mTripID);
-                        Toast.makeText(getContext(), "Tur " + currentTrip.mTripName + " slettet", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Tur '" + currentTrip.mTripName + "' slettet", Toast.LENGTH_LONG).show();
                         break;
                     case ItemTouchHelper.RIGHT:
                         SharedPreferences prefs = getView().getContext().getSharedPreferences("tripID", 0);
@@ -79,8 +81,33 @@ public class MyToursFragment extends Fragment {
                         Navigation.findNavController(requireView()).navigate(R.id.detailsFragment);
                 }
             }
-        };
 
+//            @Override
+//            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+//                //https://stackoverflow.com/questions/63404794/recyclerview-with-different-itemtouchhelper-for-each-item-on-the-list
+//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+//                // Getting the swiped item
+//
+//                // Get the color of the swiped item (the thing that differentiates among items)
+//                ColorDrawable background = new ColorDrawable(mContext.getResources().getColor(item.getColorValue()));
+//
+//                // Changing the color of the background item
+//                View itemView = viewHolder.itemView;
+//                int backgroundCornerOffset = 25; //so mBackground is behind the rounded corners of itemView
+//
+//                if (dX > 0) { // Swiping to the right
+//                    background.setBounds(itemView.getLeft(), itemView.getTop(),
+//                            itemView.getLeft() + ((int) dX) + backgroundCornerOffset, itemView.getBottom());
+//                } else if (dX < 0) { // Swiping to the left
+//                    background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
+//                            itemView.getTop(), itemView.getRight(), itemView.getBottom());
+//                } else { // view is unSwiped
+//                    background.setBounds(0, 0, 0, 0);
+//                }
+//
+//                background.draw(c);
+//            }
+        };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
