@@ -59,5 +59,6 @@
     <string name="location_permission_denied">Kunne ikke få tilganger</string>
     <string name="location_permission_allowed">Tilgang akseptert</string>
     <string name="str_bildetekst_uri">Bildetekst - URI</string>
+    <string name="finn_turer_i_n_rheten">Finn turer i nærheten</string>
 
 </resources>
