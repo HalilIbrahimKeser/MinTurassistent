@@ -21,7 +21,7 @@ public interface Dao {
     LiveData<List<Trip>> getTrips();
 
     @Query("SELECT * FROM trip_table WHERE tripID = :mTripID")
-    LiveData<List<Trip>> getTripData(int mTripID);
+    LiveData<List<Trip>> getTrip(int mTripID);
 
     @Query("DELETE FROM trip_table WHERE tripID = :mTripID")
     void deleteTrip(int mTripID);

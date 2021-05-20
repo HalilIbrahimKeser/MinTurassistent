@@ -18,11 +18,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class storedSingleImageShowFragment extends Fragment {
+public class StoredSingleImageShowFragment extends Fragment {
     private final List<Images> mediaList = new ArrayList<>();
     private ViewModel mViewModel;
 
-    public storedSingleImageShowFragment() {
+    public StoredSingleImageShowFragment() {
     }
 
     @Override

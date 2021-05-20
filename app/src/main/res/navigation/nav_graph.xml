@@ -82,7 +82,7 @@
     </fragment>
     <fragment
         android:id="@+id/storedSingleImageShowFragment"
-        android:name="com.aphex.minturassistent.storedSingleImageShowFragment"
+        android:name="com.aphex.minturassistent.StoredSingleImageShowFragment"
         android:label="fragment_stored_single_image_show"
         tools:layout="@layout/fragment_stored_single_image_show" >
         <action

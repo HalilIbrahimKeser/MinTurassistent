@@ -21,6 +21,7 @@ import com.aphex.minturassistent.viewmodel.ViewModel;
 import org.jetbrains.annotations.NotNull;
 
 public class MyToursFragment extends Fragment {
+    int mTripID;
 
     public MyToursFragment() {
     }
@@ -40,6 +41,9 @@ public class MyToursFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerview;
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        SharedPreferences prefs = getContext().getSharedPreferences("tripID", 0);
+        mTripID = prefs.getInt("tripID", -1);
 
         ViewModel mViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);

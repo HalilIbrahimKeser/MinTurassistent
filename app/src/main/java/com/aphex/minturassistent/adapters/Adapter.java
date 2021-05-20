@@ -33,6 +33,7 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
     private LayoutInflater layoutInflater;
     Context context;
     String isFinished;
+    int tripID;
     public MutableLiveData<Trip> mTripPosition;
 
 
@@ -51,7 +52,7 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         ViewHolder holder = new ViewHolder(view, (position, view1) -> {
             Trip trip = getItem(position);
             isFinished = trip.getmIsFinished().toString();
-            int tripID = trip.getmTripID();
+            tripID = trip.getmTripID();
 
             SharedPreferences prefs = view1.getContext().getSharedPreferences("tripID", 0);
             SharedPreferences.Editor editor = prefs.edit();
