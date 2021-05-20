@@ -1,10 +1,17 @@
 package com.aphex.minturassistent;
 
-import android.annotation.SuppressLint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
@@ -12,23 +19,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.StrictMode;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.SearchView;
-import android.widget.Toast;
-
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentPlanTourBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
@@ -49,6 +42,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -73,6 +67,11 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     Handler handler = new Handler(Looper.getMainLooper());
 
     String tourType;
+    Double startLatitude;
+    Double startLongitude;
+    Double stoppLatitude;
+    Double stoppLongitude;
+    Trip currentTrip;
 
     public PlanTourFragment() {
     }
@@ -111,8 +110,18 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
 
         btSaveTour.setOnClickListener(v -> {
             Trip tempTrip = viewModel.getCurrentTrip().getValue();
-            viewModel.insertTrip(tempTrip);
-            Navigation.findNavController(getView()).navigate(R.id.myToursFragment);
+            assert tempTrip != null;
+            if (tempTrip.getmTripID() == 0) {
+                viewModel.insertTrip(tempTrip);
+                updateStartStopGeo(tempTrip);
+            } else {
+                viewModel.getLastTourType().observe(getActivity(), trip -> {
+                    currentTrip = trip.get(0);
+                });
+                Toast.makeText(getContext(), "Tour allerede lagret", Toast.LENGTH_SHORT).show();
+                updateStartStopGeo(tempTrip);
+            }
+            Navigation.findNavController(requireView()).navigate(R.id.myToursFragment);
         });
 
         mMapView.setMultiTouchControls(true);
@@ -146,6 +155,25 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         test.setBackgroundColor(ContextCompat.getColor(inflater.getContext(), R.color.white));
 
         return binding.getRoot();
+    }
+
+    private void updateStartStopGeo (Trip tempTrip) {
+        if(markers.get(0).getPosition().getLatitude() != 0 && markers.get(1).getPosition().getLatitude() != 0
+                && markers.get(0).getPosition().getLongitude() != 0 && markers.get(1).getPosition().getLongitude() != 0) {
+            startLatitude = markers.get(0).getPosition().getLatitude();
+            startLongitude = markers.get(0).getPosition().getLongitude();
+            stoppLatitude = markers.get(1).getPosition().getLatitude();
+            stoppLongitude = markers.get(1).getPosition().getLongitude();
+        }else {
+            startLatitude = 0.0;
+            startLongitude = 0.0;
+            stoppLatitude = 0.0;
+            stoppLongitude = 0.0;
+        }
+        Trip.StartGeo startGeo = new Trip.StartGeo(startLatitude, startLongitude);
+        tempTrip.setStartGeo(startGeo);
+        Trip.StopGeo stopGeo = new Trip.StopGeo(stoppLatitude, stoppLongitude);
+        tempTrip.setStopGeo(stopGeo);
     }
 
     private void setMarker(GeoPoint clickedPoint) {

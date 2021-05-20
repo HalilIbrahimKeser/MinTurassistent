@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 123;
@@ -63,7 +65,7 @@ public class LoginFragment extends Fragment {
 
         //ALLEREDE INNLOGGET ?
         if (currentUser != null) {
-            Navigation.findNavController(getView()).navigate(R.id.mainFragment);
+            Navigation.findNavController(requireView()).navigate(R.id.mainFragment);
         }
 
         //LOGIN
@@ -77,7 +79,7 @@ public class LoginFragment extends Fragment {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        Navigation.findNavController(getView()).navigate(R.id.mainFragment);
+                                        Navigation.findNavController(requireView()).navigate(R.id.mainFragment);
                                     } else {
                                         Toast.makeText(getContext(), "Ikke registrert bruker", Toast.LENGTH_SHORT).show();
                                     }
@@ -102,7 +104,7 @@ public class LoginFragment extends Fragment {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(getContext(), "Du er registrert!", Toast.LENGTH_SHORT).show();
-                                        Navigation.findNavController(getView()).navigate(R.id.mainFragment);
+                                        Navigation.findNavController(requireView()).navigate(R.id.mainFragment);
                                     } else {
                                         Toast.makeText(getContext(), "Kunne ikke registrere bruker.", Toast.LENGTH_SHORT).show();
                                     }
