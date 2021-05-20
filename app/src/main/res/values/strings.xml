@@ -9,7 +9,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="str_velkommen">Velkommen til vår app: Min TurAssistent</string>
-    <string name="str_nytur">Velg ny tur fra toppmeny...</string>
+    <string name="str_nytur">Velg ny tur fra bunnmeny…</string>
     <string name="str_madeby">Laget av:</string>
     <string name="str_madeby1">Are Abrahamsen, Jørgen Rypdal</string>
     <string name="str_madeby2">og Halil Ibrahim Keser</string>

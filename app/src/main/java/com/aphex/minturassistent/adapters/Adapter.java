@@ -3,6 +3,7 @@ package com.aphex.minturassistent.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.browse.MediaBrowser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStore;
 import androidx.navigation.NavController;
@@ -31,6 +33,7 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
     private LayoutInflater layoutInflater;
     Context context;
     String isFinished;
+    public MutableLiveData<Trip> mTripPosition;
 
 
     public Adapter(Context context, @NonNull DiffUtil.ItemCallback<Trip> diffCallback) {
@@ -62,6 +65,7 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
                 Navigation.findNavController(view1).navigate(R.id.trackTourFragment);
             }
         });
+
         return holder;
     }
 
@@ -81,6 +85,7 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         holder.textViewTitle.setText(title);
         holder.textViewPlace.setText(place);
         holder.textViewDate.setText(current.getmDate());
+
     }
 
     public static class WordDiff extends DiffUtil.ItemCallback<Trip> {
@@ -130,4 +135,5 @@ class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     public interface MyClickListener {
         void onEdit(int p, View view);
     }
+
 }
