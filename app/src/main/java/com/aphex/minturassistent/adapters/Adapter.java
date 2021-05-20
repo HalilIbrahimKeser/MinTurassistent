@@ -33,7 +33,6 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
     private LayoutInflater layoutInflater;
     Context context;
     String isFinished;
-    public MutableLiveData<Trip> mTripPosition;
 
 
     public Adapter(Context context, @NonNull DiffUtil.ItemCallback<Trip> diffCallback) {

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,12 +55,19 @@ public class MyToursFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int tripID = viewHolder.getAdapterPosition();
+
                 if(direction == 4) {
-                    int position = viewHolder.getAdapterPosition();
-                    mViewModel.deleteTrip(position + 1);
-                    Toast.makeText(getContext(), "Venstre", Toast.LENGTH_SHORT).show();
-                } else if (direction == 8){
-                    Toast.makeText(getContext(), "Høyre", Toast.LENGTH_SHORT).show();
+                    mViewModel.deleteTrip(tripID + 1);
+                    Toast.makeText(getContext(), "Tur slettet", Toast.LENGTH_SHORT).show();
+                } else if (direction == 8) {
+                    SharedPreferences prefs = getView().getContext().getSharedPreferences("tripID", 0);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    prefs.edit().remove("tripID").apply();
+                    editor.putInt("tripID", tripID + 1);
+                    editor.apply();
+                    Navigation.findNavController(requireView()).navigate(R.id.detailsFragment);
+                    Toast.makeText(getContext(), "Detaljer", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getContext(), "Noe annet", Toast.LENGTH_SHORT).show();
