@@ -6,4 +6,8 @@
     <item
         android:id="@+id/menu_viapoint"
         android:title="@string/menu_viapoint"/>
+    <item
+        android:id="@+id/menu_getRoute"
+        android:title="@string/finn_turer_i_n_rheten"/>
+
 </menu>
