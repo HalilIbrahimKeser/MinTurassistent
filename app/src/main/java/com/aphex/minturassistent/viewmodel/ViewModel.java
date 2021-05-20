@@ -17,7 +17,6 @@ public class ViewModel extends AndroidViewModel {
 
     public LiveData<List<Trip>> mAllTrips;
     public MutableLiveData<Trip> mCurrentTrip;
-    public MutableLiveData<Trip> mTripPosition;
 
     public MutableLiveData<String> dateData = new MutableLiveData<>();
     public MutableLiveData<List<Images>> mediaData = new MutableLiveData<>();
@@ -40,12 +39,6 @@ public class ViewModel extends AndroidViewModel {
         return mCurrentTrip;
     }
 
-    public MutableLiveData<Trip> getTripPos() {
-        if (mTripPosition == null) {
-            mTripPosition = new MutableLiveData<>();
-        }
-        return mTripPosition;
-    }
     public LiveData<List<Trip>> getAllTrips() {
         return mAllTrips;
     }
