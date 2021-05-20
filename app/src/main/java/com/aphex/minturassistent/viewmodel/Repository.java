@@ -13,8 +13,8 @@ import java.util.List;
 
 public class Repository {
 
-    private Dao mDao;
-    private LiveData<List<Trip>> mAllTrips;
+    private final Dao mDao;
+    private final LiveData<List<Trip>> mAllTrips;
 
 
     Repository(Application application) {
@@ -35,6 +35,10 @@ public class Repository {
     }
 
     LiveData<List<Trip>> getTripData(int mTripID) {
+        return mDao.getTripData(mTripID);
+    }
+
+    LiveData<Trip> getTrip(int mTripID) {
         return mDao.getTrip(mTripID);
     }
 

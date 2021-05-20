@@ -9,20 +9,24 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.adapters.Adapter;
 import com.aphex.minturassistent.databinding.FragmentMyToursBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class MyToursFragment extends Fragment {
-    int mTripID;
+    Trip currentTrip;
 
     public MyToursFragment() {
     }
@@ -43,41 +47,42 @@ public class MyToursFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        SharedPreferences prefs = getContext().getSharedPreferences("tripID", 0);
-        mTripID = prefs.getInt("tripID", -1);
-
         ViewModel mViewModel = new ViewModelProvider(this,
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);
-        mViewModel.getAllTrips().observe(getViewLifecycleOwner(),
-                adapter::submitList);
+        mViewModel.getAllTrips().observe(getViewLifecycleOwner(), adapter::submitList);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, @NonNull @NotNull RecyclerView.ViewHolder target) {
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
-            public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int tripID = viewHolder.getAdapterPosition();
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                List<Trip> trips = adapter.getCurrentList();
+                currentTrip = trips.get(position);
+                mViewModel.getCurrentTrip().setValue(currentTrip);
 
-                if(direction == 4) {
-                    mViewModel.deleteTrip(tripID + 1);
-                    Toast.makeText(getContext(), "Tur slettet", Toast.LENGTH_SHORT).show();
-                } else if (direction == 8) {
-                    SharedPreferences prefs = getView().getContext().getSharedPreferences("tripID", 0);
-                    SharedPreferences.Editor editor = prefs.edit();
-                    prefs.edit().remove("tripID").apply();
-                    editor.putInt("tripID", tripID + 1);
-                    editor.apply();
-                    Navigation.findNavController(requireView()).navigate(R.id.detailsFragment);
-                    Toast.makeText(getContext(), "Detaljer", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getContext(), "Noe annet", Toast.LENGTH_SHORT).show();
+                switch (direction) {
+                    case ItemTouchHelper.LEFT:
+                        mViewModel.deleteTrip(currentTrip.mTripID);
+                        adapter.notifyItemRemoved(currentTrip.mTripID);
+                        Toast.makeText(getContext(), "Tur " + currentTrip.mTripName + " slettet", Toast.LENGTH_LONG).show();
+                        break;
+                    case ItemTouchHelper.RIGHT:
+                        SharedPreferences prefs = getView().getContext().getSharedPreferences("tripID", 0);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        prefs.edit().remove("tripID").apply();
+                        editor.putInt("tripID", currentTrip.mTripID);
+                        editor.apply();
+                        Navigation.findNavController(requireView()).navigate(R.id.detailsFragment);
                 }
             }
-        }).attachToRecyclerView(recyclerView);
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         return binding.getRoot();
     }

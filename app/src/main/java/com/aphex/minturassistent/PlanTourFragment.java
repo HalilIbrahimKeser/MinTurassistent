@@ -100,11 +100,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
             if (tempTrip.getmTripID() == 0) {
                 viewModel.insertTrip(tempTrip);
                 updateStartStopGeo(tempTrip);
-            } else {
-                viewModel.getLastTourType().observe(getActivity(), trip -> {
-                    currentTrip = trip.get(0);
-                });
-                Toast.makeText(getContext(), "Tour allerede lagret", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Tur lagret", Toast.LENGTH_SHORT).show();
                 updateStartStopGeo(tempTrip);
             }
             Navigation.findNavController(requireView()).navigate(R.id.myToursFragment);
