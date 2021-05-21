@@ -2,6 +2,7 @@ package com.aphex.minturassistent;
 
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import java.util.List;
 
 public class MyToursFragment extends Fragment {
     Trip currentTrip;
+    public static final float ALPHA_FULL = 1.0f;
 
     public MyToursFragment() {
     }
@@ -81,32 +83,29 @@ public class MyToursFragment extends Fragment {
                         Navigation.findNavController(requireView()).navigate(R.id.detailsFragment);
                 }
             }
+            //https://stackoverflow.com/questions/30820806/adding-a-colored-background-with-text-icon-under-swiped-row-when-using-androids
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    // Get RecyclerView item from the ViewHolder
+                    View itemView = viewHolder.itemView;
 
-//            @Override
-//            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-//                //https://stackoverflow.com/questions/63404794/recyclerview-with-different-itemtouchhelper-for-each-item-on-the-list
-//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//                // Getting the swiped item
-//
-//                // Get the color of the swiped item (the thing that differentiates among items)
-//                ColorDrawable background = new ColorDrawable(mContext.getResources().getColor(item.getColorValue()));
-//
-//                // Changing the color of the background item
-//                View itemView = viewHolder.itemView;
-//                int backgroundCornerOffset = 25; //so mBackground is behind the rounded corners of itemView
-//
-//                if (dX > 0) { // Swiping to the right
-//                    background.setBounds(itemView.getLeft(), itemView.getTop(),
-//                            itemView.getLeft() + ((int) dX) + backgroundCornerOffset, itemView.getBottom());
-//                } else if (dX < 0) { // Swiping to the left
-//                    background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
-//                            itemView.getTop(), itemView.getRight(), itemView.getBottom());
-//                } else { // view is unSwiped
-//                    background.setBounds(0, 0, 0, 0);
-//                }
-//
-//                background.draw(c);
-//            }
+                    Paint p = new Paint();
+                    if (dX > 0) {
+                        p.setARGB(255, 0, 255, 0);
+
+                        // Draw Rect with varying right side, equal to displacement dX
+                        c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
+                                (float) itemView.getBottom() - 40, p);
+                    } else {
+                        p.setARGB(255, 255, 0, 0);
+                        c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
+                                (float) itemView.getRight(), (float) itemView.getBottom() - 40, p);
+                    }
+
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
+            }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
