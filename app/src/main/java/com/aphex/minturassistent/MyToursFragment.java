@@ -2,6 +2,7 @@ package com.aphex.minturassistent;
 
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,6 +25,7 @@ import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.adapters.Adapter;
 import com.aphex.minturassistent.databinding.FragmentMyToursBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +33,7 @@ import java.util.List;
 
 public class MyToursFragment extends Fragment {
     Trip currentTrip;
-    public static final float ALPHA_FULL = 1.0f;
+    CoordinatorLayout coordinatorLayout;
 
     public MyToursFragment() {
     }
@@ -72,8 +75,20 @@ public class MyToursFragment extends Fragment {
                     case ItemTouchHelper.LEFT:
                         mViewModel.deleteTrip(currentTrip.mTripID);
                         adapter.notifyItemRemoved(currentTrip.mTripID);
-                        Toast.makeText(getContext(), "Tur '" + currentTrip.mTripName + "' slettet", Toast.LENGTH_LONG).show();
+                        Snackbar snackbar = Snackbar
+                                .make(binding.rootLayout, "Tur '" + currentTrip.mTripName + "' slettet", Snackbar.LENGTH_LONG);
+                        snackbar.setAction("ANGRE", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mViewModel.insertTrip(currentTrip);
+                                recyclerView.scrollToPosition(position);
+                            }
+                        });
+
+                        snackbar.setActionTextColor(Color.YELLOW);
+                        snackbar.show();
                         break;
+
                     case ItemTouchHelper.RIGHT:
                         SharedPreferences prefs = getView().getContext().getSharedPreferences("tripID", 0);
                         SharedPreferences.Editor editor = prefs.edit();
