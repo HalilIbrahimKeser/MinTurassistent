@@ -5,17 +5,20 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
@@ -34,9 +37,12 @@ public class MainActivity extends AppCompatActivity {
     FusedLocationProviderClient mFusedLocationClient;
     Location mLastLocation;
     private static BottomNavigationView bottomNav;
+    private static Toolbar myToolbar;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_MEDIA_LOCATION};
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
+    //Manifest.permission.WRITE_EXTERNAL_STORAGE, fjernet fra ovenfor
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
 
+        myToolbar = binding.myToolbar;
+        setSupportActionBar(myToolbar);
+
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        NavigationUI.setupWithNavController(myToolbar, navHostFragment.getNavController());
+
         bottomNav = binding.bottomNav;
         assert navHostFragment != null;
         NavigationUI.setupWithNavController(bottomNav, navHostFragment.getNavController());
@@ -63,9 +75,15 @@ public class MainActivity extends AppCompatActivity {
     public static void hideBottomNav() {
         bottomNav.setVisibility(View.GONE);
     }
-
+    public static void hideTopNav() { myToolbar.setVisibility(View.GONE); }
     public static void showBottomNav() {
         bottomNav.setVisibility(View.VISIBLE);
+    }
+    public static void showTopNav() { myToolbar.setVisibility(View.VISIBLE); }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        this.getMenuInflater().inflate(R.menu.top_menu, menu);
+        return true;
     }
 
     @Override
@@ -116,6 +134,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public boolean hasPermissions(String... permissions) {
+        if (permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     //Tatt fra: https://developer.android.com/codelabs/advanced-android-training-device-location?index=..%2F..advanced-android-training#3
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -140,8 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Tatt fra: https://developer.android.com/codelabs/advanced-android-training-device-location?index=..%2F..advanced-android-training#3
     public void getLocation() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
                     {Manifest.permission.ACCESS_FINE_LOCATION}, 1);

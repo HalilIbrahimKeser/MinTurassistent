@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:padding="10dp"
+            android:shape="oval">
+            <solid android:color="@color/light_blue_600" />
+
+            <size
+                android:width="90dp"
+                android:height="90dp" />
+
+            <padding
+                android:bottom="10dp"
+                android:left="10dp"
+                android:right="10dp"
+                android:top="10dp" />
+        </shape>
+    </item>
+
+    <item android:drawable="@drawable/icon_kamera" />
+</layer-list>

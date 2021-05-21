@@ -34,13 +34,27 @@ import java.util.List;
 public class MyToursFragment extends Fragment {
     Trip currentTrip;
     CoordinatorLayout coordinatorLayout;
+    ViewModel mViewModel;
 
     public MyToursFragment() {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity.hideTopNav();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mViewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);
     }
 
     @Override
@@ -54,8 +68,6 @@ public class MyToursFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        ViewModel mViewModel = new ViewModelProvider(this,
-                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);
         mViewModel.getAllTrips().observe(getViewLifecycleOwner(), adapter::submitList);
 
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -84,12 +96,12 @@ public class MyToursFragment extends Fragment {
                                 recyclerView.scrollToPosition(position);
                             }
                         });
-
                         snackbar.setActionTextColor(Color.YELLOW);
                         snackbar.show();
                         break;
 
                     case ItemTouchHelper.RIGHT:
+                        mViewModel.getCurrentTrip().setValue(currentTrip);
                         SharedPreferences prefs = getView().getContext().getSharedPreferences("tripID", 0);
                         SharedPreferences.Editor editor = prefs.edit();
                         prefs.edit().remove("tripID").apply();

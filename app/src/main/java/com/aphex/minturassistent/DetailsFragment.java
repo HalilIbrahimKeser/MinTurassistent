@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentDetailsBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
@@ -19,12 +20,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class DetailsFragment extends Fragment {
     private ViewModel mViewModel;
+    Trip currentTrip;
     public int mTripID;
     public TextView tvTourTittel;
     public TextView tvTimeSpent;
     public TextView tvTripDate;
 
     public DetailsFragment() {
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity.hideTopNav();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     @Override
@@ -39,6 +52,9 @@ public class DetailsFragment extends Fragment {
         tvTourTittel = binding.tvTourTittel;
         tvTimeSpent = binding.tvTimeSpent;
         tvTripDate = binding.tvTripDate;
+
+        mViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(
+                requireActivity().getApplication())).get(ViewModel.class);
 
         SharedPreferences prefs = getContext().getSharedPreferences("tripID", 0);
         mTripID = prefs.getInt("tripID", -1);

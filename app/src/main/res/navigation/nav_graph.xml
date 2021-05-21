@@ -93,6 +93,5 @@
     <fragment
         android:id="@+id/trackTourFragment"
         android:name="com.aphex.minturassistent.TrackTourFragment"
-        android:label="fragment_track_tour"
         tools:layout="@layout/fragment_track_tour" />
 </navigation>

@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.MinTurassistent" parent="Theme.MaterialComponents.Light.NoActionBar">
+
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/darkgray</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -15,6 +16,10 @@
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
 
+    </style>
+
+    <style name="top_menu">
+        <item name="android:minWidth">48dp</item>
     </style>
 
     <style name="word_title">

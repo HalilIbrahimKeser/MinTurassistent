@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item
+        android:id="@+id/menu_weather"
+        android:icon="@drawable/icon_sun"
+        android:title="Vær"
+        android:visible="true"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_track"
+        android:icon="@drawable/icon_play"
+        android:title="Start"
+        android:visible="true"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_stop"
+        android:icon="@drawable/icon_stop"
+        android:title="Slett"
+        android:visible="true"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_pause"
+        android:icon="@drawable/icon_pause"
+        android:title="Slett"
+        android:visible="true"
+        app:showAsAction="always" />
+</menu>

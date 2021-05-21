@@ -10,16 +10,47 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/btnDeleteTrip"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnCamera"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:clickable="true"
+            android:contentDescription="@string/str_todo"
+            android:cropToPadding="false"
+            android:duplicateParentState="false"
+            android:filterTouchesWhenObscured="false"
+            android:fitsSystemWindows="false"
+            android:foreground="@drawable/kamera"
+            app:backgroundTint="@color/light_blue_A200"
+            app:flow_verticalAlign="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:maxImageSize="50dp" />
+
+        <ImageView
+            android:id="@+id/imgKamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/title_text"
-            android:text="Slett tur"
+            android:layout_marginStart="32dp"
+            android:layout_marginBottom="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            tools:src="@tools:sample/avatars" />
 
+        <org.osmdroid.views.MapView
+            android:id="@+id/map"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+
+        </org.osmdroid.views.MapView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

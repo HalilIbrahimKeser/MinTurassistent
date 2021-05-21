@@ -20,8 +20,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 123;
@@ -43,12 +41,16 @@ public class LoginFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
+
+
+
         return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        MainActivity.hideTopNav();
         MainActivity.hideBottomNav();
     }
 
