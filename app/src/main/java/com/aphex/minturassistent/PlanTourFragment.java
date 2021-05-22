@@ -1,8 +1,10 @@
 package com.aphex.minturassistent;
 
 import android.annotation.SuppressLint;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,11 +16,16 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentPlanTourBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -26,6 +33,7 @@ import org.osmdroid.bonuspack.location.OverpassAPIProvider;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
+import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -45,6 +53,7 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     MapView mMapView;
     MyLocationNewOverlay mLocationOverlay;
+    Location mLocation;
     MapEventsOverlay mMapEventsOverlay;
     GeoPoint clickLocation;
     Road road;
@@ -53,6 +62,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     ArrayList<Marker> markers = new ArrayList<>();
     CompassOverlay mCompassOverlay;
     ViewModel viewModel;
+    private FusedLocationProviderClient fusedLocationClient;
 
     String tourType;
     Double startLatitude;
@@ -67,6 +77,8 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 
     @Override
@@ -81,6 +93,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         mMapView.onResume();
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -110,20 +123,15 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         });
 
         mMapView.setMultiTouchControls(true);
-
+        getLastKnownLocation();
         mLocationOverlay = new MyLocationNewOverlay(
                 new GpsMyLocationProvider(inflater.getContext()), mMapView);
         mLocationOverlay.enableMyLocation();
         mMapView.getController().zoomTo(16.0);
 
         mMapView.getOverlays().add(mLocationOverlay);
-
         if (mLocationOverlay.getMyLocation() != null) {
             mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
-        }
-        else {
-            clickLocation = new GeoPoint(62.4577, 6.1305);
-            mMapView.getController().animateTo(clickLocation);
         }
 
         mCompassOverlay = new CompassOverlay(inflater.getContext(),
@@ -271,5 +279,18 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         });
         popupMenu.show();
         return false;
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getLastKnownLocation() {
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(getActivity(), location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        mLocation = location;
+                        // Logic to handle location object
+                        Log.d("MY-LOCATION", "SIST KJENTE POSISJON: " + location.toString());
+                    }
+                });
     }
 }

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
@@ -52,6 +54,7 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.advancedpolyline.MonochromaticPaintList;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -79,7 +82,7 @@ public class TrackTourFragment extends Fragment {
     MapView mMapView;
     MyLocationNewOverlay mLocationOverlay;
     GeoPoint geoPoint;
-    
+
     private int mTripID;
     private double startPosLat;
     private double startPosLon;
@@ -155,7 +158,7 @@ public class TrackTourFragment extends Fragment {
                     locationBuffer.append(location.getLatitude()).append(", ").append(location.getLongitude()).append("\n");
                     geoPoint = new GeoPoint(location.getLatitude() , location.getLongitude());
                     mMapView.getController().setCenter(geoPoint);
-                    //mPolyline.addPoint(geoPoint);
+                    mPolyline.addPoint(geoPoint);
                     mMapView.invalidate();
                 }
             }
@@ -179,6 +182,27 @@ public class TrackTourFragment extends Fragment {
         mMapView.getOverlays().add(stopMarker);
         stopMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
         stopMarker.setTitle("Stop point");
+
+        //Polytrackline
+        this.mPolyline = new Polyline(mMapView);
+        final Paint paintBorder = new Paint();
+        paintBorder.setStrokeWidth(20);
+        paintBorder.setStyle(Paint.Style.FILL_AND_STROKE);
+        paintBorder.setColor(Color.BLACK);
+        paintBorder.setStrokeCap(Paint.Cap.ROUND);
+        paintBorder.setAntiAlias(true);
+
+        final Paint paintInside = new Paint();
+        paintInside.setStrokeWidth(10);
+        paintInside.setStyle(Paint.Style.FILL);
+        paintInside.setColor(Color.WHITE);
+        paintInside.setStrokeCap(Paint.Cap.ROUND);
+        paintInside.setAntiAlias(true);
+
+        mPolyline.getOutlinePaintLists().add(new MonochromaticPaintList(paintBorder));
+        mPolyline.getOutlinePaintLists().add(new MonochromaticPaintList(paintInside));
+
+        mMapView.getOverlays().add(mPolyline);
     }
 
     @Override
@@ -245,7 +269,7 @@ public class TrackTourFragment extends Fragment {
 
     // Verifiserer kravene satt i locationRequest-objektet.
     //   Dersom OK verifiseres fine-location-tillatelse start av lokasjonsforespørsler.
-    private void initLocationUpdates() {
+    public void initLocationUpdates() {
         final LocationRequest locationRequest = this.createLocationRequest();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
