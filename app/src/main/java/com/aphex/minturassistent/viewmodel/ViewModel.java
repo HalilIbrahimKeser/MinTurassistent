@@ -7,8 +7,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.aphex.minturassistent.Entities.Images;
+import com.aphex.minturassistent.Entities.MetData;
 import com.aphex.minturassistent.Entities.Trip;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
@@ -77,5 +79,10 @@ public class ViewModel extends AndroidViewModel {
 
     //MAPS ------------------------------------------------------------------
     public LiveData<List<Trip>> getLastTourType() { return mRepository.getLastTourType(); }
+
+    //METDATA -----------------------------------------------------------------
+    public MutableLiveData<ArrayList<MetData>> getMetData(String lat, String lon) {
+        return mRepository.downloadMetData(lat, lon);
+    }
 
 }
