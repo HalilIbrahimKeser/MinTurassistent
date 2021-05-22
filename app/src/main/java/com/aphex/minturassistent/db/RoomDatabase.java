@@ -46,15 +46,24 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
                 Dao dao = INSTANCE.Dao();
                 dao.deleteAlltrips();
 
+                //Dummy StartGeo
+                Trip.StartGeo startGeo = new Trip.StartGeo(00.00,00.00);
+
+                //Dummy StopGeo
+                Trip.StopGeo stopGeo = new Trip.StopGeo(00.00,00.00);
+
                 //Dummy Trip
                 Trip trip1 = new Trip( "Nydelig dag på Mt.Everest!", "05.05.2021", 0, 5,
-                        true,"24", "Mt.Everest", "Sykkeltur");
+                        true,"24", "Mt.Everest", "Sykkeltur", startGeo, stopGeo);
+
                 Trip trip2 = new Trip( "Fett på K2!", "06.06.2021", 0, 5,
-                        true,"12", "K2", "Gåtur");
+                        true,"12", "K2", "Gåtur", startGeo, stopGeo);
+
                 Trip trip3 = new Trip( "Bestiget Besseggen!", "19.07.2021", 0, 5,
-                        true, "10", "Besseggen", "Gåtur");
+                        true, "10", "Besseggen", "Gåtur", startGeo, stopGeo);
+
                 Trip trip4 = new Trip( "Mormorparken", "16.05.2021", 0, 5,
-                        false, "10", "Besseggen", "Gåtur");
+                        false, "10", "Besseggen", "Gåtur", startGeo, stopGeo);
                 dao.tripInsert(trip1);
                 dao.tripInsert(trip2);
                 dao.tripInsert(trip3);

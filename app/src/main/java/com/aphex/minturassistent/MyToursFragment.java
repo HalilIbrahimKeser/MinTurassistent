@@ -53,8 +53,7 @@ public class MyToursFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this,
-                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication())).get(ViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(ViewModel.class);
     }
 
     @Override

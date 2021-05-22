@@ -42,8 +42,6 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
 
-
-
         return binding.getRoot();
     }
 

@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
+    //Manifest.permission.WRITE_EXTERNAL_STORAGE, bør fjernes fra ovenfor
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
