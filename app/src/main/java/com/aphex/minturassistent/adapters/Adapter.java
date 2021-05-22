@@ -1,37 +1,22 @@
 package com.aphex.minturassistent.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.browse.MediaBrowser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStore;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aphex.minturassistent.DetailsFragment;
-import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
-import com.aphex.minturassistent.MainActivity;
-import com.aphex.minturassistent.MyToursFragment;
 import com.aphex.minturassistent.R;
-import com.aphex.minturassistent.viewmodel.ViewModel;
-
-import java.util.ArrayList;
 
 
 public class Adapter extends ListAdapter<Trip, ViewHolder> {
@@ -56,15 +41,15 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         ViewHolder holder = new ViewHolder(view, (position, view1) -> {
             Trip trip = getItem(position);
             isFinished = trip.getmIsFinished().toString();
-            int tripID = trip.getmTripID();
-
-            ArrayList<Trip> trips = new ArrayList<Trip>();
-            trips.add(trip);
 
             SharedPreferences prefs = view1.getContext().getSharedPreferences("tripID", 0);
             SharedPreferences.Editor editor = prefs.edit();
             prefs.edit().remove("tripID").apply();
-            editor.putInt("tripID", tripID);
+            editor.putInt("tripID", trip.getmTripID());
+            editor.putFloat("startgeolat", (float) trip.getStartGeo().latitude);
+            editor.putFloat("startgeolon", (float) trip.getStartGeo().longitude);
+            editor.putFloat("stopgeolat", (float) trip.getStopGeo().latitude1);
+            editor.putFloat("stopgeolon", (float) trip.getStopGeo().longitude1);
             editor.apply();
 
             if (isFinished.contains("true")) {

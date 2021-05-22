@@ -81,7 +81,7 @@ public class MyToursFragment extends Fragment {
                 int position = viewHolder.getAdapterPosition();
                 List<Trip> trips = adapter.getCurrentList();
                 currentTrip = trips.get(position);
-                mViewModel.getCurrentTrip().setValue(currentTrip);
+                mViewModel.getCurrentTrip().postValue(currentTrip);
 
                 switch (direction) {
                     case ItemTouchHelper.LEFT:

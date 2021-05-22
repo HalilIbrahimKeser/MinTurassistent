@@ -29,6 +29,9 @@ public interface Dao {
     @Query("DELETE FROM trip_table WHERE tripID = :mTripID")
     void deleteTrip(int mTripID);
 
+    @Query("SELECT * FROM trip_table WHERE tripID = :mTripID")
+    LiveData<List<Trip>> getSingleTrip(int mTripID);
+
 
     //IMAGE - - - - - - - - - - - - - - - - - - - - -  -
     @Insert(onConflict = OnConflictStrategy.IGNORE)

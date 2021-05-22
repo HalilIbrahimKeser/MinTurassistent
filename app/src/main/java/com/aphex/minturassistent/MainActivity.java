@@ -40,9 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private static Toolbar myToolbar;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
-    //Manifest.permission.WRITE_EXTERNAL_STORAGE, fjernet fra ovenfor
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

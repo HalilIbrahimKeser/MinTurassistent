@@ -39,8 +39,9 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:src="@tools:sample/avatars" />
 
+
         <org.osmdroid.views.MapView
-            android:id="@+id/map"
+            android:id="@+id/trackmap"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -51,6 +52,6 @@
             app:layout_constraintVertical_bias="0.0">
 
         </org.osmdroid.views.MapView>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>

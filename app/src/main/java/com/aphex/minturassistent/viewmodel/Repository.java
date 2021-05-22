@@ -3,6 +3,7 @@ package com.aphex.minturassistent.viewmodel;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Trip;
@@ -15,7 +16,7 @@ public class Repository {
 
     private final Dao mDao;
     private final LiveData<List<Trip>> mAllTrips;
-
+    public LiveData<List<Trip>> singleTrip;
 
     Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
@@ -36,6 +37,11 @@ public class Repository {
 
     LiveData<List<Trip>> getTripData(int mTripID) {
         return mDao.getTripData(mTripID);
+    }
+
+    LiveData<List<Trip>> getSingleTrip(int mTripID) {
+        singleTrip = mDao.getSingleTrip(mTripID);
+        return singleTrip;
     }
 
     LiveData<Trip> getTrip(int mTripID) {

@@ -105,7 +105,7 @@ public class NewTourFragment extends Fragment {
 
                 Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedHours1, estimatedDays1,
                         false, "null", "null", tourType);
-                viewModel.getCurrentTrip().setValue(newTrip);
+                viewModel.getCurrentTrip().postValue(newTrip);
                 Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
             }
         });

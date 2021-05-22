@@ -51,6 +51,10 @@ public class ViewModel extends AndroidViewModel {
         return mRepository.getTrip(mTripID);
     }
 
+    public LiveData<List<Trip>> getSingleTrip(int mTripID) {
+        return mRepository.getSingleTrip(mTripID);
+    }
+
     public void deleteTrip(int mTripID) {
         mRepository.deleteTrip(mTripID);
     }
