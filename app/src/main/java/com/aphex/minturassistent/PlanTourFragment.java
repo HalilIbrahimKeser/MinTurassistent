@@ -18,6 +18,7 @@ import androidx.navigation.Navigation;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentPlanTourBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -48,7 +49,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     GeoPoint clickLocation;
     Road road;
     Button buttonPop;
-    Button btSaveTour;
+    FloatingActionButton btSaveTour;
     ArrayList<Marker> markers = new ArrayList<>();
     CompassOverlay mCompassOverlay;
     ViewModel viewModel;
@@ -89,6 +90,8 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         viewModel.getLastTourType().observe(getActivity(), trip -> {
             tourType = trip.get(0).mTourType;
         });
+
+        Toast.makeText(getContext(), "Velg rute så lagre", Toast.LENGTH_SHORT).show();
 
         mMapView = binding.map;
         buttonPop = binding.buttonPopupMenu;

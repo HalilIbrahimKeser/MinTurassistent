@@ -11,12 +11,12 @@
                 android:height="20dp" />
 
             <padding
-                android:bottom="10dp"
-                android:left="10dp"
-                android:right="10dp"
-                android:top="10dp" />
+                android:bottom="0dp"
+                android:left="0dp"
+                android:right="0dp"
+                android:top="0dp" />
         </shape>
     </item>
 
-    <item android:drawable="@drawable/icon_kamera" />
+    <item android:drawable="@drawable/ic_baseline_add_24" />
 </layer-list>

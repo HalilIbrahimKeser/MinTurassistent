@@ -37,7 +37,7 @@ public class Trip implements Serializable {
 
     @Embedded public StopGeo stopGeo;
 
-    public Trip( String mTripName, String mDate, int mEstimatedHours, int mEstimatedHDays, Boolean mIsFinished, String mTimeSpent, String mPlace, String mTourType) {
+    public Trip( String mTripName, String mDate, int mEstimatedHours, int mEstimatedHDays, Boolean mIsFinished, String mTimeSpent, String mPlace, String mTourType, StartGeo startGeo, StopGeo stopGeo ) {
         this.mTripName = mTripName;
         this.mDate = mDate;
         this.mEstimatedHours = mEstimatedHours;
@@ -46,6 +46,8 @@ public class Trip implements Serializable {
         this.mTimeSpent = mTimeSpent;
         this.mPlace = mPlace;
         this.mTourType = mTourType;
+        this.startGeo = startGeo;
+        this.stopGeo = stopGeo;
     }
 
     public static class StartGeo {

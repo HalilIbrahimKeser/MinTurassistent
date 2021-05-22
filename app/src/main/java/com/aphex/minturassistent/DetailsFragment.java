@@ -53,8 +53,7 @@ public class DetailsFragment extends Fragment {
         tvTimeSpent = binding.tvTimeSpent;
         tvTripDate = binding.tvTripDate;
 
-        mViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(
-                requireActivity().getApplication())).get(ViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(ViewModel.class);
 
         SharedPreferences prefs = getContext().getSharedPreferences("tripID", 0);
         mTripID = prefs.getInt("tripID", -1);
