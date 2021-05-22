@@ -1,18 +1,24 @@
 package com.aphex.minturassistent;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
@@ -74,22 +80,74 @@ public class MainActivity extends AppCompatActivity {
     public static void hideBottomNav() {
         bottomNav.setVisibility(View.GONE);
     }
-    public static void hideTopNav() { myToolbar.setVisibility(View.GONE); }
+
+    public static void hideTopNav() {
+        myToolbar.setVisibility(View.GONE);
+    }
+
     public static void showBottomNav() {
         bottomNav.setVisibility(View.VISIBLE);
     }
-    public static void showTopNav() { myToolbar.setVisibility(View.VISIBLE); }
 
-    public boolean onCreateOptionsMenu(Menu menu){
+    public static void showTopNav() {
+        myToolbar.setVisibility(View.VISIBLE);
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
         this.getMenuInflater().inflate(R.menu.top_menu, menu);
         return true;
     }
 
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.menu_weather:
+                showWeatherDialog();
+                break;
+
+            case R.id.menu_track:
+                Toast.makeText(this, "Start tracking!", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menu_stop:
+                Toast.makeText(this, "Stop tracking!", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menu_pause:
+                Toast.makeText(this, "Pause tracking!", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
+
+    private void showWeatherDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_Light_DarkActionBar);
+        View view = LayoutInflater.from(MainActivity.this).inflate(
+                R.layout.weather_dialog, (ConstraintLayout) findViewById(R.id.weatherDialog)
+        );
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding: " + "\n" + "sol sol sol");
+        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(R.drawable.addtourpin);
+        final AlertDialog alertDialog = builder.create();
+        view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        if(alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+        alertDialog.show();
+    }
+
+// TRENGER IKKE DENNE?
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+//        return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
+//    }
 
     protected void checkPermissions() {
         //https://developer.here.com/documentation/android-premium/3.17/dev_guide/topics/request-android-permissions.html
