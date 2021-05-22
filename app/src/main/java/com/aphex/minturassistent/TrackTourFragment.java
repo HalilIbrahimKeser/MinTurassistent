@@ -74,8 +74,12 @@ import java.util.ArrayList;
 import static android.app.Activity.RESULT_OK;
 
 public class TrackTourFragment extends Fragment {
+    //Trackingen er hentet fra location 4 eksempelet til Werner.
+
     MapView mMapView;
     MyLocationNewOverlay mLocationOverlay;
+    GeoPoint geoPoint;
+    
     private int mTripID;
     private double startPosLat;
     private double startPosLon;
@@ -87,9 +91,8 @@ public class TrackTourFragment extends Fragment {
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationClient;
     private Polyline mPolyline;
-    // Indikerer om servicen er startet eller stoppet:
     private boolean requestingLocationUpdates = false;
-    GeoPoint geoPoint;
+
     ImageView imgKamera;
     FloatingActionButton btnCamera;
     static final int REQUEST_IMAGE_CAPTURE = 1;
