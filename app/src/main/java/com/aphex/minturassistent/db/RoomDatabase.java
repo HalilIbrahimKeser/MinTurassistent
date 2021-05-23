@@ -47,10 +47,10 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
                 dao.deleteAlltrips();
 
                 //Dummy StartGeo
-                Trip.StartGeo startGeo = new Trip.StartGeo(68.43,17.42);
+                Trip.StartGeo startGeo = new Trip.StartGeo(68.43580,17.43666);
 
                 //Dummy StopGeo
-                Trip.StopGeo stopGeo = new Trip.StopGeo(68.43,17.40);
+                Trip.StopGeo stopGeo = new Trip.StopGeo(68.44207,17.41459);
 
                 //Dummy Trip
                 Trip trip1 = new Trip( "Nydelig dag på Mt.Everest!", "05.05.2021", 0, 5,

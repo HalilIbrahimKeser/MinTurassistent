@@ -23,8 +23,6 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
     private LayoutInflater layoutInflater;
     Context context;
     String isFinished;
-    public MutableLiveData<Trip> mTripPosition;
-
 
     public Adapter(Context context, @NonNull DiffUtil.ItemCallback<Trip> diffCallback) {
         super(diffCallback);
@@ -58,7 +56,6 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
                 Navigation.findNavController(view1).navigate(R.id.trackTourFragment);
             }
         });
-
         return holder;
     }
 
@@ -74,7 +71,6 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         }else {
             holder.imIconStatus.setBackgroundResource(R.drawable.image_planned);
         }
-
         holder.textViewTitle.setText(title);
         holder.textViewPlace.setText(place);
         holder.textViewDate.setText(current.getmDate());
@@ -92,7 +88,6 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
         }
     }
 }
-
 
 class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     MyClickListener listener;

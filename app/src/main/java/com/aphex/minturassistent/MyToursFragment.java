@@ -33,7 +33,6 @@ import java.util.List;
 
 public class MyToursFragment extends Fragment {
     Trip currentTrip;
-    CoordinatorLayout coordinatorLayout;
     ViewModel mViewModel;
 
     public MyToursFragment() {
@@ -113,14 +112,10 @@ public class MyToursFragment extends Fragment {
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Get RecyclerView item from the ViewHolder
                     View itemView = viewHolder.itemView;
-
                     Paint p = new Paint();
                     if (dX > 0) {
                         p.setARGB(255, 0, 255, 0);
-
-                        // Draw Rect with varying right side, equal to displacement dX
                         c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
                                 (float) itemView.getBottom() - 40, p);
                     } else {
@@ -128,7 +123,6 @@ public class MyToursFragment extends Fragment {
                         c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
                                 (float) itemView.getRight(), (float) itemView.getBottom() - 40, p);
                     }
-
                     super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                 }
             }

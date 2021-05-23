@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
@@ -27,11 +28,12 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import org.jetbrains.annotations.NotNull;
+
 public class MyLocationService extends Service {
 
-    private Handler handler = new Handler(); //(Looper.getMainLooper());
+    private final Handler handler = new Handler(); //(Looper.getMainLooper());
     private static final int LOCATION_NOTIFICATION_ID = 1010;
-
     private LocationCallback locationCallback;
     private Location previousLocation=null;
     private  NotificationManager notificationManager;
@@ -54,8 +56,7 @@ public class MyLocationService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        // The PendingIntent to launch our activity if the user selects
-        // this notification
+
         Notification notification =  new Notification.Builder(this, channelId)
                 .setContentTitle("Lokasjon")
                 .setOnlyAlertOnce(false)
@@ -64,7 +65,6 @@ public class MyLocationService extends Service {
                 .setContentIntent(pendingIntent)
                 .setTicker("Tracker din lokasjon ...")
                 .build();
-
         return notification;
     }
 
@@ -87,22 +87,19 @@ public class MyLocationService extends Service {
 
         locationCallback = new LocationCallback() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                StringBuffer locationBuffer = new StringBuffer();
-                if (locationResult != null) {
-                    for (Location location : locationResult.getLocations()) {
-                        // Update UI with location data
-                        if (previousLocation == null)
-                            previousLocation = location;
-
-                        float distance = previousLocation.distanceTo(location);
-                        Log.d("MY-LOCATION-DISTANCE", String.valueOf(distance));
-                        Log.d("MY-LOCATION", location.toString());
-
-                        locationBuffer.append(location.getLatitude() + ", " + location.getLongitude() + "\n");
-
+            public void onLocationResult(@NotNull LocationResult locationResult) {
+                StringBuilder locationBuffer = new StringBuilder();
+                for (Location location : locationResult.getLocations()) {
+                    if (previousLocation == null)
                         previousLocation = location;
-                    }
+
+                    float distance = previousLocation.distanceTo(location);
+                    Log.d("MY-LOCATION-DISTANCE", String.valueOf(distance));
+                    Log.d("MY-LOCATION", location.toString());
+
+                    locationBuffer.append(location.getLatitude() + ", " + location.getLongitude() + "\n");
+                    previousLocation = location;
+
                 }
 
                 // Viser/oppdaterer varsel:
@@ -112,19 +109,25 @@ public class MyLocationService extends Service {
 
                 // Sender lokal broadcast:
                 //Intent intent = new Intent(MainActivity.LOCATION_FILTER_STRING);
-                intent.putExtra("POSITION", locationBuffer.toString());
+                intent.putExtra("LATITUDE", previousLocation.getLatitude());
+                intent.putExtra("LONGITUDE", previousLocation.getLongitude());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-                //Ev. lagre i Room-database via ViewModel & Repository - klasser.
-                // . . .
-
+                SharedPreferences prefs = getSharedPreferences("POSITION", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                prefs.edit().remove("POSITION").apply();
+                editor.putFloat("startgeolat",  (float) previousLocation.getLatitude());
+                editor.putFloat("startgeolon",  (float) previousLocation.getLongitude());
+                editor.apply();
+                editor.commit();
+                editor.commit();
             }
         };
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        //final LocationRequest locationRequest = MainActivity.createLocationRequest();
-        //startLocationUpdates(locationRequest);
+        final LocationRequest locationRequest = MainActivity.createLocationRequest();
+        startLocationUpdates(locationRequest);
 
         //START_STICKY sørger for at onStartCommand() kjører ved omstart (dvs. når service terminerer og starter på nytt ved ressursbehov):
         return Service.START_STICKY;
@@ -144,16 +147,13 @@ public class MyLocationService extends Service {
         return null;
     }
 
-    // Runnable som inneholder metoden som bakgrunnstråden starter:
-    private Runnable doBackgroundThreadProcessing = new Runnable() {
+    private final Runnable doBackgroundThreadProcessing = new Runnable() {
         public void run() {
             backgroundThreadProcessing();
         }
     };
 
-    // Metoden som kjører i tråden.
     private void backgroundThreadProcessing() {
-        //[ ... Tidskrevende kode ... ]
         int res = 0;
         for (int i = 0; i < 10; i++) {
             try {
@@ -164,7 +164,6 @@ public class MyLocationService extends Service {
         }
         handler.post(doShowResult);
 
-        //Avslutt service når "oppdraget" er ferdig!
         this.stopSelf();
     }
 
@@ -175,7 +174,6 @@ public class MyLocationService extends Service {
     };
 
     private void showResult() {
-        // Viser en Toast - kan kun fremvises i GUI-tråden:
         Context context = this.getApplicationContext();
         Toast.makeText(context, "Oppdrag fullført!!!!", Toast.LENGTH_SHORT).show();
 
