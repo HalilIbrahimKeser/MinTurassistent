@@ -16,7 +16,7 @@
         android:icon="@drawable/user" />
 
     <item
-        android:id="@+id/planTourFragment"
+        android:id="@+id/settingsFragment"
         android:title="@string/str_innstillinger"
         android:icon="@drawable/settings" />
 </menu>

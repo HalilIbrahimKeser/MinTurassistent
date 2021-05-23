@@ -60,5 +60,10 @@
     <string name="location_permission_allowed">Tilgang akseptert</string>
     <string name="str_bildetekst_uri">Bildetekst - URI</string>
     <string name="finn_turer_i_n_rheten">Finn turer i nærheten</string>
+    <string name="tittel">Tittel</string>
+    <string name="se_lagrede_bilder">Se lagrede bilder</string>
+    <string name="tid_brukt">Tid brukt:</string>
+    <string name="dato">Dato:</string>
+    <string name="slett_tur">Slett tur</string>
 
 </resources>

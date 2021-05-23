@@ -1,8 +1,14 @@
 package com.aphex.minturassistent;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.transition.Visibility;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,14 +17,21 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 
+import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentPlanTourBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.bonuspack.kml.KmlDocument;
@@ -26,8 +39,11 @@ import org.osmdroid.bonuspack.location.OverpassAPIProvider;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
+import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.util.TileSystem;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.MapEventsOverlay;
@@ -37,7 +53,9 @@ import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
@@ -45,6 +63,8 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     MapView mMapView;
     MyLocationNewOverlay mLocationOverlay;
+    android.location.Location mLocation = null;
+    Location mLastLocation; //endret denne til Entity Location
     MapEventsOverlay mMapEventsOverlay;
     GeoPoint clickLocation;
     Road road;
@@ -53,13 +73,16 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     ArrayList<Marker> markers = new ArrayList<>();
     CompassOverlay mCompassOverlay;
     ViewModel viewModel;
+    private FusedLocationProviderClient fusedLocationClient;
 
     String tourType;
-    Double startLatitude;
-    Double startLongitude;
-    Double stoppLatitude;
-    Double stoppLongitude;
+    private double startPosLat;
+    private double startPosLon;
+    private double stopPosLat;
+    private double stopPosLon;
     Trip currentTrip;
+
+    GeoPoint startLocation;
 
     public PlanTourFragment() {
     }
@@ -67,6 +90,8 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 
     @Override
@@ -101,10 +126,12 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
             Trip tempTrip = viewModel.getCurrentTrip().getValue();
             assert tempTrip != null;
             if (tempTrip.getmTripID() == 0) {
-                viewModel.insertTrip(tempTrip);
+                String str = startPosLat + ", " + startPosLon;
+                tempTrip.setmPlace(str);
                 updateStartStopGeo(tempTrip);
                 Toast.makeText(getContext(), "Tur lagret", Toast.LENGTH_SHORT).show();
                 updateStartStopGeo(tempTrip);
+                viewModel.insertTrip(tempTrip);
             }
             Navigation.findNavController(requireView()).navigate(R.id.myToursFragment);
         });
@@ -114,46 +141,64 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         mLocationOverlay = new MyLocationNewOverlay(
                 new GpsMyLocationProvider(inflater.getContext()), mMapView);
         mLocationOverlay.enableMyLocation();
-        mMapView.getController().zoomTo(16.0);
+        mMapView.setMinZoomLevel(3.0);
+        mMapView.setMaxZoomLevel(21.0);
+        mMapView.getController().zoomTo(18.0);
+        mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
 
-        mMapView.getOverlays().add(mLocationOverlay);
-
-        if (mLocationOverlay.getMyLocation() != null) {
+        SharedPreferences prefs = requireContext().getSharedPreferences("POSITION", 0);
+        if (prefs.getFloat("startgeolat", 0) != 0) {
+            startPosLat = prefs.getFloat("startgeolat", 0);
+            startPosLon = prefs.getFloat("startgeolon", 0);
+            startLocation = new GeoPoint(startPosLat, startPosLon);
+            mMapView.getController().animateTo(startLocation); ///halil
+        } else if (mLocationOverlay.getMyLocation() != null) {
             mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
+        } else {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(requireActivity(), location -> {
+                            if (location != null) {
+                                mLocation = location;
+                                startPosLat = location.getLatitude();
+                                startPosLon = location.getLongitude();
+                                startLocation = new GeoPoint(startPosLat, startPosLon);
+                                mMapView.getController().animateTo(startLocation);
+                            }
+                        });
+            }
+
         }
-        else {
-            clickLocation = new GeoPoint(62.4577, 6.1305);
-            mMapView.getController().animateTo(clickLocation);
-        }
+        mMapView.getOverlays().add(mLocationOverlay);
 
         mCompassOverlay = new CompassOverlay(inflater.getContext(),
                 new InternalCompassOrientationProvider(inflater.getContext()), mMapView);
         mCompassOverlay.enableCompass();
         mMapView.getOverlays().add(mCompassOverlay);
 
-        //Add "listener" to map, so you can set a marker where you want..
         mMapEventsOverlay = new MapEventsOverlay(this);
         mMapView.getOverlays().add(0, mMapEventsOverlay);
 
         return binding.getRoot();
     }
 
-    private void updateStartStopGeo (Trip tempTrip) {
-        if(markers.get(0).getPosition().getLatitude() != 0 && markers.get(1).getPosition().getLatitude() != 0
+    private void updateStartStopGeo(Trip tempTrip) {
+        if (markers.get(0).getPosition().getLatitude() != 0 && markers.get(1).getPosition().getLatitude() != 0
                 && markers.get(0).getPosition().getLongitude() != 0 && markers.get(1).getPosition().getLongitude() != 0) {
-            startLatitude = markers.get(0).getPosition().getLatitude();
-            startLongitude = markers.get(0).getPosition().getLongitude();
-            stoppLatitude = markers.get(1).getPosition().getLatitude();
-            stoppLongitude = markers.get(1).getPosition().getLongitude();
-        }else {
-            startLatitude = 0.0;
-            startLongitude = 0.0;
-            stoppLatitude = 0.0;
-            stoppLongitude = 0.0;
+            startPosLat = markers.get(0).getPosition().getLatitude();
+            startPosLon = markers.get(0).getPosition().getLongitude();
+            stopPosLat = markers.get(1).getPosition().getLatitude();
+            stopPosLon = markers.get(1).getPosition().getLongitude();
+        } else {
+            startPosLat = 0.0;
+            startPosLon = 0.0;
+            stopPosLat = 0.0;
+            stopPosLon = 0.0;
         }
-        Trip.StartGeo startGeo = new Trip.StartGeo(startLatitude, startLongitude);
+        Trip.StartGeo startGeo = new Trip.StartGeo(startPosLat, startPosLon);
         tempTrip.setStartGeo(startGeo);
-        Trip.StopGeo stopGeo = new Trip.StopGeo(stoppLatitude, stoppLongitude);
+        Trip.StopGeo stopGeo = new Trip.StopGeo(stopPosLat, stopPosLon);
         tempTrip.setStopGeo(stopGeo);
     }
 
@@ -165,13 +210,11 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         mMapView.getOverlays().add(startMarker);
         mMapView.invalidate();
         markers.add(startMarker);
-
         new UpdateRoadTask().execute();
     }
 
     @SuppressLint("StaticFieldLeak")
     private class UpdateRoadTask extends AsyncTask<Object, Void, Road> {
-
         protected Road doInBackground(Object... params) {
             @SuppressWarnings("unchecked")
             RoadManager roadManager = new OSRMRoadManager(getActivity(), "Roads");
@@ -186,14 +229,13 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
                     ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_CAR);
                     break;
             }
-
             ArrayList<GeoPoint> temp = new ArrayList<>();
             for (Marker m : markers) {
                 temp.add(new GeoPoint(m.getPosition().getLatitude(), m.getPosition().getLongitude()));
             }
-
             return roadManager.getRoad(temp);
         }
+
         @Override
         protected void onPostExecute(Road result) {
             road = result;
@@ -204,7 +246,6 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     }
 
     private class UpdateKMLTask extends AsyncTask<Object, Void, KmlDocument> {
-
         protected KmlDocument doInBackground(Object... params) {
             OverpassAPIProvider overpassProvider = new OverpassAPIProvider();
             String url = overpassProvider.urlForTagSearchKml("highway=path", mMapView.getBoundingBox(), 30, 30);
@@ -230,7 +271,6 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         } else {
             Toast.makeText(getActivity(), "Langklikk for å slette eller sette opp viapunkt.", Toast.LENGTH_SHORT).show();
         }
-
         return false;
     }
 
@@ -273,3 +313,4 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         return false;
     }
 }
+//Eksempel på viapoints: https://github.com/MKergall/osmbonuspack/blob/master/OSMNavigator/src/main/java/com/osmnavigator/MapActivity.java

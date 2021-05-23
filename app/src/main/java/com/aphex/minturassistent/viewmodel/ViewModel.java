@@ -7,10 +7,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.aphex.minturassistent.Entities.Images;
-import com.aphex.minturassistent.Entities.MetData;
+import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
@@ -19,6 +18,7 @@ public class ViewModel extends AndroidViewModel {
 
     public LiveData<List<Trip>> mAllTrips;
     public MutableLiveData<Trip> mCurrentTrip;
+    public MutableLiveData<Location> mLastLocation;
 
     public MutableLiveData<String> dateData = new MutableLiveData<>();
     public MutableLiveData<List<Images>> mediaData = new MutableLiveData<>();
@@ -59,6 +59,14 @@ public class ViewModel extends AndroidViewModel {
 
     public void deleteTrip(int mTripID) {
         mRepository.deleteTrip(mTripID);
+    }
+
+    //LOCATION
+    public MutableLiveData<Location> getLastLocation() {
+        if (mLastLocation == null) {
+            mLastLocation = new MutableLiveData<>();
+        }
+        return mLastLocation;
     }
 
 
