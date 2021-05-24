@@ -27,12 +27,16 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.aphex.minturassistent.Entities.Location;
+import com.aphex.minturassistent.Entities.MetData;
+import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.ActivityMainBinding;
 import com.aphex.minturassistent.service.MyLocationService;
 import com.aphex.minturassistent.viewmodel.ViewModel;
@@ -47,6 +51,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.menu_weather:
-                showWeatherDialog();
+                showWeatherDialog(this);
                 break;
             case R.id.menu_track:
                 Toast.makeText(this, "Start tracking!", Toast.LENGTH_SHORT).show();
@@ -288,14 +294,28 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showWeatherDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_Light_DarkActionBar);
+    private void showWeatherDialog(Context context) {
+        int mTripID;
+        float startLat;
+        float startLon;
+        SharedPreferences prefs1 = context.getSharedPreferences("weather", Context.MODE_PRIVATE);
+        mTripID = prefs1.getInt("tripID", -1);
+        startLat = prefs1.getFloat("startgeolat", 0);
+        startLon = prefs1.getFloat("startgeolon", 0);
+        String lat = String.valueOf(startLat);
+        String lon = String.valueOf(startLon);
+        mViewModel = new ViewModelProvider(this).get(ViewModel.class);
+        mViewModel.downloadMetData(lat, lon).observe(this, MetData -> {
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_DayNight_Dialog);
         View view = LayoutInflater.from(MainActivity.this).inflate(
                 R.layout.weather_dialog, (ConstraintLayout) findViewById(R.id.weatherDialog)
         );
+
         builder.setView(view);
-        ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding: " + "\n" + "sol sol sol");
-        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(R.drawable.addtourpin);
+        ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding neste 12 timer:");
+        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(R.drawable.clearsky_day);
         final AlertDialog alertDialog = builder.create();
         view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
         alertDialog.show();
+
     }
 
     public static void hideBottomNav() {

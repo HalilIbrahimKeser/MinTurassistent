@@ -1,27 +1,24 @@
 package com.aphex.minturassistent.viewmodel;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.MetData;
 import com.aphex.minturassistent.Entities.Trip;
-import com.aphex.minturassistent.Entities.Weather;
+import com.aphex.minturassistent.MainActivity;
 import com.aphex.minturassistent.db.API;
 import com.aphex.minturassistent.db.Dao;
 import com.aphex.minturassistent.db.RoomDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import okhttp3.HttpUrl;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,8 +29,8 @@ public class Repository {
     private static final String BASE_URL = "https://api.met.no/weatherapi/locationforecast/2.0/";
     private final Retrofit retrofit;
     private final com.aphex.minturassistent.db.API API;
-    //private final MutableLiveData<ArrayList<MetData>> mMetData;
-    private MetData mMetData;
+
+    private MutableLiveData<MetData> metData;
 
     private final Dao mDao;
     private final LiveData<List<Trip>> mAllTrips;
@@ -42,8 +39,9 @@ public class Repository {
     Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
         mDao = db.Dao();
-        //mMetData = new MutableLiveData<>();
+        metData = new MutableLiveData<>();
         mAllTrips = (LiveData<List<Trip>>) mDao.getTrips();
+        metData = new MutableLiveData<>();
 
         retrofit = new retrofit2.Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -102,14 +100,14 @@ public class Repository {
     //METDATA -----------------------------------------
 
     //LAST NED METDATA
-    public void downloadMetData(String lat, String lon) {
-
+    public MutableLiveData<MetData> downloadMetData(String lat, String lon) {
         Call<MetData> call = API.downloadMetData(lat, lon);
         call.enqueue(new Callback<MetData>() {
             @Override
             public void onResponse(@NotNull Call<MetData> call, @NotNull Response<MetData> response) {
                 if(response.isSuccessful()) {
                     MetData data = response.body();
+                    metData.setValue(data);
                 } else {
                     int statuscode = response.code();
                 }
@@ -118,5 +116,6 @@ public class Repository {
             public void onFailure(Call<MetData> call, Throwable t) {
             }
         });
+        return metData;
     }
 }

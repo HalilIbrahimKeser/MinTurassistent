@@ -50,6 +50,14 @@ public class Adapter extends ListAdapter<Trip, ViewHolder> {
             editor.putFloat("stopgeolon", (float) trip.getStopGeo().longitude1);
             editor.apply();
 
+            SharedPreferences prefs1 = view1.getContext().getSharedPreferences("weather", 0);
+            SharedPreferences.Editor editor1 = prefs1.edit();
+            prefs1.edit().remove("weather").apply();
+            editor1.putInt("tripID", trip.getmTripID());
+            editor1.putFloat("startgeolat", (float) trip.getStartGeo().latitude);
+            editor1.putFloat("startgeolon", (float) trip.getStartGeo().longitude);
+            editor1.apply();
+
             if (isFinished.contains("true")) {
                 Navigation.findNavController(view1).navigate(R.id.detailsFragment);
             }else {

@@ -25,13 +25,12 @@ public class ViewModel extends AndroidViewModel {
     public MutableLiveData<String> dateData = new MutableLiveData<>();
     public MutableLiveData<List<Images>> mediaData = new MutableLiveData<>();
 
-    public MutableLiveData<ArrayList<MetData>> mMetData = new MutableLiveData<>();
+    public MutableLiveData<MetData> mMetData = new MutableLiveData<>();
 
     public ViewModel(Application application) {
         super(application);
         mRepository = new Repository(application);
         mAllTrips = mRepository.getAllTrips();
-        mRepository.downloadMetData("68.8", "16.54");
     }
 
     //TRIP ------------------------------------------------------------
@@ -94,8 +93,7 @@ public class ViewModel extends AndroidViewModel {
     public LiveData<List<Trip>> getLastTourType() { return mRepository.getLastTourType(); }
 
     //METDATA -----------------------------------------------------------------
-    public void downloadMetData(String lat, String lon) {
-        mRepository.downloadMetData(lat, lon);
+    public MutableLiveData<MetData> downloadMetData(String lat, String lon) {
+        return mRepository.downloadMetData(lat, lon);
     }
-
 }
