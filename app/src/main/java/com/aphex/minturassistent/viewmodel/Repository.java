@@ -32,7 +32,8 @@ public class Repository {
     private static final String BASE_URL = "https://api.met.no/weatherapi/locationforecast/2.0/";
     private final Retrofit retrofit;
     private final com.aphex.minturassistent.db.API API;
-    private final MutableLiveData<ArrayList<MetData>> mMetData;
+    //private final MutableLiveData<ArrayList<MetData>> mMetData;
+    private MetData mMetData;
 
     private final Dao mDao;
     private final LiveData<List<Trip>> mAllTrips;
@@ -41,17 +42,10 @@ public class Repository {
     Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
         mDao = db.Dao();
-        mMetData = new MutableLiveData<>();
+        //mMetData = new MutableLiveData<>();
         mAllTrips = (LiveData<List<Trip>>) mDao.getTrips();
 
-//        HttpUrl baseUrl = new HttpUrl.Builder()
-//                .scheme("https")
-//                .host("api.met.no")
-//                .addPathSegment("weatherapi")
-//                .addPathSegment("locationforecast")
-//                .addPathSegment("2.0")
-//                .build();
-        retrofit = new Retrofit.Builder()
+        retrofit = new retrofit2.Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -108,11 +102,7 @@ public class Repository {
     //METDATA -----------------------------------------
 
     //LAST NED METDATA
-    public MutableLiveData<ArrayList<MetData>> downloadMetData(String lat, String lon) {
-        Map<String, String> urlArguments = new HashMap<>();
-
-        urlArguments.put("lat", lat);
-        urlArguments.put("lon", lon);
+    public void downloadMetData(String lat, String lon) {
 
         Call<MetData> call = API.downloadMetData(lat, lon);
         call.enqueue(new Callback<MetData>() {
@@ -128,6 +118,5 @@ public class Repository {
             public void onFailure(Call<MetData> call, Throwable t) {
             }
         });
-        return mMetData;
     }
 }

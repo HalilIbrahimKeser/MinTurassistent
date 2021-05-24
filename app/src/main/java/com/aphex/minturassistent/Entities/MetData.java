@@ -1,25 +1,126 @@
 package com.aphex.minturassistent.Entities;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+public final class MetData {
+    public final String type;
+    public final Geometry geometry;
+    public final Properties properties;
 
-public class MetData {
-    private String type;
-    private Array geometry;
-    private ArrayList<Weather> properties;
-
-    public MetData(String type, Array geometry, ArrayList<Weather> properties) {
+    public MetData(String type, Geometry geometry, Properties properties){
         this.type = type;
         this.geometry = geometry;
         this.properties = properties;
     }
 
-    @Override
-    public String toString() {
-        return "MetData{" +
-                "type=" +
-                "Feature=" +
-                ", geometry=" +
-                '}';
+    public static final class Geometry {
+        public final String type;
+        public final double[] coordinates;
+
+        public Geometry(String type, double[] coordinates){
+            this.type = type;
+            this.coordinates = coordinates;
+        }
+    }
+
+    public static final class Properties {
+        public final Meta meta;
+        public final Timesery timeseries[];
+
+        public Properties(Meta meta, Timesery[] timeseries){
+            this.meta = meta;
+            this.timeseries = timeseries;
+        }
+
+        public static final class Meta {
+            public final String updated_at;
+            public final Units units;
+
+            public Meta(String updated_at, Units units){
+                this.updated_at = updated_at;
+                this.units = units;
+            }
+
+            public static final class Units {
+                public final String air_pressure_at_sea_level;
+                public final String air_temperature;
+                public final String cloud_area_fraction;
+                public final String precipitation_amount;
+                public final String relative_humidity;
+                public final String wind_from_direction;
+                public final String wind_speed;
+
+                public Units(String air_pressure_at_sea_level, String air_temperature, String cloud_area_fraction, String precipitation_amount, String relative_humidity, String wind_from_direction, String wind_speed){
+                    this.air_pressure_at_sea_level = air_pressure_at_sea_level;
+                    this.air_temperature = air_temperature;
+                    this.cloud_area_fraction = cloud_area_fraction;
+                    this.precipitation_amount = precipitation_amount;
+                    this.relative_humidity = relative_humidity;
+                    this.wind_from_direction = wind_from_direction;
+                    this.wind_speed = wind_speed;
+                }
+            }
+        }
+
+        public static final class Timesery {
+            public final String time;
+            public final Data data;
+
+            public Timesery(String time, Data data){
+                this.time = time;
+                this.data = data;
+            }
+
+            public static final class Data {
+                public final Instant instant;
+                public final Next12hours next_12_hours;
+
+                public Data(Instant instant, Next12hours next_12_hours){
+                    this.instant = instant;
+                    this.next_12_hours = next_12_hours;
+                }
+
+                public static final class Instant {
+                    public final Details details;
+
+                    public Instant(Details details){
+                        this.details = details;
+                    }
+
+                    public static final class Details {
+                        public final double air_pressure_at_sea_level;
+                        public final double air_temperature;
+                        public final double cloud_area_fraction;
+                        public final double relative_humidity;
+                        public final double wind_from_direction;
+                        public final double wind_speed;
+
+                        public Details(double air_pressure_at_sea_level, double air_temperature, double cloud_area_fraction, double relative_humidity, double wind_from_direction, double wind_speed){
+                            this.air_pressure_at_sea_level = air_pressure_at_sea_level;
+                            this.air_temperature = air_temperature;
+                            this.cloud_area_fraction = cloud_area_fraction;
+                            this.relative_humidity = relative_humidity;
+                            this.wind_from_direction = wind_from_direction;
+                            this.wind_speed = wind_speed;
+                        }
+                    }
+                }
+
+                public static final class Next12hours {
+                    public final Summary summary;
+
+                    public Next12hours(Summary summary){
+                        this.summary = summary;
+                    }
+
+                    public static final class Summary {
+                        public final String symbol_code;
+
+
+                        public Summary(String  symbol_code){
+                            this.symbol_code = symbol_code;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
