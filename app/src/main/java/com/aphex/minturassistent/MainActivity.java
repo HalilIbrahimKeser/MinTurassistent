@@ -295,6 +295,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showWeatherDialog(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_DayNight_Dialog);
+        View view = LayoutInflater.from(MainActivity.this).inflate(
+                R.layout.weather_dialog, (ConstraintLayout) findViewById(R.id.weatherDialog)
+        );
+        builder.setView(view);
+
         int mTripID;
         float startLat;
         float startLon;
@@ -306,14 +312,9 @@ public class MainActivity extends AppCompatActivity {
         String lon = String.valueOf(startLon);
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
         mViewModel.downloadMetData(lat, lon).observe(this, MetData -> {
-        });
+            double testTemp = MetData.getAirTempValue();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_DayNight_Dialog);
-        View view = LayoutInflater.from(MainActivity.this).inflate(
-                R.layout.weather_dialog, (ConstraintLayout) findViewById(R.id.weatherDialog)
-        );
 
-        builder.setView(view);
         ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding neste 12 timer:");
         ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(R.drawable.clearsky_day);
         final AlertDialog alertDialog = builder.create();
@@ -323,11 +324,12 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.dismiss();
             }
         });
+
         if(alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
         alertDialog.show();
-
+        });
     }
 
     public static void hideBottomNav() {
