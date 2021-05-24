@@ -168,7 +168,6 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
                             }
                         });
             }
-
         }
         mMapView.getOverlays().add(mLocationOverlay);
 

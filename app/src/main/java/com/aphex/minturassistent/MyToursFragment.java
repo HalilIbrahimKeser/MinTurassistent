@@ -87,12 +87,9 @@ public class MyToursFragment extends Fragment {
                         adapter.notifyItemRemoved(currentTrip.mTripID);
                         Snackbar snackbar = Snackbar
                                 .make(binding.rootLayout, "Tur '" + currentTrip.mTripName + "' slettet", Snackbar.LENGTH_LONG);
-                        snackbar.setAction("ANGRE", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mViewModel.insertTrip(currentTrip);
-                                recyclerView.scrollToPosition(position);
-                            }
+                        snackbar.setAction("ANGRE", view -> {
+                            mViewModel.insertTrip(currentTrip);
+                            recyclerView.scrollToPosition(position);
                         });
                         snackbar.setActionTextColor(Color.YELLOW);
                         snackbar.show();

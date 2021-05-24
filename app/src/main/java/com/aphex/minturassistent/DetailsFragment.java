@@ -31,9 +31,6 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 public class DetailsFragment extends Fragment {
     private ViewModel mViewModel;
     public int mTripID;
-    public TextView tvTourTittel;
-    public TextView tvTimeSpent;
-    public TextView tvTripDate;
 
     MapView mMapView;
     private GeoPoint startPoint;
@@ -65,10 +62,6 @@ public class DetailsFragment extends Fragment {
         mMapView = binding.mapDetails;
         mMapView.getTileProvider().getTileCache().getProtectedTileComputers().clear();
 
-        tvTourTittel = binding.tvTourTittel;
-        tvTimeSpent = binding.tvTimeSpent;
-        tvTripDate = binding.tvTripDate;
-
         SharedPreferences prefs = getContext().getSharedPreferences("tripID", 0);
         mTripID = prefs.getInt("tripID", -1);
 
@@ -76,9 +69,9 @@ public class DetailsFragment extends Fragment {
         mViewModel.getSingleTrip(mTripID).observe(getViewLifecycleOwner(), new Observer<List<Trip>>() {
             @Override
             public void onChanged(@Nullable final List<Trip> tripData) {
-                tvTourTittel.setText(tripData.get(0).getmTripName());
-                tvTimeSpent.setText(tripData.get(0).getmTimeSpent());
-                tvTripDate.setText(tripData.get(0).getmDate());
+                binding.tvTourTittel.setText(tripData.get(0).getmTripName());
+                binding.tvTimeSpent.setText(tripData.get(0).getmTimeSpent());
+                binding.tvTripDate.setText(tripData.get(0).getmDate());
                 startPoint = new GeoPoint(tripData.get(0).startGeo.latitude, tripData.get(0).startGeo.longitude);
                 stopPoint = new GeoPoint(tripData.get(0).stopGeo.latitude1, tripData.get(0).stopGeo.longitude1);
                 mapWorks();
