@@ -8,8 +8,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Location;
+import com.aphex.minturassistent.Entities.MetData;
 import com.aphex.minturassistent.Entities.Trip;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
@@ -23,10 +25,13 @@ public class ViewModel extends AndroidViewModel {
     public MutableLiveData<String> dateData = new MutableLiveData<>();
     public MutableLiveData<List<Images>> mediaData = new MutableLiveData<>();
 
+    public MutableLiveData<ArrayList<MetData>> mMetData = new MutableLiveData<>();
+
     public ViewModel(Application application) {
         super(application);
         mRepository = new Repository(application);
         mAllTrips = mRepository.getAllTrips();
+        mMetData = mRepository.downloadMetData("16.54", "68.8");
     }
 
     //TRIP ------------------------------------------------------------
@@ -89,7 +94,7 @@ public class ViewModel extends AndroidViewModel {
     public LiveData<List<Trip>> getLastTourType() { return mRepository.getLastTourType(); }
 
     //METDATA -----------------------------------------------------------------
-    public MutableLiveData<ArrayList<MetData>> getMetData(String lat, String lon) {
+    public MutableLiveData<ArrayList<MetData>> downloadMetData(String lat, String lon) {
         return mRepository.downloadMetData(lat, lon);
     }
 

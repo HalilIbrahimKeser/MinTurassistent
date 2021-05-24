@@ -8,15 +8,20 @@ import androidx.lifecycle.MutableLiveData;
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.MetData;
 import com.aphex.minturassistent.Entities.Trip;
+import com.aphex.minturassistent.Entities.Weather;
 import com.aphex.minturassistent.db.API;
 import com.aphex.minturassistent.db.Dao;
 import com.aphex.minturassistent.db.RoomDatabase;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.HttpUrl;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,7 +32,7 @@ public class Repository {
     private static final String BASE_URL = "https://api.met.no/weatherapi/locationforecast/2.0/";
     private final Retrofit retrofit;
     private final com.aphex.minturassistent.db.API API;
-    private final MutableLiveData<ArrayList<MetData>> metData;
+    private final MutableLiveData<ArrayList<MetData>> mMetData;
 
     private final Dao mDao;
     private final LiveData<List<Trip>> mAllTrips;
@@ -36,9 +41,16 @@ public class Repository {
     Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
         mDao = db.Dao();
-        metData = new MutableLiveData<>();
+        mMetData = new MutableLiveData<>();
         mAllTrips = (LiveData<List<Trip>>) mDao.getTrips();
-        
+
+//        HttpUrl baseUrl = new HttpUrl.Builder()
+//                .scheme("https")
+//                .host("api.met.no")
+//                .addPathSegment("weatherapi")
+//                .addPathSegment("locationforecast")
+//                .addPathSegment("2.0")
+//                .build();
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -102,21 +114,20 @@ public class Repository {
         urlArguments.put("lat", lat);
         urlArguments.put("lon", lon);
 
-        Call<MetData> call = API.downloadMetData(urlArguments);
+        Call<MetData> call = API.downloadMetData(lat, lon);
         call.enqueue(new Callback<MetData>() {
             @Override
-            public void onResponse(Call<MetData> call, Response<MetData> response) {
-                if (!response.isSuccessful()) {
-                    return;
+            public void onResponse(@NotNull Call<MetData> call, @NotNull Response<MetData> response) {
+                if(response.isSuccessful()) {
+                    MetData data = response.body();
+                } else {
+                    int statuscode = response.code();
                 }
-                MetData data = response.body();
-                ArrayList<MetData> tmp = data.getResults();
-                metData.setValue(tmp);
             }
             @Override
             public void onFailure(Call<MetData> call, Throwable t) {
             }
         });
-        return metData;
+        return mMetData;
     }
 }

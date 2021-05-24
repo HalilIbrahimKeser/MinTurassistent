@@ -1,19 +1,25 @@
 package com.aphex.minturassistent.Entities;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MetData {
-    private ArrayList<MetData> results;
-    private int response_code;
+    private String type;
+    private Array geometry;
+    private ArrayList<Weather> properties;
 
-    public MetData() {
+    public MetData(String type, Array geometry, ArrayList<Weather> properties) {
+        this.type = type;
+        this.geometry = geometry;
+        this.properties = properties;
     }
 
-    public int getResponse_code() {
-        return response_code;
+    @Override
+    public String toString() {
+        return "MetData{" +
+                "type=" +
+                "Feature=" +
+                ", geometry=" +
+                '}';
     }
-    public ArrayList<MetData> getResults() {
-        return results;
-    }
-
 }
