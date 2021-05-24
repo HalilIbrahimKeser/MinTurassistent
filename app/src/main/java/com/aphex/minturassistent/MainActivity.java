@@ -61,9 +61,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     ViewModel mViewModel;
-    FusedLocationProviderClient mFusedLocationClient;
     Location mLastLocation;
-    Location mTestLastLocation;
     android.location.Location location;
     private double startPosLat;
     private double startPosLon;
@@ -84,14 +82,18 @@ public class MainActivity extends AppCompatActivity {
             double latitude = intent.getDoubleExtra("LATITUDE", 0);
             double longitude = intent.getDoubleExtra("LONGITUDE", 0);
             if (latitude != 0) {
+                startPosLat = latitude;
+                startPosLon = longitude;
                 mLastLocation.setmLatitude(latitude);
                 mLastLocation.setmLongitude(longitude);
-
                 mViewModel.getLastLocation().setValue(mLastLocation);
-
+            } else {
                 SharedPreferences prefs = getSharedPreferences("POSITION", Context.MODE_PRIVATE);
                 startPosLat = prefs.getFloat("startgeolat", 0);
                 startPosLon = prefs.getFloat("startgeolon", 0);
+                mLastLocation.setmLatitude(startPosLat);
+                mLastLocation.setmLongitude(startPosLon);
+                mViewModel.getLastLocation().setValue(mLastLocation);
             }
         }
     }
@@ -113,13 +115,13 @@ public class MainActivity extends AppCompatActivity {
 
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
 
-        mViewModel.getLastLocation().observe(this, lastLocationData -> {
-            if (lastLocationData != null) {
-                double mLatitude = lastLocationData.mLatitude;
-                double mLongitude = lastLocationData.mLongitude;
-                mTestLastLocation = lastLocationData;
-            }
-        });
+//        mViewModel.getLastLocation().observe(this, lastLocationData -> {
+//            if (lastLocationData != null) {
+//                double mLatitude = lastLocationData.mLatitude;
+//                double mLongitude = lastLocationData.mLongitude;
+//                mLastLocation = lastLocationData;
+//            }
+//        });
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);

@@ -59,57 +59,49 @@ public class NewTourFragment extends Fragment {
         String dateString = day + "." + month + "." + year;
         etDate.setText(dateString);
 
-        etDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(getView()).navigate(R.id.datePickerFragment);
-            }
-        });
+        etDate.setOnClickListener(view -> Navigation.findNavController(getView()).navigate(R.id.datePickerFragment));
 
 
 
         btnNewTour = binding.btnNewTour;
-        btnNewTour.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditText date = binding.etDate;
+        btnNewTour.setOnClickListener(view -> {
+            EditText date = binding.etDate;
 
-                EditText tourName = binding.etTourName;
-                if(!tourName.getText().toString().isEmpty()) {
-                    tourName1 = tourName.getText().toString();
-                } else {
-                    tourName1 = "Uten navn";
-                }
-
-                EditText estimatedDays = binding.etEstimatedDays;
-                if(!estimatedDays.getText().toString().isEmpty())
-                    estimatedDays1 = Integer.parseInt(estimatedDays.getText().toString());
-
-                EditText estimatedHours = binding.etEstimatedHours;
-                if(!estimatedHours.getText().toString().isEmpty())
-                    estimatedHours1 = Integer.parseInt(estimatedHours.getText().toString());
-
-                RadioButton radioButton1 = binding.rbTrailhiking;
-                RadioButton radioButton2 = binding.rbBicycleTour;
-                RadioButton radioButton3 = binding.rbSkitour;
-
-                if (radioButton1.isChecked()){
-                    tourType = "Gåtur";
-                }else if(radioButton2.isChecked()) {
-                    tourType = "Sykkeltur";
-                }else if(radioButton3.isChecked()) {
-                    tourType = "Skitur";
-                }else {
-                    tourType = "Ikke valgt";
-                }
-                Trip.StartGeo startGeo = new Trip.StartGeo(59.95496, 11.04957);
-                Trip.StopGeo stopGeo = new Trip.StopGeo(59.96976, 11.06133);
-
-                Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedHours1, estimatedDays1,
-                        false, "null", "null", tourType, startGeo, stopGeo);
-                viewModel.getCurrentTrip().postValue(newTrip);
-                Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
+            EditText tourName = binding.etTourName;
+            if(!tourName.getText().toString().isEmpty()) {
+                tourName1 = tourName.getText().toString();
+            } else {
+                tourName1 = "Uten navn";
             }
+
+            EditText estimatedDays = binding.etEstimatedDays;
+            if(!estimatedDays.getText().toString().isEmpty())
+                estimatedDays1 = Integer.parseInt(estimatedDays.getText().toString());
+
+            EditText estimatedHours = binding.etEstimatedHours;
+            if(!estimatedHours.getText().toString().isEmpty())
+                estimatedHours1 = Integer.parseInt(estimatedHours.getText().toString());
+
+            RadioButton radioButton1 = binding.rbTrailhiking;
+            RadioButton radioButton2 = binding.rbBicycleTour;
+            RadioButton radioButton3 = binding.rbSkitour;
+
+            if (radioButton1.isChecked()){
+                tourType = "Gåtur";
+            }else if(radioButton2.isChecked()) {
+                tourType = "Sykkeltur";
+            }else if(radioButton3.isChecked()) {
+                tourType = "Skitur";
+            }else {
+                tourType = "Ikke valgt";
+            }
+            Trip.StartGeo startGeo = new Trip.StartGeo(59.95496, 11.04957);
+            Trip.StopGeo stopGeo = new Trip.StopGeo(59.96976, 11.06133);
+
+            Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedHours1, estimatedDays1,
+                    false, "null", "null", tourType, startGeo, stopGeo);
+            viewModel.getCurrentTrip().postValue(newTrip);
+            Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
         });
         return binding.getRoot();
     }

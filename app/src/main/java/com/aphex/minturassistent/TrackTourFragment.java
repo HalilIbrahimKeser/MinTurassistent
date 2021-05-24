@@ -1,11 +1,13 @@
 package com.aphex.minturassistent;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,6 +16,7 @@ import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -64,6 +67,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.util.List;
 
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.osmdroid.bonuspack.routing.Road;
@@ -95,7 +99,7 @@ public class TrackTourFragment extends Fragment {
     private double stopPosLat;
     private double stopPosLon;
     private static final int REQUEST_CHECK_SETTINGS = 10;
-    private Location previousLocation=null;
+    private Location previousLocation = null;
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationClient;
     private Polyline mPolyline;
@@ -144,18 +148,18 @@ public class TrackTourFragment extends Fragment {
                 StringBuilder locationBuffer = new StringBuilder();
                 for (Location location : locationResult.getLocations()) {
                     // Beregner avstand fra forrige veipunkt:
-                    if (previousLocation==null)
+                    if (previousLocation == null)
                         previousLocation = location;
                     float distance = previousLocation.distanceTo(location);
                     Log.d("MY-LOCATION-DISTANCE", String.valueOf(distance));
                     Log.d("MY-LOCATION", location.toString());
-                    if (distance>50) {
+                    if (distance > 50) {
                         Log.d("MY-LOCATION", "MER ENN 50 METER!!");
                     }
                     previousLocation = location;
 
                     locationBuffer.append(location.getLatitude()).append(", ").append(location.getLongitude()).append("\n");
-                    geoPoint = new GeoPoint(location.getLatitude() , location.getLongitude());
+                    geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                     mMapView.getController().setCenter(geoPoint);
                     mPolyline.addPoint(geoPoint);
                     mMapView.invalidate();
@@ -249,11 +253,14 @@ public class TrackTourFragment extends Fragment {
     private void stopTracking() {
     }
 
-    @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         LocationRequest locationRequest = this.createLocationRequest();
-        this.fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-        boolean requestingLocationUpdates = true;
+        if (ActivityCompat.checkSelfPermission(requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            this.fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            boolean requestingLocationUpdates = true;
+        }
     }
 
     // LocationRequest: Setter krav til posisjoneringa:
