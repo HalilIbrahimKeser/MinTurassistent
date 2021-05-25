@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
     //Manifest.permission.WRITE_EXTERNAL_STORAGE, bør fjernes fra ovenfor
-
+    MetData.Properties.Timeseries.Data.Instant.Details details;
+    MetData.Properties.Timeseries.Data.Next12hours.Summary summary;
     private class MyLocationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -314,11 +315,16 @@ public class MainActivity extends AppCompatActivity {
         String lon = String.valueOf(startLon);
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
         mViewModel.downloadMetData(lat, lon).observe(this, MetData -> {
-            double testTemp = MetData.getAirTempValue();
+            double testTemp = details.getAirTempValue();
+            double testTemp2 = details.getAir_temperature();
+            String testSymbol1 = summary.getSymbolValue();
+            String testSymbol2 = summary.getSymbol_code();
 
 
-        ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding neste 12 timer:");
-        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(R.drawable.clearsky_day);
+        ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding:");
+        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(getResources().getIdentifier(testSymbol1, "drawable", getPackageName()));
+        ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp:" + String.valueOf(testTemp) + "ºC");
+
         final AlertDialog alertDialog = builder.create();
         view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -5,8 +5,6 @@ public final class MetData {
     public final Geometry geometry;
     public final Properties properties;
 
-    public double airTempValue;
-    public String symbolCodeValue;
 
     public MetData(String type, Geometry geometry, Properties properties) {
         this.type = type;
@@ -14,10 +12,17 @@ public final class MetData {
         this.properties = properties;
     }
 
-//    public double getAirTempValue() {
-//        Properties.Timeseries.Data.Instant.Details
-//    }
+    public String getType() {
+        return type;
+    }
 
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
 
     public static final class Geometry {
         public final String type;
@@ -33,6 +38,14 @@ public final class MetData {
         public final Meta meta;
         public final Timeseries[] timeseries;
 
+        public Meta getMeta() {
+            return meta;
+        }
+
+        public Timeseries[] getTimeseries() {
+            return timeseries;
+        }
+
         public Properties(Meta meta, Timeseries[] timeseries) {
             this.meta = meta;
             this.timeseries = timeseries;
@@ -46,6 +59,14 @@ public final class MetData {
             public Meta(String updated_at, Units units) {
                 this.updated_at = updated_at;
                 this.units = units;
+            }
+
+            public String getUpdated_at() {
+                return updated_at;
+            }
+
+            public Units getUnits() {
+                return units;
             }
 
             public static final class Units {
@@ -66,12 +87,17 @@ public final class MetData {
                     this.wind_from_direction = wind_from_direction;
                     this.wind_speed = wind_speed;
                 }
+
             }
         }
 
         public static final class Timeseries {
             public final String time;
             public final Data data;
+
+            public String getTime() {
+                return time;
+            }
 
             public Timeseries(String time, Data data) {
                 this.time = time;
@@ -129,13 +155,36 @@ public final class MetData {
                             this.wind_speed = wind_speed;
 
                         }
+                        public double getAir_pressure_at_sea_level() {
+                            return air_pressure_at_sea_level;
+                        }
+
+                        public double getCloud_area_fraction() {
+                            return cloud_area_fraction;
+                        }
+
+                        public double getRelative_humidity() {
+                            return relative_humidity;
+                        }
+
+                        public double getWind_from_direction() {
+                            return wind_from_direction;
+                        }
+
+                        public double getWind_speed() {
+                            return wind_speed;
+                        }
+
+
+                        public double getAir_temperature() {
+                            return air_temperature;
+                        }
+
                         public double getAirTempValue() {
                             airTempValue = getAir_temperature();
                             return airTempValue;
                         }
-                        public double getAir_temperature() {
-                            return air_temperature;
-                        }
+
                     }
                 }
 
@@ -152,12 +201,17 @@ public final class MetData {
 
                     public static final class Summary {
                         public final String symbol_code;
+                        public String symbol;
 
                         public String getSymbol_code() {
                             return symbol_code;
                         }
                         public Summary(String symbol_code) {
                             this.symbol_code = symbol_code;
+                        }
+                        public String getSymbolValue() {
+                            symbol = getSymbol_code();
+                            return symbol;
                         }
                     }
                 }
