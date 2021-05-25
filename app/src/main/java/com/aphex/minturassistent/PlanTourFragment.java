@@ -126,7 +126,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
             Trip tempTrip = viewModel.getCurrentTrip().getValue();
             assert tempTrip != null;
             if (tempTrip.getmTripID() == 0) {
-                String str = startPosLat + ", " + startPosLon;
+                @SuppressLint("DefaultLocale") String str = String.format("%.2f", startPosLat) + ", " + String.format("%.2f", startPosLon);
                 tempTrip.setmPlace(str);
                 updateStartStopGeo(tempTrip);
                 Toast.makeText(getContext(), "Tur lagret", Toast.LENGTH_SHORT).show();
