@@ -55,6 +55,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.osmdroid.util.GeoPoint;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -325,14 +326,15 @@ public class MainActivity extends AppCompatActivity {
         String lon = String.valueOf(startLon);
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
         mViewModel.downloadMetData(lat, lon).observe(this, MetData -> {
-            double testTemp = MetData.properties.timeseries[0].data.instant.details.air_temperature;
-            String testSymbol = MetData.properties.timeseries[0].data.next_12_hours.summary.symbol_code;
+            double airTemp = MetData.properties.timeseries[0].data.instant.details.air_temperature;
+            String symbolCode = MetData.properties.timeseries[0].data.next_12_hours.summary.symbol_code;
+            String timeStamp = MetData.properties.timeseries[0].time;
 
 
         ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding:");
-        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(getResources().getIdentifier(testSymbol, "drawable", getPackageName()));
-        ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp: " + String.valueOf(testTemp) + "ºC");
-
+        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(getResources().getIdentifier(symbolCode, "drawable", getPackageName()));
+        ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp: " + String.valueOf(airTemp) + "ºC");
+        ((TextView) view.findViewById(R.id.tvTimeStamp)).setText(timeStamp);
 
         view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener()  {
             @Override

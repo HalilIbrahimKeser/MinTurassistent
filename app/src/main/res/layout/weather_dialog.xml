@@ -5,23 +5,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutDialogContainer"
     android:layout_width="400dp"
-    android:layout_height="500dp"
-    android:layout_margin="20dp"
-    android:padding="130dp"
+    android:layout_height="300dp"
+    android:layout_marginTop="100dp"
+    android:padding="20dp"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/weatherDialog"
-        android:layout_width="141dp"
-        android:layout_height="193dp"
+        android:layout_width="250dp"
+        android:layout_height="230dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:background="@color/white"
+        android:background="@color/light_blue_600"
         app:layout_constraintBottom_toTopOf="@+id/btnWeatherDsm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/tvWeatherTitle"
@@ -51,6 +51,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivWeatherInfo" />
 
+        <TextView
+            android:id="@+id/tvTimeStamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/ivWeatherInfo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvWeatherTitle"
+            app:layout_constraintVertical_bias="0.39" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -58,7 +70,8 @@
         android:id="@+id/btnWeatherDsm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ok"
+        android:layout_marginBottom="96dp"
+        android:text="Lukk"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
