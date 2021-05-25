@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MyLocationService extends Service {
 
-    private final Handler handler = new Handler(); //(Looper.getMainLooper());
+    private final Handler handler = new Handler();
     private static final int LOCATION_NOTIFICATION_ID = 1010;
     private LocationCallback locationCallback;
     private Location previousLocation=null;
@@ -40,9 +40,6 @@ public class MyLocationService extends Service {
     private String channelId;
 
     private FusedLocationProviderClient fusedLocationClient;
-
-    public static void start() {
-    }
 
     @Override
     public void onCreate() {
@@ -126,8 +123,8 @@ public class MyLocationService extends Service {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        final LocationRequest locationRequest = MainActivity.createLocationRequest();
-        startLocationUpdates(locationRequest);
+        //final LocationRequest locationRequest = MainActivity.createLocationRequest();
+        //startLocationUpdates(locationRequest);
 
         //START_STICKY sørger for at onStartCommand() kjører ved omstart (dvs. når service terminerer og starter på nytt ved ressursbehov):
         return Service.START_STICKY;
