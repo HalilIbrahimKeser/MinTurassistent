@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RewriteQueriesToDropUnusedColumns;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Location;
@@ -34,6 +35,7 @@ public interface Dao {
     @Query("SELECT * FROM trip_table WHERE tripID = :mTripID")
     LiveData<List<Trip>> getSingleTrip(int mTripID);
 
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM trip_table LEFT JOIN image_table ON  tripID = FKtripID  WHERE tripID = :mTripID")
     LiveData<List<TripImages>> getTripWithImages(int mTripID);
 

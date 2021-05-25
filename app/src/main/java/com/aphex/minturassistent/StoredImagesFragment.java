@@ -11,17 +11,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aphex.minturassistent.Entities.Images;
-import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.adapters.ImageAdapter;
 import com.aphex.minturassistent.databinding.FragmentStoredImagesBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 
 import org.jetbrains.annotations.NotNull;
-import org.osmdroid.util.GeoPoint;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class StoredImagesFragment extends Fragment {
@@ -60,8 +54,12 @@ public class StoredImagesFragment extends Fragment {
 
 //        mediaList = new ArrayList<>();
 
-        mViewModel.getTripWithImages(mTripID).observe(getViewLifecycleOwner(),
-                list -> imageAdapter.submitList(list));
+        mViewModel.getTripWithImages(mTripID).observe(getViewLifecycleOwner(), imageAdapter::submitList);
+
+        mViewModel.getSingleTrip(mTripID).observe(getViewLifecycleOwner(), tripData -> {
+            binding.tvTitleImages.setText(tripData.get(0).getmTripName());
+        });
+
 
         return binding.getRoot();
     }

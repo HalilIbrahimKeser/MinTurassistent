@@ -1,6 +1,5 @@
 package com.aphex.minturassistent.Entities;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 
 public class TripImages {
