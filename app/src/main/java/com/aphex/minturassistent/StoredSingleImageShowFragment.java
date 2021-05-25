@@ -7,20 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.aphex.minturassistent.Entities.Images;
-import com.aphex.minturassistent.Entities.TripImages;
-import com.aphex.minturassistent.adapters.ImageAdapter;
 import com.aphex.minturassistent.databinding.FragmentStoredSingleImageShowBinding;
-import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.bumptech.glide.Glide;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class StoredSingleImageShowFragment extends Fragment {
 
@@ -52,12 +44,7 @@ public class StoredSingleImageShowFragment extends Fragment {
                 .centerCrop()
                 .into(binding.imSinglePhotoShow);
 
-        binding.btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment);
-            }
-        });
+        binding.btnBack.setOnClickListener(v -> Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment));
 
         return binding.getRoot();
     }
