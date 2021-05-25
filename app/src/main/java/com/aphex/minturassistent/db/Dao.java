@@ -8,6 +8,8 @@ import androidx.room.Query;
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
+import com.aphex.minturassistent.Entities.TripImages;
+
 import java.util.List;
 
 @androidx.room.Dao
@@ -31,6 +33,9 @@ public interface Dao {
 
     @Query("SELECT * FROM trip_table WHERE tripID = :mTripID")
     LiveData<List<Trip>> getSingleTrip(int mTripID);
+
+    @Query("SELECT * FROM trip_table LEFT JOIN image_table ON  tripID = FKtripID  WHERE tripID = :mTripID")
+    LiveData<List<TripImages>> getTripWithImages(int mTripID);
 
 
     //IMAGE - - - - - - - - - - - - - - - - - - - - -  -

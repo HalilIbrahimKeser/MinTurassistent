@@ -66,7 +66,8 @@ public class MyToursFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mViewModel.getAllTrips().observe(getViewLifecycleOwner(), adapter::submitList);
+        mViewModel.getAllTrips().observe(getViewLifecycleOwner(),
+                list -> adapter.submitList(list));
 
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override

@@ -66,16 +66,13 @@ public class DetailsFragment extends Fragment {
         mTripID = prefs.getInt("tripID", -1);
 
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
-        mViewModel.getSingleTrip(mTripID).observe(getViewLifecycleOwner(), new Observer<List<Trip>>() {
-            @Override
-            public void onChanged(@Nullable final List<Trip> tripData) {
-                binding.tvTourTittel.setText(tripData.get(0).getmTripName());
-                binding.tvTimeSpent.setText(tripData.get(0).getmTimeSpent());
-                binding.tvTripDate.setText(tripData.get(0).getmDate());
-                startPoint = new GeoPoint(tripData.get(0).startGeo.latitude, tripData.get(0).startGeo.longitude);
-                stopPoint = new GeoPoint(tripData.get(0).stopGeo.latitude1, tripData.get(0).stopGeo.longitude1);
-                mapWorks();
-            }
+        mViewModel.getSingleTrip(mTripID).observe(getViewLifecycleOwner(), tripData -> {
+            binding.tvTourTittel.setText(tripData.get(0).getmTripName());
+            binding.tvTimeSpent.setText(tripData.get(0).getmTimeSpent());
+            binding.tvTripDate.setText(tripData.get(0).getmDate());
+            startPoint = new GeoPoint(tripData.get(0).startGeo.latitude, tripData.get(0).startGeo.longitude);
+            stopPoint = new GeoPoint(tripData.get(0).stopGeo.latitude1, tripData.get(0).stopGeo.longitude1);
+            mapWorks();
         });
 
         Button btnImages = binding.btnImages;
