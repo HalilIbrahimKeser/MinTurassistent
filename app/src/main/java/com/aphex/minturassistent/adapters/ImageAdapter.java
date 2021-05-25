@@ -1,5 +1,6 @@
 package com.aphex.minturassistent.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -15,13 +16,12 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.Entities.TripImages;
 import com.aphex.minturassistent.R;
 import com.bumptech.glide.Glide;
 
 public class ImageAdapter extends ListAdapter<TripImages, ImageViewHolder> {
-    private LayoutInflater layoutInflater;
+    private final LayoutInflater layoutInflater;
     Context context;
 
     public ImageAdapter(Context context, @NonNull DiffUtil.ItemCallback<TripImages> diffCallback) {
@@ -34,7 +34,7 @@ public class ImageAdapter extends ListAdapter<TripImages, ImageViewHolder> {
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.recyclerview_images_item, null);
+        @SuppressLint("InflateParams") View view = layoutInflater.inflate(R.layout.recyclerview_images_item, null);
 
         return new ImageViewHolder(view, (position, view1) -> {
             TripImages tripImage = getItem(position);
@@ -53,16 +53,18 @@ public class ImageAdapter extends ListAdapter<TripImages, ImageViewHolder> {
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         TripImages current = getItem(position);
         String imageTitle = "Bildetittel: " + current.mTitle;
-        holder.tvImageDate.setText(current.mDate);
+
         Glide.with(holder.ivThumb)
                 .load(current.mImageURI)
                 .thumbnail(0.33f)
                 .centerCrop()
                 .into(holder.ivThumb);
         if (current.mTitle == null) {
-            holder.tvImageTitle.setText("Ingen bilder tilhørende denne turen!");
+            holder.tvImageTitle.setText(R.string.str_IngenBilder);
+            holder.tvImageDate.setText(R.string.str_IngenBilder1);
         } else {
             holder.tvImageTitle.setText(imageTitle);
+            holder.tvImageDate.setText(current.mDate);
         }
     }
 
@@ -80,7 +82,6 @@ public class ImageAdapter extends ListAdapter<TripImages, ImageViewHolder> {
 
 class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
     MyClickListener listener;
-
     public TextView tvImageTitle;
     public TextView tvImageDate;
     public ImageView ivThumb;
