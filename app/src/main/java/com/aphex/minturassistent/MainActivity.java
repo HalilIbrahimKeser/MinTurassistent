@@ -303,6 +303,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showWeatherDialog(Context context) {
+        //hentet mye kode fra https://www.youtube.com/watch?v=3cJ9eia49w4
+        //alertDialog.dismiss() lukker ikke parent ordentlig. Når man åpner dialogen flere ganger må
+        //man lukke dialogen tilsvarende mange ganger.
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat);
         View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.weather_dialog, (ConstraintLayout) findViewById(R.id.weatherDialog)

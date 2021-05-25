@@ -1,14 +1,18 @@
 package com.aphex.minturassistent;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,6 +21,7 @@ import androidx.navigation.Navigation;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentDetailsBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.util.GeoPoint;
@@ -77,18 +82,48 @@ public class DetailsFragment extends Fragment {
                 mapWorks();
             }
         });
+        Button btnDelete = binding.btnDeleteTrip;
+        btnDelete.setOnClickListener(this::onDeleteTripButton);
 
         Button btnImages = binding.btnImages;
         btnImages.setOnClickListener(view ->
                 Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment));
 
-        Button btnDeleteTrip = binding.btnDeleteTrip;
-        btnDeleteTrip.setOnClickListener(view -> {
-            mViewModel.deleteTrip(mTripID);
-            Navigation.findNavController(getView()).navigate(R.id.myToursFragment);
-        });
 
         return binding.getRoot();
+    }
+
+    //Viser en standard AlertDialog.. Tilpasset fra Werners dialogTest
+    public void onDeleteTripButton(View view){
+        DetailsFragment context = this;
+        String title = "Bekreft sletting";
+        String message = "Slette turen?";
+        String button1String = "Ja";
+        String button2String = "Nei, gå tilbake!";
+
+        AlertDialog.Builder ad = new AlertDialog.Builder(context.getContext());
+        ad.setTitle(title);
+        ad.setMessage(message);
+
+        ad.setPositiveButton(button1String,
+                (dialog, arg1) -> {
+                    mViewModel.deleteTrip(mTripID);
+                    Navigation.findNavController(getView()).navigate(R.id.myToursFragment);
+                    Toast.makeText(context.getContext(), "Tur slettet..", Toast.LENGTH_LONG).show();
+                });
+
+        ad.setNegativeButton(button2String,
+                (dialog, arg1) ->
+                        Toast.makeText(context.getContext(), "Avbryter..", Toast.LENGTH_LONG).show());
+
+        ad.setCancelable(false);
+
+        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+            }
+        });
+
+        ad.show();
     }
 
     private void mapWorks() {
