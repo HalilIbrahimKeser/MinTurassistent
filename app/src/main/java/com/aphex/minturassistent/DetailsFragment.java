@@ -1,8 +1,16 @@
 package com.aphex.minturassistent;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +37,10 @@ import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
@@ -36,7 +48,8 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 public class DetailsFragment extends Fragment {
     private ViewModel mViewModel;
     public int mTripID;
-
+    File imagePath;
+    FragmentDetailsBinding binding;
     MapView mMapView;
     private GeoPoint startPoint;
     private GeoPoint stopPoint;
@@ -62,7 +75,7 @@ public class DetailsFragment extends Fragment {
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FragmentDetailsBinding binding = FragmentDetailsBinding.inflate(inflater, container, false);
+        binding = FragmentDetailsBinding.inflate(inflater, container, false);
 
         mMapView = binding.mapDetails;
         mMapView.getTileProvider().getTileCache().getProtectedTileComputers().clear();
@@ -86,8 +99,33 @@ public class DetailsFragment extends Fragment {
         btnImages.setOnClickListener(view ->
                 Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment));
 
+        Button btnShared = binding.btnShare;
+        btnShared.setOnClickListener(v -> {
+            share(screenShot(getView()));
+        });
 
         return binding.getRoot();
+    }
+    // share og screenshot fra
+    // https://stackoverflow.com/questions/30196965/how-to-take-a-screenshot-of-current-activity-and-then-share-it/30212385#answer-30212385
+    private Bitmap screenShot(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    private void share(Bitmap bitmap){
+        String pathofBmp=
+                MediaStore.Images.Media.insertImage(getContext().getContentResolver(),
+                        bitmap,"MinTurassistent", null);
+        Uri uri = Uri.parse(pathofBmp);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/*");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Min Turassistent");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Jeg har delt en tur med deg!");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        getContext().startActivity(Intent.createChooser(shareIntent, "Min Turassistent"));
     }
 
     //Viser en standard AlertDialog.. Tilpasset fra Werners dialogTest
