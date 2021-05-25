@@ -13,18 +13,15 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aphex.minturassistent.Entities.Images;
+import com.aphex.minturassistent.Entities.TripImages;
 import com.aphex.minturassistent.R;
-import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.bumptech.glide.Glide;
 
-public class ImageAdapter extends ListAdapter<Images, ImageViewHolder> {
+public class ImageAdapter extends ListAdapter<TripImages, ImageViewHolder> {
     private LayoutInflater layoutInflater;
-    private ViewModel mViewModel;
     Context context;
 
-
-    public ImageAdapter(Context context, @NonNull DiffUtil.ItemCallback<Images> diffCallback) {
+    public ImageAdapter(Context context, @NonNull DiffUtil.ItemCallback<TripImages> diffCallback) {
         super(diffCallback);
         layoutInflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,7 +52,7 @@ public class ImageAdapter extends ListAdapter<Images, ImageViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        Images current = getItem(position);
+        TripImages current = getItem(position);
         String imageTitle = "Bildetittel: " + current.mTitle;
 
         Glide.with(holder.ivThumb)
@@ -63,17 +60,20 @@ public class ImageAdapter extends ListAdapter<Images, ImageViewHolder> {
                 .thumbnail(0.33f)
                 .centerCrop()
                 .into(holder.ivThumb);
-
-        holder.tvImageTitle.setText(imageTitle);
+        if (current.mTitle == null) {
+            holder.tvImageTitle.setText("Ingen bilder tilhørende denne turen!");
+        } else {
+            holder.tvImageTitle.setText(imageTitle);
+        }
     }
 
-    public static class ImageDiff extends DiffUtil.ItemCallback<Images> {
+    public static class ImageDiff extends DiffUtil.ItemCallback<TripImages> {
         @Override
-        public boolean areItemsTheSame(@NonNull Images oldItem, @NonNull Images newItem) {
+        public boolean areItemsTheSame(@NonNull TripImages oldItem, @NonNull TripImages newItem) {
             return oldItem == newItem;
         }
         @Override
-        public boolean areContentsTheSame(@NonNull Images oldItem, @NonNull Images newItem) {
+        public boolean areContentsTheSame(@NonNull TripImages oldItem, @NonNull TripImages newItem) {
             return true;
         }
     }

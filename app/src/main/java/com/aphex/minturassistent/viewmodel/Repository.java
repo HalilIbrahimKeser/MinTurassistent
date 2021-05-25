@@ -1,16 +1,14 @@
 package com.aphex.minturassistent.viewmodel;
 
 import android.app.Application;
-import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.MetData;
 import com.aphex.minturassistent.Entities.Trip;
-import com.aphex.minturassistent.MainActivity;
+import com.aphex.minturassistent.Entities.TripImages;
 import com.aphex.minturassistent.db.API;
 import com.aphex.minturassistent.db.Dao;
 import com.aphex.minturassistent.db.RoomDatabase;
@@ -35,6 +33,7 @@ public class Repository {
     private final Dao mDao;
     private final LiveData<List<Trip>> mAllTrips;
     public LiveData<List<Trip>> singleTrip;
+    public LiveData<List<TripImages>> singleTripWithImage;
 
     Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
@@ -87,9 +86,13 @@ public class Repository {
             mDao.imageInsert(image);
         });
     }
-
     LiveData<List<Images>> getImage(int mImageID) {
         return mDao.getImage(mImageID);
+    }
+
+    LiveData<List<TripImages>> getTripWithImages(int mTripID) {
+        singleTripWithImage = mDao.getTripWithImages(mTripID);
+        return singleTripWithImage;
     }
 
     //MAPS ------------------------
@@ -118,4 +121,6 @@ public class Repository {
         });
         return metData;
     }
+
+
 }

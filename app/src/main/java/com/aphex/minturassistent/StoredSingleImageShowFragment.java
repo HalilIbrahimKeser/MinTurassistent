@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.aphex.minturassistent.Entities.Images;
+import com.aphex.minturassistent.Entities.TripImages;
 import com.aphex.minturassistent.adapters.ImageAdapter;
 import com.aphex.minturassistent.databinding.FragmentStoredSingleImageShowBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StoredSingleImageShowFragment extends Fragment {
-    private final List<Images> mediaList = new ArrayList<>();
+    private final List<TripImages> mediaList = new ArrayList<>();
     private ViewModel mViewModel;
 
     public StoredSingleImageShowFragment() {
@@ -37,7 +38,7 @@ public class StoredSingleImageShowFragment extends Fragment {
         final ImageAdapter imageAdapter = new ImageAdapter(requireActivity(), new ImageAdapter.ImageDiff());
 
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        mViewModel.getMediaData().observe(getViewLifecycleOwner(), imageAdapter::submitList);
+//        mViewModel.getMediaData().observe(getViewLifecycleOwner(), imageAdapter::submitList);
 
         return binding.getRoot();
     }
@@ -47,7 +48,7 @@ public class StoredSingleImageShowFragment extends Fragment {
         //Må fikses ikke ferdig Halil
         try {
             mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-            mViewModel.mediaData.setValue(mediaList);
+//            mViewModel.mediaData.setValue(mediaList);
 
             //hente imageid
             //mViewModel.getImage(imageID)

@@ -10,8 +10,8 @@ import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.MetData;
 import com.aphex.minturassistent.Entities.Trip;
+import com.aphex.minturassistent.Entities.TripImages;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
@@ -61,6 +61,11 @@ public class ViewModel extends AndroidViewModel {
         return mRepository.getSingleTrip(mTripID);
     }
 
+    //Images
+    public LiveData<List<TripImages>> getTripWithImages(int mTripID) {
+        return mRepository.getTripWithImages(mTripID);
+    }
+
     public void deleteTrip(int mTripID) {
         mRepository.deleteTrip(mTripID);
     }
@@ -96,4 +101,6 @@ public class ViewModel extends AndroidViewModel {
     public MutableLiveData<MetData> downloadMetData(String lat, String lon) {
         return mRepository.downloadMetData(lat, lon);
     }
+
+
 }

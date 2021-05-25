@@ -74,9 +74,12 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
                 dao.locationInsert(location1);
 
                 //Dummy Image
-                Images image1 = new Images("TestBilde1",
-                        "https://image.shutterstock.com/image-photo/beautiful-autumn-scene-hintersee-lake-600w-747646759.jpg");
+                Images image1 = new Images(1,"TestBilde1",
+                        "https://image.shutterstock.com/image-photo/beautiful-autumn-scene-hintersee-lake-600w-747646759.jpg", 68.42580, 17.42666);
+                Images image2 = new Images(1,"TestBilde2",
+                        "https://image.shutterstock.com/image-photo/beautiful-autumn-scene-hintersee-lake-600w-747646759.jpg", 68.42580, 17.42666);
                 dao.imageInsert(image1);
+                dao.imageInsert(image2);
             });
         }
     };
