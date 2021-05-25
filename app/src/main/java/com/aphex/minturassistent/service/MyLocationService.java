@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
@@ -41,6 +42,7 @@ public class MyLocationService extends Service {
     // NB! Bruker repositoryklassen direkte - går ikke via ViewModel.
     private Repository mRepository;
     private FusedLocationProviderClient fusedLocationClient;
+    private int tripID;
 
     @Override
     public void onCreate() {
@@ -81,6 +83,8 @@ public class MyLocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        SharedPreferences prefs = getApplication().getSharedPreferences("tripID", 0);
+        tripID = prefs.getInt("tripID", 0);
         Context context = this.getApplicationContext();
 
         locationCallback = new LocationCallback() {
@@ -98,7 +102,7 @@ public class MyLocationService extends Service {
                     locationBuffer.append(location.getLatitude() + ", " + location.getLongitude() + "\n");
                     previousLocation = location;
 
-                    com.aphex.minturassistent.Entities.Location currentLocation = new com.aphex.minturassistent.Entities.Location(1,location.getLatitude(), location.getLongitude());
+                    com.aphex.minturassistent.Entities.Location currentLocation = new com.aphex.minturassistent.Entities.Location(tripID,location.getLatitude(), location.getLongitude());
                     mRepository.insert(currentLocation);
                 }
 

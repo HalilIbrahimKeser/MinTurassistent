@@ -57,7 +57,7 @@ public interface Dao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void locationInsert(Location location);
 
-    @Query("SELECT * FROM location_table ORDER BY tripID")
+    @Query("SELECT * FROM location_table ORDER BY locTripID")
     LiveData<List<Location>> getLocations();
 
     @Query("DELETE FROM trip_table")
