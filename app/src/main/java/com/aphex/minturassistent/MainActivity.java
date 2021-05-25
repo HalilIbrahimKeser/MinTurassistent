@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +55,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_CHECK_SETTINGS = 10;
+    private static final int CALLBACK_REQUEST_FOREGROUND_SERVICE_PERMISSION = 1;
     private static BottomNavigationView bottomNav;
     private static Toolbar myToolbar;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
@@ -61,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
     //Manifest.permission.WRITE_EXTERNAL_STORAGE, bør fjernes fra ovenfor
+
+    private boolean requestingLocationUpdates = false;
+    private static String[] requiredPermissions = {
+            Manifest.permission.FOREGROUND_SERVICE
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        //Sikrer at servicen stopper når appen avslutter.
+        Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+        stopService(myIntent);
         super.onDestroy();
     }
 
@@ -135,18 +147,18 @@ public class MainActivity extends AppCompatActivity {
                 showWeatherDialog();
                 break;
             case R.id.menu_track:
-                Toast.makeText(this, "Start tracking!", Toast.LENGTH_SHORT).show();
-                //Intent myIntent3 = new Intent(this, MyLocationService.class);
-                //service = startService(myIntent3);
+                Toast.makeText(this, "Starter tracking!", Toast.LENGTH_SHORT).show();
+                //verifyLocationUpdatesRequirements();
+                verifyFineLocationPermissions();
                 break;
             case R.id.menu_stop:
-                Toast.makeText(this, "Stop tracking!", Toast.LENGTH_SHORT).show();
-                //requestingLocationUpdates = false;
-                //Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
-                //stopService(myIntent);
+                Toast.makeText(this, "Stopper tracking!", Toast.LENGTH_SHORT).show();
+                requestingLocationUpdates = false;
+                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+                stopService(myIntent);
                 break;
             case R.id.menu_pause:
-                Toast.makeText(this, "Pause tracking!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Pauser tracking!", Toast.LENGTH_SHORT).show();
                 //requestingLocationUpdates = false;
                 //Intent myIntent1 = new Intent(MainActivity.this, MyLocationService.class);
                 //stopService(myIntent1);
@@ -228,6 +240,72 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+    /**
+     * Sjekker om kravene satt i locationRequest kan oppfylles.
+     * Hvis ikke vises en dialog.
+     *
+     */
+    public void verifyLocationUpdatesRequirements() {
+        final LocationRequest locationRequest = createLocationRequest();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        // NB! Sjekker om kravene satt i locationRequest kan oppfylles:
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // Starter location dervice!
+                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+                startForegroundService(myIntent);
+                requestingLocationUpdates = true;
+            }
+        });
+        task.addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Lokasjopnsinnstillinger er IKKE OK, men det kan fikses ved å vise brukeren en dialog!!
+                    try {
+                        // Viser dialogen ved å kalle startResolutionForResult() OG SJEKKE resultatet i onActivityResult()
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
+    }
+
+    private void verifyFineLocationPermissions() {
+        // Kontrollerer om vi har tilgang til ACCESS_FINE_LOCATION:
+        int locationPermissionFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (locationPermissionFine != PackageManager.PERMISSION_GRANTED) {
+            // Dersom vi ikke har nødvendige tilganger spør bruker om tilgang.
+            // Fortsetter i metoden onRequestPermissionsResult() ...\
+            ActivityCompat.requestPermissions(this, requiredPermissions, CALLBACK_REQUEST_FOREGROUND_SERVICE_PERMISSION);
+        } else {
+            // Fortsetter dersom tilgang gitt fra før:
+            verifyLocationUpdatesRequirements();
+        }
+    }
+    // LocationRequest: Setter krav til posisjoneringa:
+    // Merk: public static, brukes også fra MyLocationService.
+    public static LocationRequest createLocationRequest() {
+        LocationRequest locationRequest = LocationRequest.create();
+        // Hvor ofte ønskes lokasjonsoppdateringer (her: hvert 10.sekund)
+        locationRequest.setInterval(3000);
+        // Her settes intervallet for hvor raskt appen kan håndtere oppdateringer.
+        locationRequest.setFastestInterval(2000);
+        // Ulike verderi; Her: høyest mulig nøyaktighet som også normalt betyr bruk av GPS.
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
+    }
+
     public static void hideBottomNav() {
         bottomNav.setVisibility(View.GONE);
     }
@@ -242,5 +320,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static void showTopNav() {
         myToolbar.setVisibility(View.VISIBLE);
+    }
+
+    public boolean isRequestingLocationUpdates() {
+        return requestingLocationUpdates;
     }
 }

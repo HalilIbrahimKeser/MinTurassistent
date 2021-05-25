@@ -10,10 +10,13 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -34,6 +37,7 @@ import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentTrackTourBinding;
 import com.aphex.minturassistent.db.Dao;
 import com.aphex.minturassistent.db.RoomDatabase;
+import com.aphex.minturassistent.service.MyLocationService;
 import com.aphex.minturassistent.viewmodel.Repository;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -55,7 +59,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.advancedpolyline.MonochromaticPaintList;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -80,9 +86,10 @@ import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
-public class TrackTourFragment extends Fragment {
-    //Trackingen er hentet fra location 4 eksempelet til Werner.
+public class TrackTourFragment extends Fragment implements LocationListener {
+    //Trackingen er basert på location 4 eksempelet til Werner.
     MapView mMapView;
+    private FusedLocationProviderClient fusedLocationClient;
 
     private double startPosLat;
     private double startPosLon;
@@ -93,17 +100,51 @@ public class TrackTourFragment extends Fragment {
     ImageView imgKamera;
     FloatingActionButton btnCamera;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    private Location currentLocation;
+    private MyLocationNewOverlay mLocationOverlay;
+    private LocationManager lm;
 
     public TrackTourFragment() {
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+        if (((MainActivity)getActivity()).isRequestingLocationUpdates()) {
+            ((MainActivity)getActivity()).verifyLocationUpdatesRequirements();
+        }
         MainActivity.showTopNav();
         MainActivity.hideBottomNav();
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        try {
+            //this fails on AVD 19s, even with the appcompat check, says no provided named gps is available
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, this);
+        } catch (Exception ex) {
+        }
+
+        try {
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, this);
+        } catch (Exception ex) {
+        }
+
+        mLocationOverlay.enableFollowLocation();
+        mLocationOverlay.enableMyLocation();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+        try {
+            lm.removeUpdates(this);
+        } catch (Exception ex) {
+        }
+        mLocationOverlay.disableFollowLocation();
+        mLocationOverlay.disableMyLocation();
     }
 
     @Override
@@ -115,20 +156,24 @@ public class TrackTourFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        lm = null;
+        currentLocation = null;
+        mLocationOverlay = null;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         SharedPreferences prefs = requireContext().getSharedPreferences("tripID", 0);
         startPosLat = prefs.getFloat("startgeolat", 0);
         startPosLon = prefs.getFloat("startgeolon", 0);
         stopPosLon = prefs.getFloat("stopgeolon", 0);
         stopPosLat = prefs.getFloat("stopgeolat", 0);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mMapView.onPause();
     }
 
     @Override
@@ -143,10 +188,16 @@ public class TrackTourFragment extends Fragment {
         mMapView.setMaxZoomLevel(21.0);
         mMapView.getController().zoomTo(17.0);
         mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
+
         startMap();
 
-        // Polyline: tegner stien.
+
+        //Polyline: tegner stien.
+        //geoPoint = new GeoPoint(mlat, mlon);
         //mPolyline.addPoint(geoPoint);
+        //mMapView.invalidate();
+
+
         btnCamera = binding.btnCamera;
         btnCamera.setOnClickListener(v -> dispatchTakePictureIntent());
         imgKamera = binding.imgKamera;
@@ -154,13 +205,23 @@ public class TrackTourFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getActivity()), mMapView);
+        mMapView.getOverlays().add(this.mLocationOverlay);
+        mLocationOverlay.enableMyLocation();
+        mLocationOverlay.enableFollowLocation();
+
+    }
+
+    @SuppressLint("MissingPermission")
     private void startMap() {
         GeoPoint geoPointStart = new GeoPoint(startPosLat, startPosLon);
         GeoPoint geoPointStop = new GeoPoint(stopPosLat, stopPosLon);
 
         mMapView.getController().setCenter(geoPointStart);
         mMapView.getController().animateTo(geoPointStart);
-        mMapView.invalidate();
 
         //Markers
         Marker startMarker = new Marker(mMapView);
@@ -216,5 +277,10 @@ public class TrackTourFragment extends Fragment {
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             imgKamera.setImageBitmap(imageBitmap);
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = location;
     }
 }

@@ -70,7 +70,7 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
                 dao.tripInsert(trip4);
 
                 //Dummy Location
-                Location location1 = new Location( 1, 71.33, 54.22,22.22);
+                Location location1 = new Location(1, 71.33, 54.22);
                 dao.locationInsert(location1);
 
                 //Dummy Image

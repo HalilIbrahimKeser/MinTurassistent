@@ -1,6 +1,5 @@
 package com.aphex.minturassistent.service;
 
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,7 +8,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
@@ -22,6 +20,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.aphex.minturassistent.MainActivity;
 import com.aphex.minturassistent.R;
+import com.aphex.minturassistent.viewmodel.Repository;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -36,9 +35,11 @@ public class MyLocationService extends Service {
     private static final int LOCATION_NOTIFICATION_ID = 1010;
     private LocationCallback locationCallback;
     private Location previousLocation=null;
-    private  NotificationManager notificationManager;
+    private NotificationManager notificationManager;
     private String channelId;
 
+    // NB! Bruker repositoryklassen direkte - går ikke via ViewModel.
+    private Repository mRepository;
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -47,6 +48,8 @@ public class MyLocationService extends Service {
         channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
         Notification notification = createNotification("0.0 0.0");
         startForeground(LOCATION_NOTIFICATION_ID, notification);
+        // NB! Bruker repositoryklassen direkte - går ikke via ViewModel.
+        mRepository = new Repository(getApplication());
     }
 
     private Notification createNotification(String notificationText){
@@ -65,7 +68,7 @@ public class MyLocationService extends Service {
         return notification;
     }
 
-    private String createNotificationChannel(NotificationManager notificationManager){
+    private String createNotificationChannel(NotificationManager notificationManager) {
         String channelId = "my_location_channelid";
         String channelName = "MyLocationService";
         NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
@@ -79,8 +82,6 @@ public class MyLocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Context context = this.getApplicationContext();
-        Toast.makeText(context, "Starter service", Toast.LENGTH_SHORT).show();
-        Log.d("MY_SERVICE", "onStartCommand(...)");
 
         locationCallback = new LocationCallback() {
             @Override
@@ -97,6 +98,8 @@ public class MyLocationService extends Service {
                     locationBuffer.append(location.getLatitude() + ", " + location.getLongitude() + "\n");
                     previousLocation = location;
 
+                    com.aphex.minturassistent.Entities.Location currentLocation = new com.aphex.minturassistent.Entities.Location(1,location.getLatitude(), location.getLongitude());
+                    mRepository.insert(currentLocation);
                 }
 
                 // Viser/oppdaterer varsel:
@@ -105,26 +108,14 @@ public class MyLocationService extends Service {
                 mNotificationManager.notify(LOCATION_NOTIFICATION_ID, notification);
 
                 // Sender lokal broadcast:
-                //Intent intent = new Intent(MainActivity.LOCATION_FILTER_STRING);
-                intent.putExtra("LATITUDE", previousLocation.getLatitude());
-                intent.putExtra("LONGITUDE", previousLocation.getLongitude());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
-                SharedPreferences prefs = getSharedPreferences("POSITION", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                prefs.edit().remove("POSITION").apply();
-                editor.putFloat("startgeolat",  (float) previousLocation.getLatitude());
-                editor.putFloat("startgeolon",  (float) previousLocation.getLongitude());
-                editor.apply();
-                editor.commit();
-                editor.commit();
             }
         };
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        //final LocationRequest locationRequest = MainActivity.createLocationRequest();
-        //startLocationUpdates(locationRequest);
+        final LocationRequest locationRequest = MainActivity.createLocationRequest();
+        startLocationUpdates(locationRequest);
 
         //START_STICKY sørger for at onStartCommand() kjører ved omstart (dvs. når service terminerer og starter på nytt ved ressursbehov):
         return Service.START_STICKY;
@@ -132,9 +123,7 @@ public class MyLocationService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d("MY_SERVICE", "onDestroy(...)");
         this.stopLocationUpdates();
-        Toast.makeText(this, "Stopper service", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 

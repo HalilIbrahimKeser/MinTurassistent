@@ -30,13 +30,11 @@ public class Location implements Serializable {
 
     @ColumnInfo(name = "longitude") public double mLongitude;
 
-    @ColumnInfo(name = "altitude") public double mAltitude;
 
-    public Location(int mtripID, double mLatitude, double mLongitude, double mAltitude) {
+    public Location(int mtripID, double mLatitude, double mLongitude) {
         this.mtripID = mtripID;
         this.mLatitude = mLatitude;
         this.mLongitude = mLongitude;
-        this.mAltitude = mAltitude;
     }
 
     public double getmLatitude() {

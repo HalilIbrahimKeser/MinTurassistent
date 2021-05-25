@@ -59,4 +59,5 @@ public interface Dao {
     //MAPS - - - - - - - - - -
     @Query("SELECT * FROM trip_table ORDER BY tripID DESC LIMIT 1")
     LiveData<List<Trip>> getLastTourType();
+
 }
