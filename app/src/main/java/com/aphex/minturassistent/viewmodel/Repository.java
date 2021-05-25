@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.Room;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.MetData;
@@ -54,6 +55,11 @@ public class Repository {
     void tripInsert(Trip trip) {
         RoomDatabase.databaseWriteExecutor.execute(() -> {
             mDao.tripInsert(trip);
+        });
+    }
+    void setComment(int mTripID, String mComment) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.setComment(mTripID, mComment);
         });
     }
 

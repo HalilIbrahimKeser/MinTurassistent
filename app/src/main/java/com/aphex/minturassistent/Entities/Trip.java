@@ -33,11 +33,15 @@ public class Trip implements Serializable {
 
     @ColumnInfo(name = "place") public String mPlace;
 
+    @ColumnInfo(name = "comment") public String mComment;
+
     @Embedded public StartGeo startGeo;
 
     @Embedded public StopGeo stopGeo;
 
-    public Trip( String mTripName, String mDate, int mEstimatedHours, int mEstimatedHDays, Boolean mIsFinished, String mTimeSpent, String mPlace, String mTourType, StartGeo startGeo, StopGeo stopGeo ) {
+    public Trip( String mTripName, String mDate, int mEstimatedHours, int mEstimatedHDays,
+                 Boolean mIsFinished, String mTimeSpent, String mPlace, String mTourType,
+                 StartGeo startGeo, StopGeo stopGeo, String mComment ) {
         this.mTripName = mTripName;
         this.mDate = mDate;
         this.mEstimatedHours = mEstimatedHours;
@@ -48,6 +52,7 @@ public class Trip implements Serializable {
         this.mTourType = mTourType;
         this.startGeo = startGeo;
         this.stopGeo = stopGeo;
+        this.mComment = mComment;
     }
 
     public static class StartGeo {
@@ -129,4 +134,8 @@ public class Trip implements Serializable {
     public void setmTourType(String mTourType) {
         this.mTourType = mTourType;
     }
+
+    public String getmComment() { return mComment; }
+
+    public void setmComment(String mComment) { this.mComment = mComment; }
 }

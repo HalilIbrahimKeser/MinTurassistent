@@ -12,10 +12,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,10 +91,26 @@ public class DetailsFragment extends Fragment {
             binding.tvTourTittel.setText(tripData.get(0).getmTripName());
             binding.tvTimeSpent.setText(tripData.get(0).getmTimeSpent());
             binding.tvTripDate.setText(tripData.get(0).getmDate());
+            binding.tvLocDet.setText(tripData.get(0).getmPlace());
+            binding.etComment.setText(tripData.get(0).getmComment());
             startPoint = new GeoPoint(tripData.get(0).startGeo.latitude, tripData.get(0).startGeo.longitude);
             stopPoint = new GeoPoint(tripData.get(0).stopGeo.latitude1, tripData.get(0).stopGeo.longitude1);
             mapWorks();
         });
+        binding.etComment.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    String comment = binding.etComment.getText().toString();
+                    mViewModel.setComment(mTripID,comment);
+
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+
         Button btnDelete = binding.btnDeleteTrip;
         btnDelete.setOnClickListener(this::onDeleteTripButton);
 

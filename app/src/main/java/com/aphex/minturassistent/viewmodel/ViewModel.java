@@ -38,6 +38,9 @@ public class ViewModel extends AndroidViewModel {
         mRepository.tripInsert(trip);
     }
 
+    public void setComment(int mTripID, String mComment) {
+        mRepository.setComment(mTripID, mComment);
+    }
     public MutableLiveData<Trip> getCurrentTrip() {
         if (mCurrentTrip == null) {
             mCurrentTrip = new MutableLiveData<>();

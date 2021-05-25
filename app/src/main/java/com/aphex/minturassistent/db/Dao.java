@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Location;
@@ -37,6 +38,8 @@ public interface Dao {
     @Query("SELECT * FROM trip_table LEFT JOIN image_table ON  tripID = FKtripID  WHERE tripID = :mTripID")
     LiveData<List<TripImages>> getTripWithImages(int mTripID);
 
+    @Query("UPDATE trip_table SET comment=:mComment WHERE tripID =:mTripID")
+    void setComment(int mTripID, String mComment);
 
     //IMAGE - - - - - - - - - - - - - - - - - - - - -  -
     @Insert(onConflict = OnConflictStrategy.IGNORE)

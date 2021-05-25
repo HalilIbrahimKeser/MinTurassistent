@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".DetailsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,6 +28,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTourTittel">
+
         </org.osmdroid.views.MapView>
 
         <TextView
@@ -42,9 +43,10 @@
             android:id="@+id/textView11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="@string/dato"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tvTripDate"
-            app:layout_constraintStart_toStartOf="@+id/textView10" />
+            app:layout_constraintStart_toStartOf="@+id/textView10"
+            app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
         <TextView
             android:id="@+id/tvTimeSpent"
@@ -59,29 +61,28 @@
             android:id="@+id/tvTripDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="@+id/tvTimeSpent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTimeSpent" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView11"
+            app:layout_constraintStart_toStartOf="@+id/tvTimeSpent" />
 
         <Button
             android:id="@+id/btnDeleteTrip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="8dp"
             android:backgroundTint="@color/title_text"
             android:text="@string/slett_tur"
-            app:layout_constraintStart_toStartOf="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+            app:layout_constraintStart_toStartOf="@+id/etComment"
+            app:layout_constraintTop_toBottomOf="@+id/etComment" />
 
         <Button
             android:id="@+id/btnShare"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginEnd="24dp"
             android:background="@drawable/icon_share"
             android:backgroundTint="@color/title_text"
-            app:layout_constraintBaseline_toBaselineOf="@+id/btnDeleteTrip"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/etComment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/etComment" />
 
         <Button
             android:id="@+id/btnImages"
@@ -93,6 +94,34 @@
             app:layout_constraintStart_toStartOf="@+id/btnDeleteTrip"
             app:layout_constraintTop_toBottomOf="@+id/btnDeleteTrip"
             app:layout_constraintVertical_bias="0.0" />
+
+        <EditText
+            android:id="@+id/etComment"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:imeOptions="actionSend"
+            android:hint="@string/skriv_en_kommentar_her"
+            android:inputType="textPersonName"
+            app:layout_constraintStart_toStartOf="@+id/tvLoc"
+            app:layout_constraintTop_toBottomOf="@+id/tvLoc" />
+
+        <TextView
+            android:id="@+id/tvLoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="lokasjon"
+            app:layout_constraintStart_toStartOf="@+id/textView11"
+            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+        <TextView
+            android:id="@+id/tvLocDet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvLoc"
+            app:layout_constraintStart_toStartOf="@+id/tvTripDate" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+</ScrollView>
