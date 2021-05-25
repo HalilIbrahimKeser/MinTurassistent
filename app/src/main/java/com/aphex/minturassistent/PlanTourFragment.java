@@ -63,8 +63,6 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     MapView mMapView;
     MyLocationNewOverlay mLocationOverlay;
-    android.location.Location mLocation = null;
-    Location mLastLocation; //endret denne til Entity Location
     MapEventsOverlay mMapEventsOverlay;
     GeoPoint clickLocation;
     Road road;
@@ -76,12 +74,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     private FusedLocationProviderClient fusedLocationClient;
 
     String tourType;
-    private double startPosLat;
-    private double startPosLon;
-    private double stopPosLat;
-    private double stopPosLon;
-    Trip currentTrip;
-
+    private double startPosLat, startPosLon, stopPosLat, stopPosLon;
     GeoPoint startLocation;
 
     public PlanTourFragment() {
@@ -106,6 +99,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         mMapView.onResume();
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -116,17 +110,25 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
             tourType = trip.get(0).mTourType;
         });
 
-        Toast.makeText(getContext(), "Velg rute så lagre", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Velg rute, så lagre", Toast.LENGTH_SHORT).show();
 
         mMapView = binding.map;
         buttonPop = binding.buttonPopupMenu;
         btSaveTour = binding.btSaveTour;
 
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(requireActivity(), location -> {
+                    if (location != null) {
+                        startLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                        mMapView.getController().animateTo(startLocation);
+                    }
+                });
+
         btSaveTour.setOnClickListener(v -> {
             Trip tempTrip = viewModel.getCurrentTrip().getValue();
             assert tempTrip != null;
             if (tempTrip.getmTripID() == 0) {
-                @SuppressLint("DefaultLocale") String str = String.format("%.2f", startPosLat) + ", " + String.format("%.2f", startPosLon);
+                @SuppressLint("DefaultLocale") String str = String.format("%.2f", startLocation.getLatitude()) + ", " + String.format("%.2f", startLocation.getLongitude());
                 tempTrip.setmPlace(str);
                 updateStartStopGeo(tempTrip);
                 Toast.makeText(getContext(), "Tur lagret", Toast.LENGTH_SHORT).show();
@@ -146,31 +148,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
         mMapView.getController().zoomTo(18.0);
         mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
 
-        SharedPreferences prefs = requireContext().getSharedPreferences("POSITION", 0);
-        if (prefs.getFloat("startgeolat", 0) != 0) {
-            startPosLat = prefs.getFloat("startgeolat", 0);
-            startPosLon = prefs.getFloat("startgeolon", 0);
-            startLocation = new GeoPoint(startPosLat, startPosLon);
-            mMapView.getController().animateTo(startLocation); ///halil
-        } else if (mLocationOverlay.getMyLocation() != null) {
-            mMapView.getController().animateTo(mLocationOverlay.getMyLocation());
-        } else {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(requireActivity(), location -> {
-                            if (location != null) {
-                                mLocation = location;
-                                startPosLat = location.getLatitude();
-                                startPosLon = location.getLongitude();
-                                startLocation = new GeoPoint(startPosLat, startPosLon);
-                                mMapView.getController().animateTo(startLocation);
-                            }
-                        });
-            }
-        }
         mMapView.getOverlays().add(mLocationOverlay);
-
         mCompassOverlay = new CompassOverlay(inflater.getContext(),
                 new InternalCompassOrientationProvider(inflater.getContext()), mMapView);
         mCompassOverlay.enableCompass();

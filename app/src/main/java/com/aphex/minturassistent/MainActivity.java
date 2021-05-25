@@ -1,11 +1,8 @@
 package com.aphex.minturassistent;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -15,34 +12,25 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.aphex.minturassistent.Entities.Location;
-import com.aphex.minturassistent.Entities.MetData;
-import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.ActivityMainBinding;
 import com.aphex.minturassistent.service.MyLocationService;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -53,62 +41,29 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.osmdroid.util.GeoPoint;
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    ViewModel mViewModel;
-    Location mLastLocation;
-    android.location.Location location;
-    private double startPosLat;
-    private double startPosLon;
-    private ComponentName service;
-    private boolean requestingLocationUpdates = false;
+    ActivityMainBinding binding;
+    private static final int REQUEST_CHECK_SETTINGS = 10;
+    private static final int CALLBACK_REQUEST_FOREGROUND_SERVICE_PERMISSION = 1;
     private static BottomNavigationView bottomNav;
     private static Toolbar myToolbar;
-    private static final int REQUEST_CHECK_SETTINGS = 10;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
     //Manifest.permission.WRITE_EXTERNAL_STORAGE, bør fjernes fra ovenfor
 
-    MetData.Properties.Timeseries.Data.Instant.Details details;
-    MetData.Properties.Timeseries.Data.Next12hours.Summary summary;
+    private boolean requestingLocationUpdates = false;
+    private static String[] requiredPermissions = {
+            Manifest.permission.FOREGROUND_SERVICE
+    };
+    private ViewModel mViewModel;
 
-    ActivityMainBinding binding;
-
-    private class MyLocationReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            double latitude = intent.getDoubleExtra("LATITUDE", 0);
-            double longitude = intent.getDoubleExtra("LONGITUDE", 0);
-            if (latitude != 0) {
-                startPosLat = latitude;
-                startPosLon = longitude;
-                mLastLocation.setmLatitude(latitude);
-                mLastLocation.setmLongitude(longitude);
-                mViewModel.getLastLocation().setValue(mLastLocation);
-            } else {
-                SharedPreferences prefs = getSharedPreferences("POSITION", Context.MODE_PRIVATE);
-                startPosLat = prefs.getFloat("startgeolat", 0);
-                startPosLon = prefs.getFloat("startgeolon", 0);
-                mLastLocation.setmLatitude(startPosLat);
-                mLastLocation.setmLongitude(startPosLon);
-                mViewModel.getLastLocation().setValue(mLastLocation);
-            }
-        }
-    }
-
-    private MyLocationReceiver myLocationReceiver = new MyLocationReceiver();
-
-    public final static String LOCATION_FILTER_STRING = "com.wfamedia.location2.MY_LOCATION_RECEIVER";
-    private IntentFilter myBroadcastFilter = new IntentFilter(LOCATION_FILTER_STRING);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,16 +74,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         checkPermissions();
-
-        mViewModel = new ViewModelProvider(this).get(ViewModel.class);
-
-//        mViewModel.getLastLocation().observe(this, lastLocationData -> {
-//            if (lastLocationData != null) {
-//                double mLatitude = lastLocationData.mLatitude;
-//                double mLongitude = lastLocationData.mLongitude;
-//                mLastLocation = lastLocationData;
-//            }
-//        });
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
@@ -147,28 +92,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent myIntent = new Intent(this, MyLocationService.class);
-        service = startService(myIntent);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(myLocationReceiver, myBroadcastFilter);
-        if (this.requestingLocationUpdates) {
-            verifyFineLocationPermissions();
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (myLocationReceiver!=null)
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(myLocationReceiver);
     }
 
     @Override
     protected void onDestroy() {
+        //Sikrer at servicen stopper når appen avslutter.
         Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
         stopService(myIntent);
         super.onDestroy();
@@ -177,24 +115,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        stopService(new Intent(this, MyLocationService.class));
     }
 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean("requestingLocationUpdates", requestingLocationUpdates);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.keySet().contains("requestingLocationUpdates")) {
-            this.requestingLocationUpdates = savedInstanceState.getBoolean("requestingLocationUpdates");
-        } else {
-            this.requestingLocationUpdates = false;
-        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -210,45 +141,24 @@ public class MainActivity extends AppCompatActivity {
                 showWeatherDialog(this);
                 break;
             case R.id.menu_track:
-                Toast.makeText(this, "Start tracking!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Starter tracking!", Toast.LENGTH_SHORT).show();
+                //verifyLocationUpdatesRequirements();
                 verifyFineLocationPermissions();
-                Intent myIntent3 = new Intent(this, MyLocationService.class);
-                service = startService(myIntent3);
                 break;
             case R.id.menu_stop:
-                Toast.makeText(this, "Stop tracking!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Stopper tracking!", Toast.LENGTH_SHORT).show();
                 requestingLocationUpdates = false;
                 Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
                 stopService(myIntent);
                 break;
             case R.id.menu_pause:
-                Toast.makeText(this, "Pause tracking!", Toast.LENGTH_SHORT).show();
-                requestingLocationUpdates = false;
-                Intent myIntent1 = new Intent(MainActivity.this, MyLocationService.class);
-                stopService(myIntent1);
+                Toast.makeText(this, "Pauser tracking!", Toast.LENGTH_SHORT).show();
+                //requestingLocationUpdates = false;
+                //Intent myIntent1 = new Intent(MainActivity.this, MyLocationService.class);
+                //stopService(myIntent1);
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void verifyFineLocationPermissions() {
-        int locationPermissionFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (locationPermissionFine != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, REQUIRED_SDK_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS);
-        } else {
-            verifyLocationUpdatesRequirements();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            //Kalles når bruker har akseptert og gitt tillatelse til bruk av posisjon:
-            case REQUEST_CHECK_SETTINGS:
-                verifyFineLocationPermissions();
-                return;
-        }
     }
 
     protected void checkPermissions() {
@@ -350,6 +260,72 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sjekker om kravene satt i locationRequest kan oppfylles.
+     * Hvis ikke vises en dialog.
+     *
+     */
+    public void verifyLocationUpdatesRequirements() {
+        final LocationRequest locationRequest = createLocationRequest();
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        // NB! Sjekker om kravene satt i locationRequest kan oppfylles:
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // Starter location dervice!
+                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+                startForegroundService(myIntent);
+                requestingLocationUpdates = true;
+            }
+        });
+        task.addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Lokasjopnsinnstillinger er IKKE OK, men det kan fikses ved å vise brukeren en dialog!!
+                    try {
+                        // Viser dialogen ved å kalle startResolutionForResult() OG SJEKKE resultatet i onActivityResult()
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
+    }
+
+    private void verifyFineLocationPermissions() {
+        // Kontrollerer om vi har tilgang til ACCESS_FINE_LOCATION:
+        int locationPermissionFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (locationPermissionFine != PackageManager.PERMISSION_GRANTED) {
+            // Dersom vi ikke har nødvendige tilganger spør bruker om tilgang.
+            // Fortsetter i metoden onRequestPermissionsResult() ...\
+            ActivityCompat.requestPermissions(this, requiredPermissions, CALLBACK_REQUEST_FOREGROUND_SERVICE_PERMISSION);
+        } else {
+            // Fortsetter dersom tilgang gitt fra før:
+            verifyLocationUpdatesRequirements();
+        }
+    }
+    // LocationRequest: Setter krav til posisjoneringa:
+    // Merk: public static, brukes også fra MyLocationService.
+    public static LocationRequest createLocationRequest() {
+        LocationRequest locationRequest = LocationRequest.create();
+        // Hvor ofte ønskes lokasjonsoppdateringer (her: hvert 10.sekund)
+        locationRequest.setInterval(3000);
+        // Her settes intervallet for hvor raskt appen kan håndtere oppdateringer.
+        locationRequest.setFastestInterval(2000);
+        // Ulike verderi; Her: høyest mulig nøyaktighet som også normalt betyr bruk av GPS.
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
+    }
+
     public static void hideBottomNav() {
         bottomNav.setVisibility(View.GONE);
     }
@@ -366,42 +342,7 @@ public class MainActivity extends AppCompatActivity {
         myToolbar.setVisibility(View.VISIBLE);
     }
 
-    private void verifyLocationUpdatesRequirements() {
-        final LocationRequest locationRequest = createLocationRequest();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
-
-        SettingsClient client = LocationServices.getSettingsClient(this);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
-                startForegroundService(myIntent);
-                requestingLocationUpdates = true;
-            }
-        });
-        task.addOnFailureListener(this, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    try {
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
-                }
-            }
-        });
-    }
-
-    public static LocationRequest createLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(2000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
+    public boolean isRequestingLocationUpdates() {
+        return requestingLocationUpdates;
     }
 }

@@ -1,29 +1,28 @@
 package com.aphex.minturassistent;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
-import com.aphex.minturassistent.Entities.Images;
-import com.aphex.minturassistent.Entities.TripImages;
-import com.aphex.minturassistent.adapters.ImageAdapter;
 import com.aphex.minturassistent.databinding.FragmentStoredSingleImageShowBinding;
-import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.bumptech.glide.Glide;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class StoredSingleImageShowFragment extends Fragment {
-    private final List<TripImages> mediaList = new ArrayList<>();
-    private ViewModel mViewModel;
 
     public StoredSingleImageShowFragment() {
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity.hideTopNav();
     }
 
     @Override
@@ -35,28 +34,18 @@ public class StoredSingleImageShowFragment extends Fragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         FragmentStoredSingleImageShowBinding binding = FragmentStoredSingleImageShowBinding.inflate(inflater, container, false);
-        final ImageAdapter imageAdapter = new ImageAdapter(requireActivity(), new ImageAdapter.ImageDiff());
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-//        mViewModel.getMediaData().observe(getViewLifecycleOwner(), imageAdapter::submitList);
+        SharedPreferences prefs = getContext().getSharedPreferences("tripImage", 0);
+        String mImageURI = prefs.getString("imgUrl", "0");
+
+        Glide.with(binding.imSinglePhotoShow)
+                .load(mImageURI)
+                .thumbnail(0.33f)
+                .centerCrop()
+                .into(binding.imSinglePhotoShow);
+
+        binding.btnBack.setOnClickListener(v -> Navigation.findNavController(getView()).navigate(R.id.storedImagesFragment));
 
         return binding.getRoot();
-    }
-
-
-    private void getImageToShow() {
-        //Må fikses ikke ferdig Halil
-        try {
-            mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-//            mViewModel.mediaData.setValue(mediaList);
-
-            //hente imageid
-            //mViewModel.getImage(imageID)
-            //sette image på imSinglePhotoShow
-            //Denne må muligens gjøres via en adapter
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

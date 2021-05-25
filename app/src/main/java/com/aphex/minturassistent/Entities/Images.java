@@ -12,7 +12,7 @@ import java.io.Serializable;
 import static androidx.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "image_table",
-        indices = {@Index("imageID")},
+        indices = {@Index("FKtripID")},
         foreignKeys = {@ForeignKey(entity = Trip.class,
                 parentColumns = "tripID",
                 childColumns = "FKtripID",

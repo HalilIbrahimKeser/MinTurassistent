@@ -12,11 +12,14 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -37,6 +40,7 @@ import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentTrackTourBinding;
 import com.aphex.minturassistent.db.Dao;
 import com.aphex.minturassistent.db.RoomDatabase;
+import com.aphex.minturassistent.service.MyLocationService;
 import com.aphex.minturassistent.viewmodel.Repository;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -58,7 +62,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.advancedpolyline.MonochromaticPaintList;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -84,41 +90,65 @@ import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
-public class TrackTourFragment extends Fragment {
-    //Trackingen er hentet fra location 4 eksempelet til Werner.
+public class TrackTourFragment extends Fragment implements LocationListener {
+    //Trackingen er basert på location 4 eksempelet til Werner.
     MapView mMapView;
-    MyLocationNewOverlay mLocationOverlay;
-    GeoPoint geoPoint;
-
-    ViewModel viewModel;
-    android.location.Location mLocation = null;
-    com.aphex.minturassistent.Entities.Location mLastLocation;
+    private FusedLocationProviderClient fusedLocationClient;
 
     private double startPosLat;
     private double startPosLon;
     private double stopPosLat;
     private double stopPosLon;
-    private static final int REQUEST_CHECK_SETTINGS = 10;
-    private Location previousLocation = null;
-    private LocationCallback locationCallback;
-    private FusedLocationProviderClient fusedLocationClient;
     private Polyline mPolyline;
 
     ImageView imgKamera;
     FloatingActionButton btnCamera;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    private Location currentLocation;
+    private MyLocationNewOverlay mLocationOverlay;
+    private LocationManager lm;
 
     public TrackTourFragment() {
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+        if (((MainActivity)getActivity()).isRequestingLocationUpdates()) {
+            ((MainActivity)getActivity()).verifyLocationUpdatesRequirements();
+        }
         MainActivity.showTopNav();
         MainActivity.hideBottomNav();
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        
+
+        lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        try {
+            //this fails on AVD 19s, even with the appcompat check, says no provided named gps is available
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, this);
+        } catch (Exception ex) {
+        }
+
+        try {
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, this);
+        } catch (Exception ex) {
+        }
+
+        mLocationOverlay.enableFollowLocation();
+        mLocationOverlay.enableMyLocation();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+        try {
+            lm.removeUpdates(this);
+        } catch (Exception ex) {
+        }
+        mLocationOverlay.disableFollowLocation();
+        mLocationOverlay.disableMyLocation();
     }
 
     @Override
@@ -130,49 +160,24 @@ public class TrackTourFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        lm = null;
+        currentLocation = null;
+        mLocationOverlay = null;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         SharedPreferences prefs = requireContext().getSharedPreferences("tripID", 0);
-        int mTripID = prefs.getInt("tripID", -1);
         startPosLat = prefs.getFloat("startgeolat", 0);
         startPosLon = prefs.getFloat("startgeolon", 0);
         stopPosLon = prefs.getFloat("stopgeolon", 0);
         stopPosLat = prefs.getFloat("stopgeolat", 0);
-
-        Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(requireActivity()));
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NotNull LocationResult locationResult) {
-                StringBuilder locationBuffer = new StringBuilder();
-                for (Location location : locationResult.getLocations()) {
-                    // Beregner avstand fra forrige veipunkt:
-                    if (previousLocation == null)
-                        previousLocation = location;
-                    float distance = previousLocation.distanceTo(location);
-                    Log.d("MY-LOCATION-DISTANCE", String.valueOf(distance));
-                    Log.d("MY-LOCATION", location.toString());
-                    if (distance > 50) {
-                        Log.d("MY-LOCATION", "MER ENN 50 METER!!");
-                    }
-                    previousLocation = location;
-
-                    locationBuffer.append(location.getLatitude()).append(", ").append(location.getLongitude()).append("\n");
-                    geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    mMapView.getController().setCenter(geoPoint);
-                    mPolyline.addPoint(geoPoint);
-                    mMapView.invalidate();
-                }
-            }
-        };
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mMapView.onPause();
     }
 
     @Override
@@ -182,28 +187,21 @@ public class TrackTourFragment extends Fragment {
         mMapView = binding.trackmap;
 
         mMapView.setMultiTouchControls(true);
-        getLastKnownLocation();
-        mLocationOverlay = new MyLocationNewOverlay(
-                new GpsMyLocationProvider(inflater.getContext()), mMapView);
-        mLocationOverlay.enableMyLocation();
-
-//        mLastLocation = viewModel.getLastLocation().getValue();
-
-        if (mLastLocation != null) {
-            startPosLat = mLastLocation.getmLatitude();
-            startPosLon = mLastLocation.getmLongitude();
-        }
-        GeoPoint startLocation = new GeoPoint(startPosLat, startPosLon);
-        mMapView.getController().animateTo(startLocation);
 
         mMapView.setMinZoomLevel(3.0);
         mMapView.setMaxZoomLevel(21.0);
-        mMapView.getController().zoomTo(20.0);
+        mMapView.getController().zoomTo(17.0);
         mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
+
         startMap();
 
-        // Polyline: tegner stien.
+
+        //Polyline: tegner stien.
+        //geoPoint = new GeoPoint(mlat, mlon);
         //mPolyline.addPoint(geoPoint);
+        //mMapView.invalidate();
+
+
         btnCamera = binding.btnCamera;
         btnCamera.setOnClickListener(v -> dispatchTakePictureIntent());
         imgKamera = binding.imgKamera;
@@ -211,9 +209,24 @@ public class TrackTourFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getActivity()), mMapView);
+        mMapView.getOverlays().add(this.mLocationOverlay);
+        mLocationOverlay.enableMyLocation();
+        mLocationOverlay.enableFollowLocation();
+
+    }
+
+    @SuppressLint("MissingPermission")
     private void startMap() {
         GeoPoint geoPointStart = new GeoPoint(startPosLat, startPosLon);
         GeoPoint geoPointStop = new GeoPoint(stopPosLat, stopPosLon);
+
+        mMapView.getController().setCenter(geoPointStart);
+        mMapView.getController().animateTo(geoPointStart);
+
         //Markers
         Marker startMarker = new Marker(mMapView);
         startMarker.setPosition(geoPointStart);
@@ -251,58 +264,6 @@ public class TrackTourFragment extends Fragment {
         mMapView.getOverlays().add(mPolyline);
     }
 
-    private void stopTracking() {
-    }
-
-    private void startLocationUpdates() {
-        LocationRequest locationRequest = this.createLocationRequest();
-        if (ActivityCompat.checkSelfPermission(requireActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireActivity(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            this.fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-            boolean requestingLocationUpdates = true;
-        }
-    }
-
-    // LocationRequest: Setter krav til posisjoneringa:
-    public LocationRequest createLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(3000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
-    }
-
-    public void initLocationUpdates() {
-        final LocationRequest locationRequest = this.createLocationRequest();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
-
-        SettingsClient client = LocationServices.getSettingsClient(requireActivity());
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(requireActivity(), new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                startLocationUpdates();
-            }
-        });
-        task.addOnFailureListener(requireActivity(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    try {
-                        // Viser dialogen ved å kalle startResolutionForResult() OG SJEKKE resultatet i onActivityResult()
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(requireActivity(), REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
-                }
-            }
-        });
-    }
-
     private void dispatchTakePictureIntent() {
         //https://developer.android.com/training/camera/photobasics
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -322,16 +283,8 @@ public class TrackTourFragment extends Fragment {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private void getLastKnownLocation() {
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(requireActivity(), location -> {
-                    // Got last known location. In some rare situations this can be null.
-                    if (location != null) {
-                        mLocation = location;
-                        // Logic to handle location object
-                        Log.d("MY-LOCATION", "SIST KJENTE POSISJON: " + location.toString());
-                    }
-                });
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = location;
     }
 }
