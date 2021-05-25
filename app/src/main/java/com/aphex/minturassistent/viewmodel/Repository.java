@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.MetData;
+import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.Entities.TripImages;
 import com.aphex.minturassistent.db.API;
@@ -35,7 +36,7 @@ public class Repository {
     public LiveData<List<Trip>> singleTrip;
     public LiveData<List<TripImages>> singleTripWithImage;
 
-    Repository(Application application) {
+    public Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
         mDao = db.Dao();
         metData = new MutableLiveData<>();
@@ -86,6 +87,7 @@ public class Repository {
             mDao.imageInsert(image);
         });
     }
+
     LiveData<List<Images>> getImage(int mImageID) {
         return mDao.getImage(mImageID);
     }
@@ -98,6 +100,13 @@ public class Repository {
     //MAPS ------------------------
     LiveData<List<Trip>> getLastTourType() {
         return mDao.getLastTourType();
+    }
+
+    //LOCATION
+    public void insert(Location myLocation) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.locationInsert(myLocation);
+        });
     }
 
     //METDATA -----------------------------------------
