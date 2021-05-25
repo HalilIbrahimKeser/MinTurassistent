@@ -1,49 +1,36 @@
 package com.aphex.minturassistent;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.aphex.minturassistent.Entities.Location;
-import com.aphex.minturassistent.Entities.MetData;
-import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.ActivityMainBinding;
 import com.aphex.minturassistent.service.MyLocationService;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -54,9 +41,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.osmdroid.util.GeoPoint;
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private static String[] requiredPermissions = {
             Manifest.permission.FOREGROUND_SERVICE
     };
+    private ViewModel mViewModel;
 
 
     @Override
@@ -153,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.menu_weather:
-                showWeatherDialog();
+                showWeatherDialog(this);
                 break;
             case R.id.menu_track:
                 Toast.makeText(this, "Starter tracking!", Toast.LENGTH_SHORT).show();
