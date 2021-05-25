@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,8 +76,12 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
     //Manifest.permission.WRITE_EXTERNAL_STORAGE, bør fjernes fra ovenfor
+
     MetData.Properties.Timeseries.Data.Instant.Details details;
     MetData.Properties.Timeseries.Data.Next12hours.Summary summary;
+
+    ActivityMainBinding binding;
+
     private class MyLocationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -109,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        ActivityMainBinding binding = ActivityMainBinding.inflate(layoutInflater);
+        binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.getRoot());
 
         checkPermissions();
@@ -298,11 +303,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showWeatherDialog(Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat_DayNight_Dialog);
-        View view = LayoutInflater.from(MainActivity.this).inflate(
-                R.layout.weather_dialog, (ConstraintLayout) findViewById(R.id.weatherDialog)
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat);
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.weather_dialog, (ConstraintLayout) findViewById(R.id.weatherDialog)
         );
         builder.setView(view);
+
+        final AlertDialog alertDialog = builder.create();
 
         int mTripID;
         float startLat;
@@ -315,28 +322,26 @@ public class MainActivity extends AppCompatActivity {
         String lon = String.valueOf(startLon);
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
         mViewModel.downloadMetData(lat, lon).observe(this, MetData -> {
-            double testTemp = details.getAirTempValue();
-            double testTemp2 = details.getAir_temperature();
-            String testSymbol1 = summary.getSymbolValue();
-            String testSymbol2 = summary.getSymbol_code();
+            double testTemp = MetData.properties.timeseries[0].data.instant.details.air_temperature;
+            String testSymbol = MetData.properties.timeseries[0].data.next_12_hours.summary.symbol_code;
 
 
         ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding:");
-        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(getResources().getIdentifier(testSymbol1, "drawable", getPackageName()));
-        ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp:" + String.valueOf(testTemp) + "ºC");
+        ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(getResources().getIdentifier(testSymbol, "drawable", getPackageName()));
+        ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp: " + String.valueOf(testTemp) + "ºC");
 
-        final AlertDialog alertDialog = builder.create();
-        view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener() {
+
+        view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener()  {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
             }
         });
-
         if(alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
-        alertDialog.show();
+
+            alertDialog.show();
         });
     }
 

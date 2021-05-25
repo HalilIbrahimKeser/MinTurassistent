@@ -144,7 +144,6 @@ public final class MetData {
                         public final double relative_humidity;
                         public final double wind_from_direction;
                         public final double wind_speed;
-                        public double airTempValue;
 
                         public Details(double air_pressure_at_sea_level, double air_temperature, double cloud_area_fraction, double relative_humidity, double wind_from_direction, double wind_speed) {
                             this.air_pressure_at_sea_level = air_pressure_at_sea_level;
@@ -175,16 +174,9 @@ public final class MetData {
                             return wind_speed;
                         }
 
-
                         public double getAir_temperature() {
                             return air_temperature;
                         }
-
-                        public double getAirTempValue() {
-                            airTempValue = getAir_temperature();
-                            return airTempValue;
-                        }
-
                     }
                 }
 
@@ -201,17 +193,12 @@ public final class MetData {
 
                     public static final class Summary {
                         public final String symbol_code;
-                        public String symbol;
 
                         public String getSymbol_code() {
                             return symbol_code;
                         }
                         public Summary(String symbol_code) {
                             this.symbol_code = symbol_code;
-                        }
-                        public String getSymbolValue() {
-                            symbol = getSymbol_code();
-                            return symbol;
                         }
                     }
                 }

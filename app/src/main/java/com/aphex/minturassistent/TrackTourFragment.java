@@ -118,6 +118,7 @@ public class TrackTourFragment extends Fragment {
         MainActivity.showTopNav();
         MainActivity.hideBottomNav();
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        
     }
 
     @Override

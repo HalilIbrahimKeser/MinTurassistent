@@ -107,7 +107,7 @@ public class Repository {
             public void onResponse(@NotNull Call<MetData> call, @NotNull Response<MetData> response) {
                 if(response.isSuccessful()) {
                     MetData data = response.body();
-                    metData.setValue(data);
+                    metData.postValue(data);
                 } else {
                     int statuscode = response.code();
                 }
