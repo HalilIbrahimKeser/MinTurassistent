@@ -1,7 +1,6 @@
 package com.aphex.minturassistent;
 
 import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -86,7 +85,6 @@ public class TrackTourFragment extends Fragment {
     public TrackTourFragment() {
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onResume() {
         super.onResume();
@@ -236,16 +234,6 @@ public class TrackTourFragment extends Fragment {
         mMapView.getOverlays().add(stopMarker);
         stopMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
         stopMarker.setTitle("Stop point");
-    }
-
-    private void dispatchTakePictureIntent() {
-        //https://developer.android.com/training/camera/photobasics
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            // display error state to the user
-        }
     }
 
     @Override

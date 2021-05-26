@@ -108,8 +108,8 @@ public class MyLocationService extends Service {
                     SharedPreferences prefs = getApplication().getSharedPreferences("positionForImage", 0);
                     SharedPreferences.Editor editor = prefs.edit();
                     prefs.edit().remove("positionForImage").apply();
-                    editor.putFloat("lat", (float) previousLocation.getLatitude());
-                    editor.putFloat("lon", (float) previousLocation.getLongitude());
+                    editor.putFloat("lat", (float) location.getLatitude());
+                    editor.putFloat("lon", (float) location.getLongitude());
                     editor.apply();
                 }
 
