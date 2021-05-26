@@ -105,11 +105,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+        // Ved skjermrotasjon må vi starte servicen på nytt (siden vi stopper servicen i onDestroy()):
+        if (this.requestingLocationUpdates) {
+            verifyFineLocationPermissions();
+        }
     }
 
     @Override
@@ -128,12 +127,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("requestingLocationUpdates", requestingLocationUpdates);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.keySet().contains("requestingLocationUpdates")) {
+            this.requestingLocationUpdates = savedInstanceState.getBoolean("requestingLocationUpdates");
+        } else {
+            this.requestingLocationUpdates = false;
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
