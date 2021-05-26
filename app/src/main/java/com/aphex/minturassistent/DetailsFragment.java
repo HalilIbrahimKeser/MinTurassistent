@@ -50,7 +50,6 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 public class DetailsFragment extends Fragment {
     private ViewModel mViewModel;
     public int mTripID;
-    File imagePath;
     FragmentDetailsBinding binding;
     MapView mMapView;
     private GeoPoint startPoint;
