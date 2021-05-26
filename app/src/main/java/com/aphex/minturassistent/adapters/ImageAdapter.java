@@ -71,7 +71,8 @@ public class ImageAdapter extends ListAdapter<TripImages, ImageViewHolder> {
             holder.tvImageDate.setText(R.string.str_IngenBilder1);
         } else {
             holder.tvImageTitle.setText(imageTitle);
-            holder.tvImageDate.setText(current.mDate);
+//            holder.tvImageDate.setText(current.mDate);
+            holder.tvImageDate.setText(current.mImageURI);
         }
     }
 

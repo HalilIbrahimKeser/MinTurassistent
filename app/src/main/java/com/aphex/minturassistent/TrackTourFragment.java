@@ -2,12 +2,10 @@ package com.aphex.minturassistent;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -54,6 +52,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -94,6 +93,8 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     private LocationManager lm;
     private List<Images> mediaList = new ArrayList<Images>();
     private File photoFile = null;
+
+    FragmentTrackTourBinding binding;
 
     public TrackTourFragment() {
     }
@@ -186,7 +187,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FragmentTrackTourBinding binding = FragmentTrackTourBinding.inflate(inflater, container, false);
+        binding = FragmentTrackTourBinding.inflate(inflater, container, false);
 
         mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
 
@@ -203,19 +204,58 @@ public class TrackTourFragment extends Fragment implements LocationListener {
 
         startMap();
 
-//        parseAllImages();
-
         //Polyline: tegner stien.
         //geoPoint = new GeoPoint(mlat, mlon);
         //mPolyline.addPoint(geoPoint);
         //mMapView.invalidate();
 
-
-        btnCamera = binding.btnCamera;
-        btnCamera.setOnClickListener(v -> dispatchTakePictureIntent());
         imgKamera = binding.imgKamera;
+        btnCamera = binding.btnCamera;
+        btnCamera.setOnClickListener(v -> {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                photoURI = FileProvider.getUriForFile(getContext(),
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        });
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            imageUri = String.valueOf(photoURI);
+            Images imageData = new Images(tripID, imageFileName, imageUri, imageLat, imageLon);
+            mediaList.add(imageData);
+            mViewModel.mediaData.setValue(mediaList);
+            mViewModel.insertImage(imageData);
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat sdf = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
+        String currentDateandTime = sdf.format(new Date());
+        imageFileName = "MinTur_" + currentDateandTime;
+        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @Override
@@ -277,87 +317,6 @@ public class TrackTourFragment extends Fragment implements LocationListener {
 
         mMapView.getOverlays().add(mPolyline);
     }
-
-//    private void dispatchTakePictureIntent() {
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-//            File photoFile = null;
-
-
-    @SuppressLint("QueryPermissionsNeeded")
-    private void dispatchTakePictureIntent() {
-        //Det meste av bilde kode hentet fra https://developer.android.com/training/camera/photobasics
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            photoFile = createImageFile();
-        } catch (IOException ex) {
-            Toast.makeText(getActivity(), "Kunne ikke starte Kamera.", Toast.LENGTH_SHORT).show();
-        }
-        if (photoFile != null) {
-            photoURI = FileProvider.getUriForFile(requireActivity(), "com.aphex.minturassistent", photoFile);
-//            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-
-            imageBitmap = (Bitmap) extras.get("data");
-            imageUri = String.valueOf(photoFile);
-
-            Images imageData = new Images(tripID, imageFileName, imageUri, imageLat, imageLon);
-            mediaList.add(imageData);
-            mViewModel.mediaData.setValue(mediaList);
-            mViewModel.insertImage(imageData);
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        @SuppressLint("SimpleDateFormat")
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        imageFileName = "MinTur_" + timeStamp;
-
-        File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-//    private void parseAllImages() {
-//        try {
-//            String[] projection = {
-//                    MediaStore.Images.Media.DATA
-//            };
-//            Cursor cursor = requireActivity()
-//                    .getContentResolver()
-//                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
-//            int size = cursor.getCount();
-//
-//            if (size == 0) {
-//                Toast.makeText(getActivity(), "Det er ingen bilder på minnet.", Toast.LENGTH_SHORT).show();
-//            } else {
-//                while (cursor.moveToNext()) {
-//                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
-//                    String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
-//                    Images imageData = new Images(tripID, fileName, path, imageLat, imageLon);
-//                    if (imageData.mFKTripID == tripID) {
-////                        mediaList.add(imageData);
-//                        mViewModel.insertImage(imageData);
-//                    }
-//                }
-//                cursor.close();
-//            }
-////            mViewModel.mediaData.setValue(mediaList);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public void onDestroyView() {
