@@ -53,7 +53,6 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 public class TrackTourFragment extends Fragment {
     //Trackingen er basert på location 4 eksempelet til Werner.
     MapView mMapView;
-    private FusedLocationProviderClient fusedLocationClient;
     private ViewModel mViewModel;
 
     private int tripID;
@@ -63,23 +62,15 @@ public class TrackTourFragment extends Fragment {
     private double stopPosLon;
     private double imageLat;
     private double imageLon;
-    private Polyline mPolyline;
 
-    ImageView imgKamera;
     FloatingActionButton btnCamera;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    Bitmap imageBitmap;
     Uri photoURI;
     String imageUri;
     String imageFileName;
 
-    private Location currentLocation;
     String currentPhotoPath;
-    private MyLocationNewOverlay mLocationOverlay;
-    private LocationManager lm;
     private List<Images> mediaList = new ArrayList<Images>();
-    private File photoFile = null;
-
     FragmentTrackTourBinding binding;
 
     public TrackTourFragment() {
@@ -121,7 +112,7 @@ public class TrackTourFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
         Configuration.getInstance().setUserAgentValue("MinturAssistent");
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         SharedPreferences prefs = requireContext().getSharedPreferences("tripID", 0);
         tripID = prefs.getInt("tripID", 0);
@@ -156,6 +147,7 @@ public class TrackTourFragment extends Fragment {
         startMap();
 
         btnCamera = binding.btnCamera;
+
         btnCamera.setOnClickListener(v -> {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             File photoFile = null;
@@ -172,7 +164,6 @@ public class TrackTourFragment extends Fragment {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         });
-
         return binding.getRoot();
     }
 
@@ -206,13 +197,12 @@ public class TrackTourFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getActivity()), mMapView);
+        MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getActivity()), mMapView);
         mLocationOverlay.enableMyLocation();
         mLocationOverlay.enableFollowLocation();
-        mMapView.getOverlays().add(this.mLocationOverlay);
+        mMapView.getOverlays().add(mLocationOverlay);
     }
 
-    @SuppressLint("MissingPermission")
     private void startMap() {
         GeoPoint geoPointStart = new GeoPoint(startPosLat, startPosLon);
         GeoPoint geoPointStop = new GeoPoint(stopPosLat, stopPosLon);

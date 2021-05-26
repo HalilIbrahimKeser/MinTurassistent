@@ -37,6 +37,7 @@ public class Repository {
     private final LiveData<List<Trip>> mAllTrips;
     public LiveData<List<Trip>> singleTrip;
     public LiveData<List<TripImages>> singleTripWithImage;
+    public LiveData<List<Images>> imagesForTrip;
 
     public Repository(Application application) {
         RoomDatabase db = RoomDatabase.getDatabase(application);
@@ -101,6 +102,11 @@ public class Repository {
         });
     }
 
+    public LiveData<List<Images>> getImagesForTrip(int mFKTripID) {
+        imagesForTrip = mDao.getImagesForTrip(mFKTripID);
+        return imagesForTrip;
+    }
+
     LiveData<List<Images>> getImage(int mImageID) {
         return mDao.getImage(mImageID);
     }
@@ -153,4 +159,5 @@ public class Repository {
             mDao.imageInsert(imageData);
         });
     }
+
 }

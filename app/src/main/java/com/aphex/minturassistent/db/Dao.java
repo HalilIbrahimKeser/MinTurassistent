@@ -55,6 +55,9 @@ public interface Dao {
     @Query("SELECT * FROM image_table ORDER BY imageID")
     LiveData<List<Images>> getImages();
 
+    @Query("SELECT * FROM image_table WHERE FKtripID =:mFKTripID")
+    LiveData<List<Images>> getImagesForTrip(int mFKTripID);
+
     @Query("SELECT * FROM image_table WHERE imageID = :mImageID")
     LiveData<List<Images>> getImage(int mImageID);
 

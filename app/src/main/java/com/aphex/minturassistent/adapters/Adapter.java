@@ -19,7 +19,7 @@ import com.aphex.minturassistent.R;
 
 
 public class Adapter extends ListAdapter<Trip, ViewHolder> {
-    private LayoutInflater layoutInflater;
+    private final LayoutInflater layoutInflater;
     Context context;
     String isFinished;
 

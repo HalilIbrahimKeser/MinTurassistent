@@ -61,16 +61,17 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
     };
-
-
     private boolean requestingLocationUpdates = false;
-    private static String[] requiredPermissions = {
+    private static final String[] requiredPermissions = {
             Manifest.permission.FOREGROUND_SERVICE
     };
-    private ViewModel mViewModel;
     private NavController navController;
     private Repository mRepository;
+    private Intent myIntent;
 
+    public Boolean getRequestingLocationUpdates() {
+        return this.requestingLocationUpdates;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         //Sikrer at servicen stopper når appen avslutter.
-        Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+        myIntent = new Intent(MainActivity.this, MyLocationService.class);
         stopService(myIntent);
         super.onDestroy();
     }
@@ -124,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        myIntent = new Intent(MainActivity.this, MyLocationService.class);
+        stopService(myIntent);
     }
 
 
@@ -148,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -162,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_stop:
                 Toast.makeText(this, "Stopper tracking!", Toast.LENGTH_SHORT).show();
                 requestingLocationUpdates = false;
-                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+                myIntent = new Intent(MainActivity.this, MyLocationService.class);
                 stopService(myIntent);
                 SharedPreferences prefs1 = this.getSharedPreferences("weather", Context.MODE_PRIVATE);
                 int mTripID = prefs1.getInt("tripID", -1);
@@ -244,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         String lat = String.valueOf(startLat);
         String lon = String.valueOf(startLon);
 
-        mViewModel = new ViewModelProvider(this).get(ViewModel.class);
+        ViewModel mViewModel = new ViewModelProvider(this).get(ViewModel.class);
         mViewModel.downloadMetData(lat, lon).observe(this, MetData -> {
             double airTemp = MetData.properties.timeseries[0].data.instant.details.air_temperature;
             String symbolCode = MetData.properties.timeseries[0].data.next_12_hours.summary.symbol_code;
@@ -288,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 // Starter location dervice!
-                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+                myIntent = new Intent(MainActivity.this, MyLocationService.class);
                 startForegroundService(myIntent);
                 requestingLocationUpdates = true;
             }

@@ -7,6 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,6 +23,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -28,9 +32,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
+import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.databinding.FragmentDetailsBinding;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.config.Configuration;
@@ -91,7 +100,7 @@ public class DetailsFragment extends Fragment {
         final Observer<List<Location>> nameObserver = new Observer<List<Location>>() {
             @Override
             public void onChanged(@Nullable final List<Location> locs) {
-                for (int i = 0; i < locs.size(); i ++) {
+                for (int i = 0; i < locs.size(); i++) {
                     GeoPoint temp = new GeoPoint(locs.get(i).getmLatitude(), locs.get(i).getmLongitude());
                     pathPoints.add(temp);
                     mPolyline.setPoints(pathPoints);
@@ -111,13 +120,41 @@ public class DetailsFragment extends Fragment {
             mapWorks();
         });
 
+        mViewModel.getImagesForTrip(mTripID).observe(getViewLifecycleOwner(), images -> {
+            if (images.size() != 0) {
+                for (int i = 0; i < images.size(); i++) {
+                    Marker imageMarker = new Marker(mMapView);
+
+                    Glide.with(this)
+                            .asBitmap()
+                            .load(images.get(i).getmImageURI())
+                            .thumbnail(0.1f)
+                            .centerCrop()
+                            .apply(new RequestOptions().override(100, 100))
+                            .into(new CustomTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                    imageMarker.setIcon(new BitmapDrawable(resource));
+                                }
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                }
+                            });
+                    imageMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
+                    imageMarker.setPosition(new GeoPoint(images.get(i).getmLatitude(), images.get(i).getmLongitude()));
+                    imageMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                    mMapView.getOverlays().add(imageMarker);
+                }
+            }
+        });
+
         binding.etComment.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     String comment = binding.etComment.getText().toString();
-                    mViewModel.setComment(mTripID,comment);
+                    mViewModel.setComment(mTripID, comment);
 
                     handled = true;
                 }
@@ -139,19 +176,20 @@ public class DetailsFragment extends Fragment {
 
         return binding.getRoot();
     }
+
     // share og screenshot fra
     // https://stackoverflow.com/questions/30196965/how-to-take-a-screenshot-of-current-activity-and-then-share-it/30212385#answer-30212385
     private Bitmap screenShot(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
         return bitmap;
     }
 
-    private void share(Bitmap bitmap){
-        String pathofBmp=
+    private void share(Bitmap bitmap) {
+        String pathofBmp =
                 MediaStore.Images.Media.insertImage(getContext().getContentResolver(),
-                        bitmap,"MinTurassistent", null);
+                        bitmap, "MinTurassistent", null);
         Uri uri = Uri.parse(pathofBmp);
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("image/*");
@@ -162,7 +200,7 @@ public class DetailsFragment extends Fragment {
     }
 
     //Viser en standard AlertDialog.. Tilpasset fra Werners dialogTest
-    public void onDeleteTripButton(View view){
+    public void onDeleteTripButton(View view) {
         DetailsFragment context = this;
         String title = "Bekreft sletting";
         String message = "Slette turen?";
