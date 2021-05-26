@@ -210,10 +210,11 @@ public class DetailsFragment extends Fragment {
     private void mapWorks() {
         mMapView.setMinZoomLevel(3.0);
         mMapView.setMaxZoomLevel(21.0);
-        mMapView.setMultiTouchControls(false);
-        mMapView.setEnabled(false);
+        mMapView.setMultiTouchControls(true);
+        mMapView.setClickable(true);
+        mMapView.getFocusable();
         mMapView.getController().zoomTo(15.0);
-        mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+        mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
 
         //FOCUS
         GeoPoint centerGeo = new GeoPoint(((startPoint.getLatitude() + stopPoint.getLatitude()) / 2), ((startPoint.getLongitude() + stopPoint.getLongitude()) / 2));

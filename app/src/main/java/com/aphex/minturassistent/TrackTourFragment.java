@@ -90,7 +90,7 @@ import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
-public class TrackTourFragment extends Fragment implements LocationListener {
+public class TrackTourFragment extends Fragment {
     //Trackingen er basert på location 4 eksempelet til Werner.
     MapView mMapView;
     private FusedLocationProviderClient fusedLocationClient;
@@ -99,15 +99,11 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     private double startPosLon;
     private double stopPosLat;
     private double stopPosLon;
-    private Polyline mPolyline;
 
     ImageView imgKamera;
     FloatingActionButton btnCamera;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    private Location currentLocation;
     private MyLocationNewOverlay mLocationOverlay;
-    private LocationManager lm;
-    private int ints = 1;
 
     public TrackTourFragment() {
     }
@@ -117,39 +113,18 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        if (((MainActivity)getActivity()).isRequestingLocationUpdates()) {
-            ((MainActivity)getActivity()).verifyLocationUpdatesRequirements();
+        if (((MainActivity) getActivity()).isRequestingLocationUpdates()) {
+            ((MainActivity) getActivity()).verifyLocationUpdatesRequirements();
         }
         MainActivity.showTopNav();
         MainActivity.hideBottomNav();
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        try {
-            //this fails on AVD 19s, even with the appcompat check, says no provided named gps is available
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, this);
-        } catch (Exception ex) {
-        }
-
-        try {
-            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, this);
-        } catch (Exception ex) {
-        }
-
-        mLocationOverlay.enableFollowLocation();
-        mLocationOverlay.enableMyLocation();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-        try {
-            lm.removeUpdates(this);
-        } catch (Exception ex) {
-        }
-        mLocationOverlay.disableFollowLocation();
-        mLocationOverlay.disableMyLocation();
     }
 
     @Override
@@ -163,9 +138,6 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        lm = null;
-        currentLocation = null;
-        mLocationOverlay = null;
     }
 
     @Override
@@ -255,10 +227,5 @@ public class TrackTourFragment extends Fragment implements LocationListener {
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             imgKamera.setImageBitmap(imageBitmap);
         }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        currentLocation = location;
     }
 }
