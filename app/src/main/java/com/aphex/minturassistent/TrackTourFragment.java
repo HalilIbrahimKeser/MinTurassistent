@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
+import android.os.Environment;
 import android.util.Log;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
