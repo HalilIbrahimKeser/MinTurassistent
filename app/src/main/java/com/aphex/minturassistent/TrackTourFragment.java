@@ -93,7 +93,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     private MyLocationNewOverlay mLocationOverlay;
     private LocationManager lm;
     private List<Images> mediaList = new ArrayList<Images>();
-    private File photoFile;
+    private File photoFile = null;
 
     public TrackTourFragment() {
     }
@@ -284,23 +284,19 @@ public class TrackTourFragment extends Fragment implements LocationListener {
 //            File photoFile = null;
 
 
+    @SuppressLint("QueryPermissionsNeeded")
     private void dispatchTakePictureIntent() {
         //Det meste av bilde kode hentet fra https://developer.android.com/training/camera/photobasics
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        photoFile = null;
         try {
             photoFile = createImageFile();
         } catch (IOException ex) {
             Toast.makeText(getActivity(), "Kunne ikke starte Kamera.", Toast.LENGTH_SHORT).show();
         }
         if (photoFile != null) {
-            try {
-                photoURI = FileProvider.getUriForFile(requireActivity(), "com.aphex.minturassistent", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(getActivity(), "Kunne ikke starte Kamera.", Toast.LENGTH_SHORT).show();
-            }
+            photoURI = FileProvider.getUriForFile(requireActivity(), "com.aphex.minturassistent", photoFile);
+//            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
@@ -309,6 +305,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
+
             imageBitmap = (Bitmap) extras.get("data");
             imageUri = String.valueOf(photoFile);
 
@@ -322,7 +319,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     private File createImageFile() throws IOException {
         @SuppressLint("SimpleDateFormat")
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        imageFileName =  "MinTurAssistent_" + timeStamp + "_";
+        imageFileName = "MinTur_" + timeStamp;
 
         File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
