@@ -180,10 +180,9 @@ public class TrackTourFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getActivity()), mMapView);
-        mMapView.getOverlays().add(this.mLocationOverlay);
         mLocationOverlay.enableMyLocation();
         mLocationOverlay.enableFollowLocation();
-
+        mMapView.getOverlays().add(this.mLocationOverlay);
     }
 
     @SuppressLint("MissingPermission")
