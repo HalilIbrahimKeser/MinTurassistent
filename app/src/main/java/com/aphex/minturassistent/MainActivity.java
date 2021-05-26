@@ -1,6 +1,7 @@
 package com.aphex.minturassistent;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -70,14 +71,17 @@ public class MainActivity extends AppCompatActivity {
     private static Toolbar myToolbar;
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA};
-    //Manifest.permission.WRITE_EXTERNAL_STORAGE, bør fjernes fra ovenfor
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_MEDIA_LOCATION, Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
 
     private boolean requestingLocationUpdates = false;
     private static String[] requiredPermissions = {
             Manifest.permission.FOREGROUND_SERVICE
     };
+    ViewModel mViewModel;
 
 
     @Override
@@ -153,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.menu_weather:
-                showWeatherDialog();
+                showWeatherDialog(this);
                 break;
             case R.id.menu_track:
                 Toast.makeText(this, "Starter tracking!", Toast.LENGTH_SHORT).show();
@@ -187,8 +191,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (!missingPermissions.isEmpty()) {
-            final String[] permissions = missingPermissions
-                    .toArray(new String[missingPermissions.size()]);
+            final String[] permissions = missingPermissions.toArray(new String[0]);
             ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
         } else {
             final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
@@ -228,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("SetTextI18n")
     private void showWeatherDialog(Context context) {
         //hentet mye kode fra https://www.youtube.com/watch?v=3cJ9eia49w4
         //alertDialog.dismiss() lukker ikke parent ordentlig. Når man åpner dialogen flere ganger må
@@ -249,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
         startLon = prefs1.getFloat("startgeolon", 0);
         String lat = String.valueOf(startLat);
         String lon = String.valueOf(startLon);
+
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
         mViewModel.downloadMetData(lat, lon).observe(this, MetData -> {
             double airTemp = MetData.properties.timeseries[0].data.instant.details.air_temperature;
@@ -258,15 +263,10 @@ public class MainActivity extends AppCompatActivity {
 
         ((TextView) view.findViewById(R.id.tvWeatherTitle)).setText("Værmelding:");
         ((ImageView) view.findViewById(R.id.ivWeatherInfo)).setImageResource(getResources().getIdentifier(symbolCode, "drawable", getPackageName()));
-        ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp: " + String.valueOf(airTemp) + "ºC");
+        ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp: " + airTemp + "ºC");
         ((TextView) view.findViewById(R.id.tvTimeStamp)).setText(timeStamp);
 
-        view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener()  {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
+        view.findViewById(R.id.btnWeatherDsm).setOnClickListener(v -> alertDialog.dismiss());
         if(alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
@@ -275,68 +275,46 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Sjekker om kravene satt i locationRequest kan oppfylles.
-     * Hvis ikke vises en dialog.
-     *
-     */
     public void verifyLocationUpdatesRequirements() {
         final LocationRequest locationRequest = createLocationRequest();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
 
-        // NB! Sjekker om kravene satt i locationRequest kan oppfylles:
         SettingsClient client = LocationServices.getSettingsClient(this);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                // Starter location dervice!
-                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
-                startForegroundService(myIntent);
-                requestingLocationUpdates = true;
-            }
+        task.addOnSuccessListener(this, locationSettingsResponse -> {
+            // Starter location dervice!
+            Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+            startForegroundService(myIntent);
+            requestingLocationUpdates = true;
         });
-        task.addOnFailureListener(this, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // Lokasjopnsinnstillinger er IKKE OK, men det kan fikses ved å vise brukeren en dialog!!
-                    try {
-                        // Viser dialogen ved å kalle startResolutionForResult() OG SJEKKE resultatet i onActivityResult()
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
+        task.addOnFailureListener(this, e -> {
+            if (e instanceof ResolvableApiException) {
+                try {
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException sendEx) {
+                    // Ignore the error.
                 }
             }
         });
     }
 
     private void verifyFineLocationPermissions() {
-        // Kontrollerer om vi har tilgang til ACCESS_FINE_LOCATION:
         int locationPermissionFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (locationPermissionFine != PackageManager.PERMISSION_GRANTED) {
-            // Dersom vi ikke har nødvendige tilganger spør bruker om tilgang.
-            // Fortsetter i metoden onRequestPermissionsResult() ...\
             ActivityCompat.requestPermissions(this, requiredPermissions, CALLBACK_REQUEST_FOREGROUND_SERVICE_PERMISSION);
         } else {
-            // Fortsetter dersom tilgang gitt fra før:
             verifyLocationUpdatesRequirements();
         }
     }
-    // LocationRequest: Setter krav til posisjoneringa:
-    // Merk: public static, brukes også fra MyLocationService.
+
     public static LocationRequest createLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
-        // Hvor ofte ønskes lokasjonsoppdateringer (her: hvert 10.sekund)
         locationRequest.setInterval(3000);
-        // Her settes intervallet for hvor raskt appen kan håndtere oppdateringer.
         locationRequest.setFastestInterval(2000);
-        // Ulike verderi; Her: høyest mulig nøyaktighet som også normalt betyr bruk av GPS.
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }

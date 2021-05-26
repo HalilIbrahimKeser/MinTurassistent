@@ -132,4 +132,9 @@ public class Repository {
     }
 
 
+    public void insertImage(Images imageData) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.imageInsert(imageData);
+        });
+    }
 }

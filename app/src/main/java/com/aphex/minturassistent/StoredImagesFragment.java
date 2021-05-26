@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class StoredImagesFragment extends Fragment {
-//    private List<Trip> mediaList = new ArrayList<>();
     private ViewModel mViewModel;
     int mTripID;
 
@@ -52,8 +51,6 @@ public class StoredImagesFragment extends Fragment {
         SharedPreferences prefs = getContext().getSharedPreferences("tripID", 0);
         mTripID = prefs.getInt("tripID", -1);
 
-//        mediaList = new ArrayList<>();
-
         mViewModel.getTripWithImages(mTripID).observe(getViewLifecycleOwner(), imageAdapter::submitList);
 
         mViewModel.getSingleTrip(mTripID).observe(getViewLifecycleOwner(), tripData -> {
@@ -63,35 +60,4 @@ public class StoredImagesFragment extends Fragment {
 
         return binding.getRoot();
     }
-
-//    private void parseAllImages() {
-//        try {
-//            String[] projection = {
-//                    MediaStore.Images.Media.DATA
-//            };
-//            Cursor cursor = requireActivity()
-//                    .getContentResolver()
-//                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
-//
-//            int size = cursor.getCount();
-//
-//            if (size == 0) {
-//                Toast.makeText(getActivity(), "Det er ingen bilder på minnet.", Toast.LENGTH_SHORT).show();
-//            } else {
-//                while (cursor.moveToNext()) {
-//                    int file_ColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-//                    String path = cursor.getString(file_ColumnIndex);
-//                    String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
-//                    Images imageData = new Images(1, fileName, path, 68.43580,17.43666);
-//                    mediaList.add(imageData);
-//                }
-//                cursor.close();
-//            }
-//            mViewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-//            mViewModel.mediaData.setValue(mediaList);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

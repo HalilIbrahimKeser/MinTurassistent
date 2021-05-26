@@ -94,6 +94,10 @@ public class ViewModel extends AndroidViewModel {
         return mRepository.getImage(mImageID);
     }
 
+    public void insertImage(Images imageData) {
+        mRepository.insertImage(imageData);
+    }
+
     //MAPS ------------------------------------------------------------------
     public LiveData<List<Trip>> getLastTourType() { return mRepository.getLastTourType(); }
 
@@ -101,6 +105,7 @@ public class ViewModel extends AndroidViewModel {
     public MutableLiveData<MetData> downloadMetData(String lat, String lon) {
         return mRepository.downloadMetData(lat, lon);
     }
+
 
 
 }

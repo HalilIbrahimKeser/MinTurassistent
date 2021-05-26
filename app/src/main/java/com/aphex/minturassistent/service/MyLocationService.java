@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
@@ -100,6 +101,13 @@ public class MyLocationService extends Service {
 
                     com.aphex.minturassistent.Entities.Location currentLocation = new com.aphex.minturassistent.Entities.Location(1,location.getLatitude(), location.getLongitude());
                     mRepository.insert(currentLocation);
+
+                    SharedPreferences prefs = getApplication().getSharedPreferences("positionForImage", 0);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    prefs.edit().remove("positionForImage").apply();
+                    editor.putFloat("lat", (float) previousLocation.getLatitude());
+                    editor.putFloat("lon", (float) previousLocation.getLongitude());
+                    editor.apply();
                 }
 
                 // Viser/oppdaterer varsel:

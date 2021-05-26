@@ -36,7 +36,7 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
         }
         return INSTANCE;
     }
-    private static Callback sRoomDatabaseCallback = new Callback() {
+    private static final Callback sRoomDatabaseCallback = new Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);

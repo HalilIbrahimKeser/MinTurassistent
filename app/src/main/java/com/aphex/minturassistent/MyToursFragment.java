@@ -98,7 +98,7 @@ public class MyToursFragment extends Fragment {
 
                     case ItemTouchHelper.RIGHT:
                         mViewModel.getCurrentTrip().setValue(currentTrip);
-                        SharedPreferences prefs = getView().getContext().getSharedPreferences("tripID", 0);
+                        SharedPreferences prefs = requireActivity().getSharedPreferences("tripID", 0);
                         SharedPreferences.Editor editor = prefs.edit();
                         prefs.edit().remove("tripID").apply();
                         editor.putInt("tripID", currentTrip.mTripID);

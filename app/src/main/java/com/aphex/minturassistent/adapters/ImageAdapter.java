@@ -1,8 +1,14 @@
 package com.aphex.minturassistent.adapters;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +59,7 @@ public class ImageAdapter extends ListAdapter<TripImages, ImageViewHolder> {
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         TripImages current = getItem(position);
         String imageTitle = "Bildetittel: " + current.mTitle;
+        String test = current.mImageURI;
 
         Glide.with(holder.ivThumb)
                 .load(current.mImageURI)
