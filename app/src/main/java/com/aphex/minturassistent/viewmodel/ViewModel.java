@@ -12,6 +12,7 @@ import com.aphex.minturassistent.Entities.MetData;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.Entities.TripImages;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
@@ -20,12 +21,13 @@ public class ViewModel extends AndroidViewModel {
 
     public LiveData<List<Trip>> mAllTrips;
     public MutableLiveData<Trip> mCurrentTrip;
-    public MutableLiveData<Location> mLastLocation;
 
     public MutableLiveData<String> dateData = new MutableLiveData<>();
     public MutableLiveData<List<Images>> mediaData = new MutableLiveData<>();
 
     public MutableLiveData<MetData> mMetData = new MutableLiveData<>();
+    private LiveData<List<Location>> mGeoLocations;
+
 
     public ViewModel(Application application) {
         super(application);
@@ -74,13 +76,13 @@ public class ViewModel extends AndroidViewModel {
     }
 
     //LOCATION
-    public MutableLiveData<Location> getLastLocation() {
-        if (mLastLocation == null) {
-            mLastLocation = new MutableLiveData<>();
+    public LiveData<List<Location>> getLocationPath(int mTripID) {
+        if (mGeoLocations == null) {
+            mGeoLocations = new MutableLiveData<>();
         }
-        return mLastLocation;
+        mGeoLocations = mRepository.getLocationPath(mTripID);
+        return mGeoLocations;
     }
-
 
     //DATE ------------------------------------------------------
     public MutableLiveData<String> getDate() {
@@ -104,6 +106,4 @@ public class ViewModel extends AndroidViewModel {
     public MutableLiveData<MetData> downloadMetData(String lat, String lon) {
         return mRepository.downloadMetData(lat, lon);
     }
-
-
 }

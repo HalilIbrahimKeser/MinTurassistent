@@ -24,11 +24,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.aphex.minturassistent.databinding.ActivityMainBinding;
 import com.aphex.minturassistent.service.MyLocationService;
+import com.aphex.minturassistent.viewmodel.Repository;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
@@ -63,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.FOREGROUND_SERVICE
     };
     private ViewModel mViewModel;
+    private NavController navController;
+    private Repository mRepository;
 
 
     @Override
@@ -77,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
+        navController = navHostFragment.getNavController();
 
         myToolbar = binding.myToolbar;
         setSupportActionBar(myToolbar);
@@ -87,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = binding.bottomNav;
         NavigationUI.setupWithNavController(bottomNav, navHostFragment.getNavController());
+
+        mRepository = new Repository(getApplication());
     }
 
     @Override
@@ -142,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.menu_track:
                 Toast.makeText(this, "Starter tracking!", Toast.LENGTH_SHORT).show();
-                //verifyLocationUpdatesRequirements();
                 verifyFineLocationPermissions();
                 break;
             case R.id.menu_stop:
@@ -150,9 +157,17 @@ public class MainActivity extends AppCompatActivity {
                 requestingLocationUpdates = false;
                 Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
                 stopService(myIntent);
+                SharedPreferences prefs1 = this.getSharedPreferences("weather", Context.MODE_PRIVATE);
+                int mTripID = prefs1.getInt("tripID", -1);
+                mRepository.updateIsFinished(mTripID);
+                if (!navController.popBackStack()) {
+                    finish();
+                }
+                Toast.makeText(this, "Tur avsluttet!", Toast.LENGTH_LONG).show();
                 break;
             case R.id.menu_pause:
                 Toast.makeText(this, "Pauser tracking!", Toast.LENGTH_SHORT).show();
+                //TODO
                 //requestingLocationUpdates = false;
                 //Intent myIntent1 = new Intent(MainActivity.this, MyLocationService.class);
                 //stopService(myIntent1);

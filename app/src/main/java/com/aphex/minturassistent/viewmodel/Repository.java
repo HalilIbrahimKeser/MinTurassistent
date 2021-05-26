@@ -17,6 +17,7 @@ import com.aphex.minturassistent.db.RoomDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -87,6 +88,12 @@ public class Repository {
         });
     }
 
+    public void updateIsFinished(int mTripID) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.updateIsFinished(mTripID);
+        });
+    }
+
     //IMAGES--------------------
     void imageInsert(Images image) {
         RoomDatabase.databaseWriteExecutor.execute(() -> {
@@ -115,6 +122,10 @@ public class Repository {
         });
     }
 
+    public LiveData<List<Location>> getLocationPath(int mTripID) {
+        return mDao.getLocationPath(mTripID);
+    }
+
     //METDATA -----------------------------------------
 
     //LAST NED METDATA
@@ -136,6 +147,4 @@ public class Repository {
         });
         return metData;
     }
-
-
 }

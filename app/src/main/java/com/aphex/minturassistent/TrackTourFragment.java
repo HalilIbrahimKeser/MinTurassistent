@@ -107,6 +107,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     private Location currentLocation;
     private MyLocationNewOverlay mLocationOverlay;
     private LocationManager lm;
+    private int ints = 1;
 
     public TrackTourFragment() {
     }
@@ -171,6 +172,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        Configuration.getInstance().setUserAgentValue("MinturAssistent");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         SharedPreferences prefs = requireContext().getSharedPreferences("tripID", 0);
@@ -194,13 +196,6 @@ public class TrackTourFragment extends Fragment implements LocationListener {
         mMapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
 
         startMap();
-
-
-        //Polyline: tegner stien.
-        //geoPoint = new GeoPoint(mlat, mlon);
-        //mPolyline.addPoint(geoPoint);
-        //mMapView.invalidate();
-
 
         btnCamera = binding.btnCamera;
         btnCamera.setOnClickListener(v -> dispatchTakePictureIntent());
@@ -232,7 +227,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
         startMarker.setPosition(geoPointStart);
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         mMapView.getOverlays().add(startMarker);
-        startMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
+        startMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder_green, null));
         startMarker.setTitle("Start point");
 
         Marker stopMarker = new Marker(mMapView);
@@ -241,27 +236,6 @@ public class TrackTourFragment extends Fragment implements LocationListener {
         mMapView.getOverlays().add(stopMarker);
         stopMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
         stopMarker.setTitle("Stop point");
-
-        //Polytrackline
-        this.mPolyline = new Polyline(mMapView);
-        final Paint paintBorder = new Paint();
-        paintBorder.setStrokeWidth(20);
-        paintBorder.setStyle(Paint.Style.FILL_AND_STROKE);
-        paintBorder.setColor(Color.BLACK);
-        paintBorder.setStrokeCap(Paint.Cap.ROUND);
-        paintBorder.setAntiAlias(true);
-
-        final Paint paintInside = new Paint();
-        paintInside.setStrokeWidth(10);
-        paintInside.setStyle(Paint.Style.FILL);
-        paintInside.setColor(Color.WHITE);
-        paintInside.setStrokeCap(Paint.Cap.ROUND);
-        paintInside.setAntiAlias(true);
-
-        mPolyline.getOutlinePaintLists().add(new MonochromaticPaintList(paintBorder));
-        mPolyline.getOutlinePaintLists().add(new MonochromaticPaintList(paintInside));
-
-        mMapView.getOverlays().add(mPolyline);
     }
 
     private void dispatchTakePictureIntent() {

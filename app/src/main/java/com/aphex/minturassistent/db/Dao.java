@@ -1,6 +1,7 @@
 package com.aphex.minturassistent.db;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -11,6 +12,7 @@ import com.aphex.minturassistent.Entities.Location;
 import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.Entities.TripImages;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @androidx.room.Dao
@@ -42,6 +44,10 @@ public interface Dao {
     @Query("UPDATE trip_table SET comment=:mComment WHERE tripID =:mTripID")
     void setComment(int mTripID, String mComment);
 
+    @Query("UPDATE trip_table SET isFinished = 1 WHERE tripID =:mTripID")
+    void updateIsFinished(int mTripID);
+
+
     //IMAGE - - - - - - - - - - - - - - - - - - - - -  -
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void imageInsert(Images image);
@@ -68,4 +74,7 @@ public interface Dao {
     //MAPS - - - - - - - - - -
     @Query("SELECT * FROM trip_table ORDER BY tripID DESC LIMIT 1")
     LiveData<List<Trip>> getLastTourType();
+
+    @Query("SELECT * FROM location_table WHERE locTripID = :mTripID")
+    LiveData<List<Location>> getLocationPath(int mTripID);
 }
