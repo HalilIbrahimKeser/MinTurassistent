@@ -5,6 +5,7 @@ public final class MetData {
     public final Geometry geometry;
     public final Properties properties;
 
+// Generert fra https://timboudreau.com/blog/json/read --- json to pojo
 
     public MetData(String type, Geometry geometry, Properties properties) {
         this.type = type;

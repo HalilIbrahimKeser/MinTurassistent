@@ -36,11 +36,9 @@ public class Location implements Serializable {
         this.mLatitude = mLatitude;
         this.mLongitude = mLongitude;
     }
-
     public double getmLatitude() {
         return mLatitude;
     }
-
     public double getmLongitude() {
         return mLongitude;
     }

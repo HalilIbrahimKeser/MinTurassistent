@@ -40,28 +40,19 @@ public class Images implements Serializable {
         this.mLatitude = mLatitude;
         this.mLongitude = mLongitude;
     }
-
     public double getmLatitude() { return mLatitude; }
     public void setmLatitude(double mLatitude) { this.mLatitude = mLatitude; }
     public double getmLongitude() { return mLongitude; }
     public void setmLongitude(double mLongitude) { this.mLongitude = mLongitude; }
-
     public int getmFKTripID() { return mFKTripID; }
-
     public void setmFKTripID(int mFKTripID) { this.mFKTripID = mFKTripID; }
-
     public String getmTitle() {
         return mTitle;
     }
-
     public void setmTitle(String mTitle) {
         this.mTitle = mTitle;
     }
-
-    public String getmImageURI() {
-        return mImageURI;
-    }
-
+    public String getmImageURI() { return mImageURI; }
     public void setmImageURI(String mImageURI) {
         this.mImageURI = mImageURI;
     }

@@ -130,12 +130,10 @@ public class Trip implements Serializable {
     }
 
     public String getmTourType() {return mTourType;}
-
     public void setmTourType(String mTourType) {
         this.mTourType = mTourType;
     }
 
     public String getmComment() { return mComment; }
-
     public void setmComment(String mComment) { this.mComment = mComment; }
 }
