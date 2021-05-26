@@ -2,6 +2,7 @@ package com.aphex.minturassistent;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,29 +22,50 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
-import android.os.Environment;
+import android.util.Log;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.aphex.minturassistent.Entities.Images;
+import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.FragmentTrackTourBinding;
+import com.aphex.minturassistent.db.Dao;
+import com.aphex.minturassistent.db.RoomDatabase;
+import com.aphex.minturassistent.service.MyLocationService;
+import com.aphex.minturassistent.viewmodel.Repository;
 import com.aphex.minturassistent.viewmodel.ViewModel;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import org.jetbrains.annotations.NotNull;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.advancedpolyline.MonochromaticPaintList;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -60,11 +82,21 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.compass.CompassOverlay;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
-public class TrackTourFragment extends Fragment implements LocationListener {
+public class TrackTourFragment extends Fragment {
     //Trackingen er basert på location 4 eksempelet til Werner.
     MapView mMapView;
     private FusedLocationProviderClient fusedLocationClient;
@@ -99,6 +131,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     public TrackTourFragment() {
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onResume() {
         super.onResume();
@@ -109,45 +142,12 @@ public class TrackTourFragment extends Fragment implements LocationListener {
         MainActivity.showTopNav();
         MainActivity.hideBottomNav();
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        try {
-            //this fails on AVD 19s, even with the appcompat check, says no provided named gps is available
-            //Sjekk permision før man åpner kamera
-            if (ActivityCompat.checkSelfPermission(requireActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(requireActivity(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, this);
-            }
-        } catch (Exception ex) {
-            //Ignored
-        }
-
-        try {
-            if (ActivityCompat.checkSelfPermission(requireActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(requireActivity(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, this);
-            }
-        } catch (Exception ignored) {
-        }
-
-        mLocationOverlay.enableFollowLocation();
-        mLocationOverlay.enableMyLocation();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-        try {
-            lm.removeUpdates(this);
-        } catch (Exception ex) {
-        }
-        mLocationOverlay.disableFollowLocation();
-        mLocationOverlay.disableMyLocation();
     }
 
     @Override
@@ -161,15 +161,13 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        lm = null;
-        currentLocation = null;
-        mLocationOverlay = null;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        Configuration.getInstance().setUserAgentValue("MinturAssistent");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         SharedPreferences prefs = requireContext().getSharedPreferences("tripID", 0);
@@ -204,12 +202,6 @@ public class TrackTourFragment extends Fragment implements LocationListener {
 
         startMap();
 
-        //Polyline: tegner stien.
-        //geoPoint = new GeoPoint(mlat, mlon);
-        //mPolyline.addPoint(geoPoint);
-        //mMapView.invalidate();
-
-        imgKamera = binding.imgKamera;
         btnCamera = binding.btnCamera;
         btnCamera.setOnClickListener(v -> {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -262,15 +254,9 @@ public class TrackTourFragment extends Fragment implements LocationListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getActivity()), mMapView);
-        mMapView.getOverlays().add(this.mLocationOverlay);
         mLocationOverlay.enableMyLocation();
         mLocationOverlay.enableFollowLocation();
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        currentLocation = location;
+        mMapView.getOverlays().add(this.mLocationOverlay);
     }
 
     @SuppressLint("MissingPermission")
@@ -286,7 +272,7 @@ public class TrackTourFragment extends Fragment implements LocationListener {
         startMarker.setPosition(geoPointStart);
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         mMapView.getOverlays().add(startMarker);
-        startMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
+        startMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder_green, null));
         startMarker.setTitle("Start point");
 
         Marker stopMarker = new Marker(mMapView);
@@ -295,27 +281,16 @@ public class TrackTourFragment extends Fragment implements LocationListener {
         mMapView.getOverlays().add(stopMarker);
         stopMarker.setIcon(getDrawable(getResources(), R.drawable.placeholder, null));
         stopMarker.setTitle("Stop point");
+    }
 
-        //Polytrackline
-        this.mPolyline = new Polyline(mMapView);
-        final Paint paintBorder = new Paint();
-        paintBorder.setStrokeWidth(20);
-        paintBorder.setStyle(Paint.Style.FILL_AND_STROKE);
-        paintBorder.setColor(Color.BLACK);
-        paintBorder.setStrokeCap(Paint.Cap.ROUND);
-        paintBorder.setAntiAlias(true);
-
-        final Paint paintInside = new Paint();
-        paintInside.setStrokeWidth(10);
-        paintInside.setStyle(Paint.Style.FILL);
-        paintInside.setColor(Color.WHITE);
-        paintInside.setStrokeCap(Paint.Cap.ROUND);
-        paintInside.setAntiAlias(true);
-
-        mPolyline.getOutlinePaintLists().add(new MonochromaticPaintList(paintBorder));
-        mPolyline.getOutlinePaintLists().add(new MonochromaticPaintList(paintInside));
-
-        mMapView.getOverlays().add(mPolyline);
+    private void dispatchTakePictureIntent() {
+        //https://developer.android.com/training/camera/photobasics
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // display error state to the user
+        }
     }
 
     @Override

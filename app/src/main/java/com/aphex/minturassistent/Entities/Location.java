@@ -13,10 +13,10 @@ import java.io.Serializable;
 import static androidx.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "location_table",
-        indices = {@Index("locationID")},
+        indices = {@Index("locTripID")},
         foreignKeys = {@ForeignKey(entity = Trip.class,
                 parentColumns = "tripID",
-                childColumns = "locationID",
+                childColumns = "locTripID",
                 onDelete = CASCADE)})
 
 public class Location implements Serializable {
@@ -24,7 +24,7 @@ public class Location implements Serializable {
     @NonNull
     @ColumnInfo(name = "locationID") public int mLocationID;
 
-    @ColumnInfo(name = "tripID") public int mtripID;
+    @ColumnInfo(name = "locTripID") public int mtripID;
 
     @ColumnInfo(name = "latitude") public double mLatitude;
 
@@ -41,15 +41,7 @@ public class Location implements Serializable {
         return mLatitude;
     }
 
-    public void setmLatitude(double mLatitude) {
-        this.mLatitude = mLatitude;
-    }
-
     public double getmLongitude() {
         return mLongitude;
-    }
-
-    public void setmLongitude(double mLongitude) {
-        this.mLongitude = mLongitude;
     }
 }

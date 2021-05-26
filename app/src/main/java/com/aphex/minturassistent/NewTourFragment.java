@@ -99,7 +99,7 @@ public class NewTourFragment extends Fragment {
             Trip.StopGeo stopGeo = new Trip.StopGeo(59.96976, 11.06133);
 
             Trip newTrip = new Trip(tourName1, String.valueOf(date.getText()), estimatedHours1, estimatedDays1,
-                    false, "null", "null", tourType, startGeo, stopGeo);
+                    false, "null", "null", tourType, startGeo, stopGeo, "Skriv kommentar her");
             viewModel.getCurrentTrip().postValue(newTrip);
             Navigation.findNavController(getView()).navigate(R.id.planTourFragment);
         });

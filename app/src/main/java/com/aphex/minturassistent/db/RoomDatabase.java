@@ -54,16 +54,16 @@ public abstract class RoomDatabase extends androidx.room.RoomDatabase {
 
                 //Dummy Trip
                 Trip trip1 = new Trip( "Nydelig dag på Mt.Everest!", "05.05.2021", 0, 5,
-                        true,"24", "61.44, -17.41", "Sykkeltur", startGeo, stopGeo);
+                        true,"24", "61.44, -17.41", "Sykkeltur", startGeo, stopGeo, "Hei");
 
                 Trip trip2 = new Trip( "Fett på K2!", "06.06.2021", 0, 5,
-                        true,"12", "70.42, 10.41", "Gåtur", startGeo, stopGeo);
+                        true,"12", "70.42, 10.41", "Gåtur", startGeo, stopGeo, "Flott tur");
 
                 Trip trip3 = new Trip( "Bestiget Besseggen!", "19.07.2021", 0, 5,
-                        true, "10", "55.42, 0.41", "Gåtur", startGeo, stopGeo);
+                        true, "10", "55.42, 0.41", "Gåtur", startGeo, stopGeo, "Luftig");
 
                 Trip trip4 = new Trip( "Mormorparken", "16.05.2021", 0, 5,
-                        false, "10", "68.43, 17.41", "Gåtur", startGeo, stopGeo);
+                        false, "10", "68.43, 17.41", "Gåtur", startGeo, stopGeo, "mormor er best");
                 dao.tripInsert(trip1);
                 dao.tripInsert(trip2);
                 dao.tripInsert(trip3);

@@ -65,6 +65,7 @@
     <string name="tid_brukt">Tid brukt:</string>
     <string name="dato">Dato:</string>
     <string name="slett_tur">Slett tur</string>
+    <string name="skriv_en_kommentar_her">Skriv en kommentar her</string>
     <string name="str_IngenBilder">Ingen bilder tilhørende </string>
     <string name="str_IngenBilder1">denne turen!</string>
 

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.Room;
 
 import com.aphex.minturassistent.Entities.Images;
 import com.aphex.minturassistent.Entities.MetData;
@@ -16,6 +17,7 @@ import com.aphex.minturassistent.db.RoomDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -57,6 +59,11 @@ public class Repository {
             mDao.tripInsert(trip);
         });
     }
+    void setComment(int mTripID, String mComment) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.setComment(mTripID, mComment);
+        });
+    }
 
     LiveData<List<Trip>> getAllTrips() {
         return mAllTrips;
@@ -78,6 +85,12 @@ public class Repository {
     void deleteTrip(int trip) {
         RoomDatabase.databaseWriteExecutor.execute(() -> {
             mDao.deleteTrip(trip);
+        });
+    }
+
+    public void updateIsFinished(int mTripID) {
+        RoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.updateIsFinished(mTripID);
         });
     }
 
@@ -109,6 +122,10 @@ public class Repository {
         });
     }
 
+    public LiveData<List<Location>> getLocationPath(int mTripID) {
+        return mDao.getLocationPath(mTripID);
+    }
+
     //METDATA -----------------------------------------
 
     //LAST NED METDATA
@@ -130,7 +147,6 @@ public class Repository {
         });
         return metData;
     }
-
 
     public void insertImage(Images imageData) {
         RoomDatabase.databaseWriteExecutor.execute(() -> {

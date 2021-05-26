@@ -1,50 +1,39 @@
 package com.aphex.minturassistent;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.aphex.minturassistent.Entities.Location;
-import com.aphex.minturassistent.Entities.MetData;
-import com.aphex.minturassistent.Entities.Trip;
 import com.aphex.minturassistent.databinding.ActivityMainBinding;
 import com.aphex.minturassistent.service.MyLocationService;
+import com.aphex.minturassistent.viewmodel.Repository;
 import com.aphex.minturassistent.viewmodel.ViewModel;
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -55,9 +44,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.osmdroid.util.GeoPoint;
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
     private static String[] requiredPermissions = {
             Manifest.permission.FOREGROUND_SERVICE
     };
-    ViewModel mViewModel;
+    private ViewModel mViewModel;
+    private NavController navController;
+    private Repository mRepository;
 
 
     @Override
@@ -96,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
+        navController = navHostFragment.getNavController();
 
         myToolbar = binding.myToolbar;
         setSupportActionBar(myToolbar);
@@ -106,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = binding.bottomNav;
         NavigationUI.setupWithNavController(bottomNav, navHostFragment.getNavController());
+
+        mRepository = new Repository(getApplication());
     }
 
     @Override
@@ -116,11 +107,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+        // Ved skjermrotasjon må vi starte servicen på nytt (siden vi stopper servicen i onDestroy()):
+        if (this.requestingLocationUpdates) {
+            verifyFineLocationPermissions();
+        }
     }
 
     @Override
@@ -139,12 +129,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("requestingLocationUpdates", requestingLocationUpdates);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.keySet().contains("requestingLocationUpdates")) {
+            this.requestingLocationUpdates = savedInstanceState.getBoolean("requestingLocationUpdates");
+        } else {
+            this.requestingLocationUpdates = false;
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -161,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.menu_track:
                 Toast.makeText(this, "Starter tracking!", Toast.LENGTH_SHORT).show();
-                //verifyLocationUpdatesRequirements();
                 verifyFineLocationPermissions();
                 break;
             case R.id.menu_stop:
@@ -169,9 +164,17 @@ public class MainActivity extends AppCompatActivity {
                 requestingLocationUpdates = false;
                 Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
                 stopService(myIntent);
+                SharedPreferences prefs1 = this.getSharedPreferences("weather", Context.MODE_PRIVATE);
+                int mTripID = prefs1.getInt("tripID", -1);
+                mRepository.updateIsFinished(mTripID);
+                if (!navController.popBackStack()) {
+                    finish();
+                }
+                Toast.makeText(this, "Tur avsluttet!", Toast.LENGTH_LONG).show();
                 break;
             case R.id.menu_pause:
                 Toast.makeText(this, "Pauser tracking!", Toast.LENGTH_SHORT).show();
+                //TODO
                 //requestingLocationUpdates = false;
                 //Intent myIntent1 = new Intent(MainActivity.this, MyLocationService.class);
                 //stopService(myIntent1);
@@ -264,7 +267,12 @@ public class MainActivity extends AppCompatActivity {
         ((TextView) view.findViewById(R.id.tvTemp)).setText("Temp: " + airTemp + "ºC");
         ((TextView) view.findViewById(R.id.tvTimeStamp)).setText(timeStamp);
 
-        view.findViewById(R.id.btnWeatherDsm).setOnClickListener(v -> alertDialog.dismiss());
+        view.findViewById(R.id.btnWeatherDsm).setOnClickListener(new View.OnClickListener()  {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
         if(alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
@@ -273,46 +281,68 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sjekker om kravene satt i locationRequest kan oppfylles.
+     * Hvis ikke vises en dialog.
+     *
+     */
     public void verifyLocationUpdatesRequirements() {
         final LocationRequest locationRequest = createLocationRequest();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
 
+        // NB! Sjekker om kravene satt i locationRequest kan oppfylles:
         SettingsClient client = LocationServices.getSettingsClient(this);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-        task.addOnSuccessListener(this, locationSettingsResponse -> {
-            // Starter location dervice!
-            Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
-            startForegroundService(myIntent);
-            requestingLocationUpdates = true;
+        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // Starter location dervice!
+                Intent myIntent = new Intent(MainActivity.this, MyLocationService.class);
+                startForegroundService(myIntent);
+                requestingLocationUpdates = true;
+            }
         });
-        task.addOnFailureListener(this, e -> {
-            if (e instanceof ResolvableApiException) {
-                try {
-                    ResolvableApiException resolvable = (ResolvableApiException) e;
-                    resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
-                } catch (IntentSender.SendIntentException sendEx) {
-                    // Ignore the error.
+        task.addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Lokasjopnsinnstillinger er IKKE OK, men det kan fikses ved å vise brukeren en dialog!!
+                    try {
+                        // Viser dialogen ved å kalle startResolutionForResult() OG SJEKKE resultatet i onActivityResult()
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
                 }
             }
         });
     }
 
     private void verifyFineLocationPermissions() {
+        // Kontrollerer om vi har tilgang til ACCESS_FINE_LOCATION:
         int locationPermissionFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (locationPermissionFine != PackageManager.PERMISSION_GRANTED) {
+            // Dersom vi ikke har nødvendige tilganger spør bruker om tilgang.
+            // Fortsetter i metoden onRequestPermissionsResult() ...\
             ActivityCompat.requestPermissions(this, requiredPermissions, CALLBACK_REQUEST_FOREGROUND_SERVICE_PERMISSION);
         } else {
+            // Fortsetter dersom tilgang gitt fra før:
             verifyLocationUpdatesRequirements();
         }
     }
-
+    // LocationRequest: Setter krav til posisjoneringa:
+    // Merk: public static, brukes også fra MyLocationService.
     public static LocationRequest createLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
+        // Hvor ofte ønskes lokasjonsoppdateringer (her: hvert 10.sekund)
         locationRequest.setInterval(3000);
+        // Her settes intervallet for hvor raskt appen kan håndtere oppdateringer.
         locationRequest.setFastestInterval(2000);
+        // Ulike verderi; Her: høyest mulig nøyaktighet som også normalt betyr bruk av GPS.
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
