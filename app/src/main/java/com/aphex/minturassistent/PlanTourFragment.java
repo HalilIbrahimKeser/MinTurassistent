@@ -84,6 +84,7 @@ public class PlanTourFragment extends Fragment implements MapEventsReceiver {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().load(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        Configuration.getInstance().setUserAgentValue("MinturAssistent");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 

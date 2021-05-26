@@ -41,15 +41,7 @@ public class Location implements Serializable {
         return mLatitude;
     }
 
-    public void setmLatitude(double mLatitude) {
-        this.mLatitude = mLatitude;
-    }
-
     public double getmLongitude() {
         return mLongitude;
-    }
-
-    public void setmLongitude(double mLongitude) {
-        this.mLongitude = mLongitude;
     }
 }
